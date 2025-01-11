@@ -6,8 +6,9 @@ import { usePathname } from "next/navigation";
 const NAV_ITEMS = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
-  { href: "/shop", label: "Shop" },
+  { href: "/calendar", label: "Calendar" },
   { href: "/contact", label: "Contact" },
+  { href: "register", label: "Register" },
 ];
 
 const CustomNav = () => {
@@ -18,7 +19,7 @@ const CustomNav = () => {
       <Navbar.Brand href="/">
         <img
           src="/assets/logos/CM_logo_Orange.svg"
-          className="mr-3 h-6 sm:h-9"
+          className="mr-3 h-6 w-20 sm:h-9"
           alt="Cétera Marketing"
         />
         <span className="self-center whitespace-nowrap text-xl text-white">

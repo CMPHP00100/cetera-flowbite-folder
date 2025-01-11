@@ -1,4 +1,5 @@
-import HeroSection from "../components/hero";
+import HeroSection from "/components/hero";
+import GetUsers from "../../components/get-users";
 
 export default function Contact() {
   return (
@@ -11,6 +12,8 @@ export default function Contact() {
         heroImage="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/hero/phone-mockup.png"
         heroAlt="Contact Page Alt Text"
       />
+      <h1>Users</h1>
+      <GetUsers />
     </div>
   );
 }

@@ -58,7 +58,7 @@ const Footer = () => {
               <a href="https://flowbite.com" className="flex items-center">
                 <img
                   src="/assets/logos/CM_logo_Gray.svg"
-                  className="mr-3 h-8"
+                  className="mr-3 h-8 w-20"
                   alt="Cétera Marketing"
                 />
                 <p className="self-center whitespace-nowrap text-gray-600 hover:text-cetera-orange">

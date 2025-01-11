@@ -1,8 +1,15 @@
+"use client";
+import { useState } from "react";
+
 const HeroSection = ({
+  id,
   heading,
   description,
+  dataModalTarget,
+  dataModalToggle,
   callToActionButtonText,
   callToActionButtonLink,
+  callToActionButtonClass,
   heroImage,
   heroAlt,
 }) => {
@@ -18,8 +25,11 @@ const HeroSection = ({
               {description}
             </p>
             <a
+              id={id}
+              data-modal-target={dataModalTarget}
+              data-modal-toggle={useState(dataModalToggle)}
               href={callToActionButtonLink}
-              className="mr-3 inline-flex items-center justify-center rounded-lg bg-primary-700 px-5 py-3 text-center text-base font-medium text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900"
+              className={callToActionButtonClass}
             >
               {callToActionButtonText}
               <svg

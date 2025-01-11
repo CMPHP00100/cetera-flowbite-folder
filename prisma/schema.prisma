@@ -17,6 +17,7 @@ model Post {
   id        String     @default(cuid()) @id
   title     String
   content   String?
+  createdAt DateTime  @default(now()) @map(name: "created_at")
   published Boolean @default(false)
   author    User?   @relation(fields: [authorId], references: [id])
   authorId  String?
@@ -31,4 +32,16 @@ model User {
   updatedAt     DateTime  @updatedAt @map(name: "updated_at")
   posts         Post[]
   @@map(name: "users")
+}
+
+model Event {
+  id          Int      @id @default(autoincrement()) // Unique identifier
+  title       String   // Event title
+  description String?  // Optional event description
+  location    String?  // Optional location
+  startTime   DateTime // Start time of the event
+  endTime     DateTime // End time of the event
+  createdAt   DateTime  @default(now()) @map(name: "created_at")
+  updatedAt   DateTime  @updatedAt @map(name: "updated_at")
+  @@map(name: "events")
 }

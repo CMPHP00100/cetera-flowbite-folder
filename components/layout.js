@@ -16,8 +16,8 @@ export default function Layout({ children }) {
             </Link>
           </li>
           <li>
-            <Link href="/shop" legacyBehavior>
-              <a className="text-white">Shop</a>
+            <Link href="/calendar" legacyBehavior>
+              <a className="text-white">Calendar</a>
             </Link>
           </li>
           <li>
