@@ -27,6 +27,9 @@ const config: Config = {
           "950": "#172554",
         },
         "cetera-orange": "#f85f14",
+        "cetera-blue": "#1087ff",
+        "regal-blue": "#243c5a",
+        "light-blue": "#a9d4ff",
       },
     },
     variants: {

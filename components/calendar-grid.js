@@ -6,16 +6,16 @@ import React, { useState } from "react";
 import { format } from "date-fns";
 import CalendarModal from "./calendar-modal";
 
-const CalendarGrid = ({ refresh }) => {
+const CalendarGrid = ({ refresh, refreshGrid }) => {
   const [events, setEvents] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
-  const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchNewEvents = async () => {
     try {
-      const response = await fetch("/api/getevents"); // Call the API endpoint
+      const response = await fetch("/api/getEvents"); // Call the API endpoint
       if (!response.ok) {
         throw new Error("Failed to fetch events");
       }
@@ -25,7 +25,6 @@ const CalendarGrid = ({ refresh }) => {
         ...event,
         date: new Date(event.startTime),
       }));
-      console.log(formattedEvents);
       setEvents(formattedEvents);
     } catch (err) {
       setError(err.message);
@@ -36,14 +35,13 @@ const CalendarGrid = ({ refresh }) => {
 
   React.useEffect(() => {
     fetchNewEvents();
-  }, [refresh]);
+  }, [refresh, refreshGrid]);
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
   // Handle tile click to open the popup
-  const handleTileClick = (date) => {
-    setSelectedDate(date);
-    setShowModal(true);
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
   };
 
   // Function to render tile content
@@ -66,7 +64,9 @@ const CalendarGrid = ({ refresh }) => {
             <div
               key={index}
               className="event-title event-dot"
-              onClick={() => handleTileClick(date)}
+              data-modal-target="default-modal"
+              data-modal-toggle="default-modal"
+              type="button"
             >
               {event.title}
             </div>
@@ -82,39 +82,67 @@ const CalendarGrid = ({ refresh }) => {
       selectedDate && event.date.toDateString() === selectedDate.toDateString(),
   );
 
+  // Handle tile click
+  const handleDateClick = (eventsForSelectedDate) => {
+    setSelectedDate(eventsForSelectedDate);
+    setIsModalOpen(true);
+  };
+
   return (
     <div>
       <Calendar
         tileContent={renderTileContent}
         //onClickDay={(value) => alert(`Clicked date: ${value.toDateString()}`)}
+        onClickDay={handleDateClick}
       />
 
       {/* Popup Modal */}
-      {/*<Modal
-        isOpen={showModal}
-        onRequestClose={() => setShowModal(false)}
-        contentLabel="Event Details"
-        className="event-modal"
-        overlayClassName="event-modal-overlay"
-      >
-        <h3>Events for {selectedDate?.toDateString()}</h3>
-        {eventsForSelectedDate.length > 0 ? (
-          <ul>
-            {eventsForSelectedDate.map((event, index) => (
-              <li key={index}>{event.title}</li>
-            ))}
-          </ul>
-        ) : (
-          <p>No events for this date.</p>
-        )}
-        <button onClick={() => setShowModal(false)}>Close</button>
-      </Modal>*/}
-      <CalendarModal
-        isOpen={showModal}
-        onRequestClose={() => setShowModal(false)}
-        heading={selectedDate?.toDateString()}
-        description="Description for the modal goes here..."
-      />
+      {isModalOpen &&
+        eventsForSelectedDate.map((event, index) => (
+          <div key={index} className="modal-overlay" onClick={toggleModal}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+                onClick={toggleModal}
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <div class="modal-header pb-2">
+                <h2>{event.title}</h2>
+              </div>
+              <hr />
+              <div class="modal-body pt-2">
+                <p class="pb-2">{event.description}</p>
+                <ul>
+                  <li class="pb-2 text-sm text-gray-600">{event.location}</li>
+                  <li class="pb-2 text-sm text-gray-600">
+                    {format(new Date(event.startTime), "MMM dd yyyy, h:mm a")}{" "}
+                    <span>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="inline size-6"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M5 12h14"
+                        />
+                      </svg>
+                    </span>{" "}
+                    {format(new Date(event.endTime), "MMM dd yyyy, h:mm a")}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        ))}
     </div>
   );
 };

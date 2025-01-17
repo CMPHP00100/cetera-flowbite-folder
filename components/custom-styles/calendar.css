@@ -38,7 +38,7 @@
 }
 .react-calendar__tile--now:enabled:hover,
 .react-calendar__tile--now:enabled:focus {
-  background: none;
+  background: #006edc;
 }
 .react-calendar__navigation button {
   font-size: 1.2rem;
@@ -50,4 +50,35 @@
 
 .react-calendar__month-view__days {
   height: 35vh;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 415px;
+  text-align: center;
+  position: relative;
+}
+.modal-overlay .close {
+  margin-right: -90%;
+}
+.modal-overlay .close span {
+  font-size: 1.5rem;
+}
+.modal-overlay .modal-header {
+  font-size: 1.5rem;
 }

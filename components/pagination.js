@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import CalendarList from "./calendar-list";
 import { format } from "date-fns";
+import EditEvents from "./edit-event";
 
-const PaginatedList = ({ events }) => {
+const PaginatedList = ({ events, deleteEvent }) => {
   const [currentPage, setCurrentPage] = useState(1); // Track the current page
   const eventsPerPage = 10; // Number of events per page
 
@@ -24,37 +25,56 @@ const PaginatedList = ({ events }) => {
     }
   };
 
+  //Edit button section
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  // Handle tile click to open the popup
+  const toggleEditModal = () => {
+    setIsEditModalOpen(!isEditModalOpen);
+  };
+
   return (
     <div>
       {/* Render paginated events */}
 
-      <div class="relative overflow-x-auto p-4">
-        <table class="w-full text-left text-sm text-gray-500 dark:text-gray-400 rtl:text-right">
-          <thead class="bg-none text-xs text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+      <div className="relative overflow-x-auto p-4">
+        <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400 rtl:text-right">
+          <thead className="bg-none text-xs text-gray-700 dark:bg-gray-700 dark:text-gray-400">
             <h1 className="my-6 text-center text-2xl font-bold underline">
               List Of Events
             </h1>
           </thead>
           <tbody className="h-46vh min-h-screen">
-            <tr class="border-b bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600">
+            <tr className="border-b bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600">
               {currentEvents.map((event, index) => (
                 <tr
-                  class="border-b bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600"
+                  className="border-b bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600"
                   key={index}
                 >
                   <th
                     scope="row"
-                    class="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-white"
+                    className="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-white"
                   >
                     {event.title}
                   </th>
-                  <td class="px-6 py-4">{event.description}</td>
-                  <td class="px-6 py-4">{event.location}</td>
-                  <td class="px-6 py-4">
+                  <td className="px-6 py-4">{event.description}</td>
+                  <td className="px-6 py-4">{event.location}</td>
+                  <td className="px-6 py-4">
                     {format(new Date(event.startTime), "MMMM d, yyyy, h:mm a")}
                   </td>
-                  <td class="px-6 py-4">
+                  <td className="px-6 py-4">
                     {format(new Date(event.endTime), "MMMM d, yyyy, h:mm a")}
+                  </td>
+                  <td className="px-6 py-4">
+                    <button
+                      //class="font-small rounded-lg bg-red-700 px-2.5 py-1.5 text-center text-sm text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
+                      className="font-small text-red-500"
+                      onClick={() => deleteEvent(event.id)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                  <td className="px-6 py-4">
+                    <EditEvents editEvents={event} />
                   </td>
                 </tr>
               ))}
@@ -65,23 +85,23 @@ const PaginatedList = ({ events }) => {
 
       {/* Pagination Controls */}
       <nav
-        class="flex-column flex flex-wrap items-center justify-between pt-4 md:flex-row"
+        className="flex-column flex flex-wrap items-center justify-between pt-4 md:flex-row"
         aria-label="Table navigation"
       >
-        <span class="mb-4 block w-full text-sm font-normal text-gray-500 dark:text-gray-400 md:mb-0 md:inline md:w-auto">
+        <span className="mb-4 block w-full text-sm font-normal text-gray-500 dark:text-gray-400 md:mb-0 md:inline md:w-auto">
           Showing{" "}
-          <span class="font-semibold text-gray-900 dark:text-white">
+          <span className="font-semibold text-gray-900 dark:text-white">
             {startIndex + 1} to {endIndex}
           </span>{" "}
           of{" "}
-          <span class="font-semibold text-gray-900 dark:text-white">
+          <span className="font-semibold text-gray-900 dark:text-white">
             {totalIndex}
           </span>
         </span>
-        <ul class="h-8 inline-flex -space-x-px text-sm rtl:space-x-reverse">
+        <ul className="h-8 inline-flex -space-x-px text-sm rtl:space-x-reverse">
           <li>
             <button
-              class="h-8 ms-0 flex items-center justify-center rounded-s-lg border border-gray-300 bg-white px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+              className="h-8 ms-0 flex items-center justify-center rounded-s-lg border border-gray-300 bg-white px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
             >
@@ -91,7 +111,7 @@ const PaginatedList = ({ events }) => {
           {Array.from({ length: totalPages }, (_, index) => (
             <li key={index}>
               <button
-                class="h-8 flex items-center justify-center border border-gray-300 bg-white px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                className="h-8 flex items-center justify-center border border-gray-300 bg-white px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                 onClick={() => handlePageChange(index + 1)}
                 style={{
                   fontWeight: currentPage === index + 1 ? "bold" : "normal",
@@ -103,7 +123,7 @@ const PaginatedList = ({ events }) => {
           ))}
           <li>
             <button
-              class="h-8 flex items-center justify-center rounded-e-lg border border-gray-300 bg-white px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+              className="h-8 flex items-center justify-center rounded-e-lg border border-gray-300 bg-white px-3 leading-tight text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
             >
