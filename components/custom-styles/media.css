@@ -1,0 +1,9 @@
+a {
+  text-decoration: none;
+  color: #fff;
+}
+
+.custom-uppy-dashboard .uppy-Dashboard-inner {
+  width: 410px !important;
+  height: 68px !important;
+}

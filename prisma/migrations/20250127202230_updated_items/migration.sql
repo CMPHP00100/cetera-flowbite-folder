@@ -1,0 +1,7 @@
+-- AlterTable
+ALTER TABLE "items" ADD COLUMN     "sku" TEXT,
+ALTER COLUMN "imageWidth" DROP NOT NULL,
+ALTER COLUMN "imageHeight" DROP NOT NULL,
+ALTER COLUMN "addressStreet" DROP NOT NULL,
+ALTER COLUMN "addressCity" DROP NOT NULL,
+ALTER COLUMN "addressZip" DROP NOT NULL;

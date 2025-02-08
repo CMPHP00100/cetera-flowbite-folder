@@ -25,6 +25,11 @@ export default function Layout({ children }) {
               <a className="text-white">Contact</a>
             </Link>
           </li>
+          <li>
+            <Link href="/register" legacyBehavior>
+              <a className="text-white">Register</a>
+            </Link>
+          </li>
         </ul>
       </nav>
       <main>{children}</main>

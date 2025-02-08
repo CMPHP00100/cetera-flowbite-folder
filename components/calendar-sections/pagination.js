@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import CalendarList from "./calendar-list";
 import { format } from "date-fns";
-import EditEvents from "./edit-event";
+import EditEvents from "../event-sections/edit-event";
 
 const PaginatedList = ({ events, deleteEvent }) => {
   const [currentPage, setCurrentPage] = useState(1); // Track the current page

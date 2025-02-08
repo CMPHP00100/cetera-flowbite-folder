@@ -1,10 +1,9 @@
 "use client";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import "./custom-styles/calendar.css"; // Custom styles for full width
+import "../custom-styles/calendar.css"; // Custom styles for full width
 import React, { useState } from "react";
 import { format } from "date-fns";
-import CalendarModal from "./calendar-modal";
 
 const CalendarGrid = ({ refresh, refreshGrid }) => {
   const [events, setEvents] = useState([]);

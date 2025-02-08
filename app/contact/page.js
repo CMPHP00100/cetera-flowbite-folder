@@ -1,5 +1,5 @@
-import HeroSection from "/components/hero";
-import GetUsers from "../../components/get-users";
+import HeroSection from "/components/page-sections/hero";
+import GetUsers from "../../components/user-sections/get-users";
 
 export default function Contact() {
   return (

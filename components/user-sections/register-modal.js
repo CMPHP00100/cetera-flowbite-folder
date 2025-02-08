@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import "/app/globals.css";
 
@@ -107,7 +108,7 @@ export default function RegisterUser() {
           />
         </div>
         <div className="mb-5 flex items-start">
-          <div className="flex h-5 items-center">
+          <div className="h-5 flex items-center">
             <input
               id="terms"
               type="checkbox"

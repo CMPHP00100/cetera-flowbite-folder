@@ -40,7 +40,7 @@ export default function CreateEvent({ setRefresh }) {
   };
 
   return (
-    <div className="h-50 relative bg-white p-4 shadow-md">
+    <div className="h-full relative bg-white p-4 shadow-md">
       <h1 className="mb-4 text-2xl font-bold">Create Event</h1>
 
       {/* Entering Events */}
@@ -54,7 +54,7 @@ export default function CreateEvent({ setRefresh }) {
             placeholder="Event title..."
             value={formData.title}
             onChange={handleChange}
-            className="mb-2 w-full rounded-lg border border-gray-300 bg-gray-100 p-4"
+            className="mb-2 w-full rounded-lg border border-gray-300 bg-gray-100 p-3"
           />
           <input
             type="textarea"
@@ -63,7 +63,7 @@ export default function CreateEvent({ setRefresh }) {
             placeholder="Event description..."
             value={formData.description}
             onChange={handleChange}
-            className="mb-2 w-full rounded-lg border border-gray-300 bg-gray-100 p-4"
+            className="mb-2 w-full rounded-lg border border-gray-300 bg-gray-100 p-3"
           />
           <input
             type="text"
@@ -72,7 +72,7 @@ export default function CreateEvent({ setRefresh }) {
             placeholder="Event location..."
             value={formData.location}
             onChange={handleChange}
-            className="mb-2 w-full rounded-lg border border-gray-300 bg-gray-100 p-4"
+            className="mb-2 w-full rounded-lg border border-gray-300 bg-gray-100 p-3"
           />
           <div className="mx-auto mb-2 grid grid-cols-2 gap-4">
             <div>

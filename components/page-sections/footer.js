@@ -1,6 +1,8 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const RESOURCES = [
   { href: "/resources/blog", label: "Blog" },
@@ -50,22 +52,24 @@ const SOCIALS = [
 const Footer = () => {
   const pathname = usePathname();
   return (
-    <div>
+    <>
       <footer className="bg-gray-800 p-4 align-bottom sm:p-6">
-        <div className="mx-auto max-w-screen-xl">
+        <div className="mx-auto">
           <div className="md:flex md:justify-between">
             <div className="mb-6 md:mb-0">
               <a href="https://flowbite.com" className="flex items-center">
-                <img
+                <Image
                   src="/assets/logos/CM_logo_Gray.svg"
-                  className="mr-3 h-8 w-20"
+                  class="h-8 mr-3 w-20"
                   alt="Cétera Marketing"
+                  width="200"
+                  height="100"
                 />
                 <p className="self-center whitespace-nowrap text-gray-600 hover:text-cetera-orange">
                   <span className="text-2xl">
                     Cétera Marketing <br />
                   </span>
-                  <span className="text-2sm">we spark ideas</span>
+                  <span class="text-2sm">we spark ideas</span>
                 </p>
               </a>
             </div>
@@ -74,15 +78,16 @@ const Footer = () => {
                 <h2 className="mb-6 text-sm font-semibold uppercase text-cetera-orange">
                   Resources
                 </h2>
-                <ul className="text-gray-400">
+                <ul className="ps-0 text-gray-400">
                   {RESOURCES.map(({ href, label }) => {
                     const isActive = pathname === href;
                     return (
+                      // eslint-disable-next-line react/jsx-key
                       <li className="mb-4">
                         <Link
                           key={href}
                           href={href}
-                          className={`${isActive ? "text-cetera-orange" : "text-gray"} hover:text-cetera-orange hover:brightness-50`}
+                          class={`${isActive ? "text-cetera-orange" : "text-gray"} hover:text-cetera-orange hover:brightness-50`}
                         >
                           {label}
                         </Link>
@@ -95,15 +100,16 @@ const Footer = () => {
                 <h2 className="mb-6 text-sm font-semibold uppercase text-cetera-orange">
                   Support
                 </h2>
-                <ul className="text-gray-400">
+                <ul className="ps-0 text-gray-400">
                   {SUPPORT.map(({ href, label }) => {
                     const isActive = pathname === href;
                     return (
+                      // eslint-disable-next-line react/jsx-key
                       <li className="mb-4">
                         <Link
                           key={href}
                           href={href}
-                          className={`${isActive ? "text-cetera-orange" : "text-gray"} hover:text-cetera-orange hover:brightness-50`}
+                          class={`${isActive ? "text-cetera-orange" : "text-gray"} hover:text-cetera-orange hover:brightness-50`}
                         >
                           {label}
                         </Link>
@@ -127,9 +133,10 @@ const Footer = () => {
               {SOCIALS.map(({ href, className, svglink }) => {
                 //const isActive = pathname === href;
                 return (
+                  // eslint-disable-next-line react/jsx-key
                   <a href={href} className={className}>
                     <svg
-                      className="h-5 w-5"
+                      class="h-5 w-5"
                       fill="currentColor"
                       viewBox="0 0 24 24"
                       aria-hidden="true"
@@ -143,7 +150,7 @@ const Footer = () => {
           </div>
         </div>
       </footer>
-    </div>
+    </>
   );
 };
 export default Footer;
