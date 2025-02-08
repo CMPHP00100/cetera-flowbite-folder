@@ -1,9 +1,8 @@
 "use client";
 import React, { useState } from "react";
-import CreateEvent from "./create-event";
+import CreateEvent from "../event-sections/create-event";
 import CalendarList from "./calendar-list";
 import CalendarGrid from "./calendar-grid";
-import EditEvents from "./edit-event";
 
 const CalendarApp = () => {
   const [refresh, setRefresh] = useState(false);

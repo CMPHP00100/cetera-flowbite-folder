@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useEffect, useState, useCallback } from "react";
 import { format } from "date-fns";
 import PaginatedList from "./pagination";

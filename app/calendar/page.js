@@ -1,5 +1,5 @@
-import CalendarHero from "/components/calendar-hero";
-import CalendarApp from "/components/calendar";
+import CalendarHero from "../../components/calendar-sections/calendar-hero";
+import CalendarApp from "../../components/calendar-sections/calendar";
 
 export default function Calendar() {
   return (

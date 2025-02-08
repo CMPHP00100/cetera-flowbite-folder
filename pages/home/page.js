@@ -1,6 +1,6 @@
-import HeroSection from "../../components/hero";
-import CtaLeft from "../../components/cta-left";
-import CtaRight from "../../components/cta-right";
+import HeroSection from "../../components/page-sections/hero";
+import CtaLeft from "../../components/page-sections/cta-left";
+import CtaRight from "../../components/page-sections/cta-right";
 //import GetUsers from "../../components/get-users";
 //import CreatEvent from "../../components/create-event";
 

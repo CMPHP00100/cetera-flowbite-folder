@@ -1,4 +1,4 @@
-import RegisterUser from "../components/register-modal";
+/*import RegisterUser from "../components/user-sections/register-modal";
 
 export default function Register() {
   return (
@@ -6,4 +6,4 @@ export default function Register() {
       <RegisterUser />
     </div>
   );
-}
+}*/
