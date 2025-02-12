@@ -4,6 +4,14 @@ a {
 }
 
 .custom-uppy-dashboard .uppy-Dashboard-inner {
-  width: 410px !important;
-  height: 68px !important;
+  width: 400px !important;
+  height: 260px !important;
+}
+
+.custom-uppy-dashboard .uppy-Dashboard-Item-preview {
+  width: 150px !important;
+  height: auto !important;
+}
+.custom-uppy-dashboard .uppy-Dashboard-AddFiles-title {
+  margin-top: 6rem !important;
 }

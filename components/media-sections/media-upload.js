@@ -45,11 +45,19 @@ export function FileUploader({ onUploadSuccess }) {
       id: "AwsS3",
       getUploadParameters: (file) => getUploadParameters(file),
     });
+
+    uppy.on("complete", (result) => {
+      onUploadSuccess(result);
+      if (onUploadSuccess) {
+        onUploadSuccess(result); // Call the function passed via props
+      } else {
+        console.warn("onUploadSuccess is not defined.");
+      }
+    });
+
     return uppy;
-  }, []);
-  uppy.on("complete", (result) => {
-    onUploadSuccess(result);
-  });
+  }, [onUploadSuccess]);
+
   return (
     <>
       <Dashboard

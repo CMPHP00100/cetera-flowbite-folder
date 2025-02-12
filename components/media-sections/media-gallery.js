@@ -1,55 +1,62 @@
-/*import { useEffect, useState } from "react";
-import Image from "next/image";
-import axios from "axios";
+/*import prisma from "../../lib/prisma";
 
-const ImageGallery = () => {
-  const [images, setImages] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+export default async function handler(req, res) {
+  if (req.method === "POST") {
+    const { title, description, imageURL, price, color, sku } = req.body;
+    if (!title || !imageURL || !price) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Missing required fields" });
+    }
 
-  // Fetch images when the component mounts
-  useEffect(() => {
-    const fetchImages = async () => {
-      setLoading(true);
-      setError(null);
+    try {
+      const item = await prisma.item.create({
+        data: {
+          title,
+          description,
+          imageURL,
+          price: parseFloat(price),
+          color,
+          sku,
+        },
+      });
+      console.log(item);
+      res.status(201).json({ success: true, item });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  } else {
+    res.setHeader("Allow", ["POST"]);
+    res.status(405).json({ error: `Method ${req.method} Not Allowed` });
+  }
+}
 
-      try {
-        const response = await axios.get("/api/imgfetch");
+import prisma from "../../lib/prisma"; // Import your Prisma client
 
-        setImages(response.data.resources || []); // Assuming resources array exists
-      } catch (err) {
-        console.error(err);
-        setError("Error fetching images");
-      } finally {
-        setLoading(false);
-      }
-    };
+export default async function handler(req, res) {
+  if (req.method === "POST") {
+    const { title, description, imageURL, price, color, sku } = req.body;
 
-    fetchImages();
-  }, []);
-
-  if (loading) return <p>Loading images...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
-
-  return (
-    <div>
-      <div class="row">
-        {images.map((image) => (
-          <div
-            class="col-12 col-sm-6 col-md-3 w-full py-2.5"
-            key={image.public_id}
-          >
-            <Image
-              className="object-cover"
-              src={image.secure_url}
-              alt={image.public_id}
-              //style={{ maxWidth: "200px", maxHeight: "200px" }}
-            />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-export default ImageGallery;*/
+    try {
+      const apiItem = await prisma.item.create({
+        data: {
+          title,
+          description,
+          imageURL,
+          price: parseFloat(price),
+          color,
+          sku,
+        },
+      });
+      console.log(item);
+      res.status(201).json({ success: true, apiItem });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  } else {
+    res.setHeader("Allow", ["POST"]);
+    res.status(405).end(`Method ${req.method} Not Allowed`);
+  }
+}*/

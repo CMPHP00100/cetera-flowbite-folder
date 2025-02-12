@@ -13,32 +13,33 @@ export async function fetchR2Images() {
   return await response.json();
 }
 
-export function ImageGallery() {
+export function ImageGallery({ refresh }) {
   const [images, setImages] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function getImages() {
-      try {
-        const data = await fetchR2Images();
-        console.log(data);
-        setImages(data.files || []); // Assuming API response contains a `files` array
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
+  const getImages = async () => {
+    try {
+      const data = await fetchR2Images();
+      console.log(data);
+      setImages(data.files || []); // Assuming API response contains a `files` array
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  React.useEffect(() => {
     getImages();
-  }, []);
+  }, [refresh]);
 
   if (loading) return <p>Loading images...</p>;
   if (error) return <p>Error: {error}</p>;
 
   return (
     <div>
-      <div className="mt-8 flex flex-wrap">
+      <div className="mt-4 flex flex-wrap">
         {images.map((image) => (
           <div
             key={image.key}
