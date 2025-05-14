@@ -19,9 +19,24 @@ const store = configureStore({
 
 export default store;*/
 
-import { configureStore, createSlice } from "@reduxjs/toolkit";
+import { configureStore, createSlice, combineReducers } from "@reduxjs/toolkit";
+import { persistStore, persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage"; // Uses localStorage
 //import imageReducer from "./slices/imageSlice";
 import uploadReducer from "./slices/uploadSlice";
+import cartReducer from "./slices/cartSlice";
+
+import textReducer from "./slices/textSlice"; // Import the reducer
+import itemReducer from "./slices/itemSlice";
+
+import {
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
 
 // Initial state for the API data
 const initialState = {
@@ -53,13 +68,38 @@ const apiSlice = createSlice({
 // Export actions
 export const { fetchStart, fetchSuccess, fetchFailure } = apiSlice.actions;
 
-// Export reducer
-const store = configureStore({
-  reducer: {
-    apiData: apiSlice.reducer,
-    //imageUpload: imageReducer,
-    upload: uploadReducer,
-  },
+// Combine reducers (for scalability)
+const rootReducer = combineReducers({
+  apiData: apiSlice.reducer,
+  //imageUpload: imageReducer,
+  upload: uploadReducer,
+  cart: cartReducer,
+  text: textReducer,
+  item: itemReducer,
 });
 
-export default store;
+// Persist config
+const persistConfig = {
+  key: "root",
+  storage,
+  whitelist: ["item", "text"],
+};
+
+// Create persisted reducer
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+// Export reducer
+const store = configureStore({
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER], // Ignore Redux Persist serialization warnings
+      },
+    }),
+});
+
+export const persistor = persistStore(store);
+persistor.purge();
+//export default store;
+export { store };

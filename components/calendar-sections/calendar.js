@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from "react";
 import CreateEvent from "../event-sections/create-event";
 import CalendarList from "./calendar-list";
@@ -9,13 +10,25 @@ const CalendarApp = () => {
   const [refreshGrid, setRefreshGrid] = useState(false);
 
   return (
-    <div class="calendar-container">
-      <div className="flex flex-col justify-between gap-4 bg-gray-100 p-6 lg:grid lg:grid-cols-2">
-        <CreateEvent setRefresh={setRefresh} />
-        <CalendarGrid refresh={refresh} refreshGrid={refreshGrid} />
-      </div>
-      <div id="calendarList" className="grid grid-cols-1 grid-rows-2">
-        <CalendarList refresh={refresh} setRefreshGrid={setRefreshGrid} />
+    <div class="container-fluid">
+      {/* <div class="calendar-container"> */}
+      <div class="row">
+        <div className="col-12 col-sm-12 col-md-12 col-lg-6 bg-gray-100 p-6">
+          <div class="row">
+            <div class="col-12">
+              <CreateEvent setRefresh={setRefresh} />
+            </div>
+            <div class="col-12">
+              <CalendarGrid refresh={refresh} refreshGrid={refreshGrid} />
+            </div>
+          </div>
+        </div>
+        <div
+          id="calendarList"
+          className="col-12 col-sm-12 col-md-12 col-lg-6 mb-8"
+        >
+          <CalendarList refresh={refresh} setRefreshGrid={setRefreshGrid} />
+        </div>
       </div>
     </div>
   );

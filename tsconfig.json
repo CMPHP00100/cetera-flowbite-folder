@@ -20,8 +20,16 @@
     ],
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "target": "ES2017",
+    "types": ["node", "estree"] // Add this line to explicitly include estree type definitions
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "context/CartContext.js"
+  ],
   "exclude": ["node_modules"]
 }

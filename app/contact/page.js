@@ -1,4 +1,4 @@
-import HeroSection from "/components/page-sections/hero";
+import HeroSection from "@/components/page-sections/hero";
 import GetUsers from "../../components/user-sections/get-users";
 
 export default function Contact() {

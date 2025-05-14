@@ -1,0 +1,79 @@
+/*@media (min-width: 1025px) {
+  .h-custom {
+    height: 100vh !important;
+  }
+}*/
+
+.card-registration .select-input.form-control[readonly]:not([disabled]) {
+  font-size: 1rem;
+  line-height: 2.15;
+  padding-left: 0.75em;
+  padding-right: 0.75em;
+}
+
+.card-registration .select-arrow {
+  top: 13px;
+}
+section {
+  background-color: #1f2937;
+}
+.card .card-registration .card-registration-2 {
+  border-radius: 15px;
+}
+
+.cart-container .img-fluid {
+  width: 25%;
+}
+
+.cart-container .trash-icon svg {
+  color: red;
+}
+
+.cart-container .btn-link .fa-minus {
+  color: #ff5f5d;
+}
+.cart-container .btn-link .fa-plus {
+  color: #00ccbf;
+}
+
+.cart-container .cart-bottom-section {
+  background: #1f2937;
+  margin-top: -1rem;
+}
+
+.cart-container .cart-bottom-section .apply-btn {
+  padding: 10px;
+  font-size: 16px;
+  height: 48px;
+  border: 1px solid #f85f14;
+  color: #f85f14;
+}
+.cart-container .cart-bottom-section .apply-btn:hover,
+.cart-container .cart-bottom-section .apply-btn:focus {
+  color: #1f2937;
+  background-color: #f85f14;
+  border: 1px solid #1f2937;
+}
+
+.cart-container .cart-bottom-section .text-right h3 {
+  color: #f85f14;
+  padding: 1.2rem 0rem;
+}
+
+.cart-container .cart-bottom-section .pay-btn {
+  color: #1f2937;
+  background-color: #f85f14;
+  border: 1px solid #1f2937;
+}
+
+.cart-container .cart-bottom-section .pay-btn:hover,
+.cart-container .cart-bottom-section .pay-btn:focus {
+  color: #f85f14;
+  background-color: #1f2937;
+  border: 1px solid #f85f14;
+}
+
+.cart-container .cart-bottom-section .discount-box,
+.cart-container .cart-bottom-section .discount-box div {
+  background: none;
+}

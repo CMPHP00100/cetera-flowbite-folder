@@ -33,7 +33,7 @@ const HeroSection = ({
             >
               {callToActionButtonText}
               <svg
-                className="-mr-1 ml-2 h-5 w-5"
+                className="h-5 -mr-1 ml-2 w-5"
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"

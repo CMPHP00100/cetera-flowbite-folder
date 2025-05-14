@@ -1,4 +1,5 @@
-import flowbite from "flowbite-react/tailwind";
+//import flowbitePlugin from "flowbite/plugin";
+
 import type { Config } from "tailwindcss";
 
 const config: Config = {
@@ -6,9 +7,9 @@ const config: Config = {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    flowbite.content(),
+    "./node_modules/flowbite-react/**/*.{js,jsx,ts,tsx}",
   ],
-  plugins: [flowbite.plugin(), require("tailwindcss-current")],
+  plugins: [require('flowbite/plugin')],
   darkMode: "class",
   theme: {
     extend: {
@@ -28,8 +29,11 @@ const config: Config = {
         },
         "cetera-orange": "#f85f14",
         "cetera-blue": "#1087ff",
+        "cetera-gray": "#1F2937",
+        "dark-blue": "#111827",
         "regal-blue": "#243c5a",
         "light-blue": "#a9d4ff",
+        "light-gray": "#f7f7f7",
       },
     },
     variants: {

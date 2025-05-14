@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeModeScript } from "flowbite-react";
-import CustomNav from "../components/page-sections/navbar";
-import Footer from "../components/page-sections/footer";
+import PageWrapper from "@/components/animations/page-wrapper"; // Import PageWrapper
+import CustomNav from "@/components/page-sections/navbar";
+import Footer from "@/components/page-sections/footer";
+import { Providers } from "./providers";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -23,9 +25,11 @@ export default function RootLayout({
         <ThemeModeScript />
       </head>
       <body className={inter.className}>
-        <CustomNav />
-        {children}
-        <Footer />
+        <Providers>
+          <CustomNav />
+          <PageWrapper>{children}</PageWrapper>
+          <Footer />
+        </Providers>
       </body>
     </html>
   );

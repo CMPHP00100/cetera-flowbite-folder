@@ -1,0 +1,59 @@
+@import url("https://fonts.googleapis.com/css2?family=Sixtyfour&family=VT323&display=swap");
+
+.carousel-item {
+  height: 800px;
+}
+
+.carousel-item img {
+  height: 100%;
+  object-fit: cover;
+}
+
+.carousel-item video {
+  height: 100%;
+  object-fit: cover;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Adjust opacity */
+  z-index: 1;
+}
+
+.carousel-caption {
+  position: absolute;
+  z-index: 2;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.carousel-inner {
+  border-radius: 10px;
+  /*box-shadow: -14px 13px 9px 5px rgba(0, 0, 0, 0.1);*/
+}
+
+.carousel-inner .typed-text {
+  margin-top: -13rem;
+  margin-left: 14rem;
+  position: relative;
+  color: #3e5b4b;
+  font-size: 20px;
+  font-family: "Sixtyfour", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "BLED" 0,
+    "SCAN" 0;
+}
+
+.hero-text-container {
+  text-align: left !important;
+  margin-top: -36rem;
+  margin-left: -8rem;
+  position: relative !important;
+}

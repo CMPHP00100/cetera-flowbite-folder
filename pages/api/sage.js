@@ -10,7 +10,7 @@ export default async function handler(req, res) {
       key: SAGE_AUTH_KEY,
     },
     search: {
-      categories: "Flashlights",
+      categories: "Books, Flashlights",
     },
   };
 
@@ -37,8 +37,3 @@ export default async function handler(req, res) {
     res.status(500).json({ error: "Failed to fetch data from SAGE API" });
   }
 }
-
-/*fetch("https://www.promoplace.com/ws/ws.dll/ConnectAPI", requestOptions)
-  .then((response) => response.text())
-  .then((result) => console.log(result))
-  .catch((error) => console.error(error));*/

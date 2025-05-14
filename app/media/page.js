@@ -38,8 +38,7 @@ const MediaGallery = () => {
           <FileUploader onUploadSuccess={triggerRefresh} />
 
           <button
-            class="btn btn-primary refresh-btn"
-            className="mt-4 rounded-md border-2 border-cetera-blue bg-none text-cetera-blue hover:bg-cetera-blue hover:text-white"
+            className="btn btn-primary refresh-btn mt-4 rounded-md border-2 border-cetera-blue bg-none text-cetera-blue hover:bg-cetera-blue hover:text-white"
             type="submit"
             onClick={triggerRefresh}
           >

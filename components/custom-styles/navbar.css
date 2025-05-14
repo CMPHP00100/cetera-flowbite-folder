@@ -1,0 +1,12 @@
+.cart-icon {
+  color: #fff;
+}
+.cart-icon:hover {
+  color: #f85f14;
+}
+a:hover,
+a:focus,
+.cart-icon:active,
+.cart-icon:focus {
+  color: #f85f14;
+}

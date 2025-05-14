@@ -11,3 +11,35 @@
 .react-calendar__tile {
   font-size: 1rem !important;
 }*/
+
+a {
+  text-decoration: none !important;
+}
+
+/* .list-group-item {
+  background: #f7f7f7 !important;
+} */
+
+.__className_d65c78 {
+  background: #f7f7f7 !important;
+}
+
+/* #«r1» {
+  border: none !important;
+  margin-top: -5px;
+}
+
+#«r1».focus\:ring-4:focus {
+  box-shadow: none;
+}
+ */
+button[data-testid="flowbite-dropdown-toggle"] {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+}
+#fade-section {
+  background: white;
+  box-shadow: -6px 7px 19px 9px rgba(0, 0, 0, 0.1);
+}
