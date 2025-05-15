@@ -1,7 +1,7 @@
 "use client";
 
 import { useDrag } from "react-dnd";
-import { useEffect, useState } from "react";
+import Image from "next/image";
 
 export default function DraggableProduct({ product }) {
   const [{ isDragging }, drag] = useDrag(() => ({
@@ -26,7 +26,7 @@ export default function DraggableProduct({ product }) {
     >
       <div className="row inline">
         <div className="col-sm-2">
-          <img
+          <Image
             src={product.thumbPic}
             alt={product.name}
             className="h-24 w-24"

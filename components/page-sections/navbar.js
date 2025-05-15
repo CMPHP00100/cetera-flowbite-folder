@@ -10,6 +10,7 @@ import { IoPersonSharp } from "react-icons/io5";
 import { HiCog, HiCurrencyDollar, HiLogout, HiViewGrid } from "react-icons/hi";
 import { PiCashRegisterLight } from "react-icons/pi";
 import { FaChevronDown } from "react-icons/fa";
+import Image from "next/image";
 
 const NAV_ITEMS = [
   { href: "/", label: "Home" },
@@ -37,10 +38,12 @@ const CustomNav = () => {
     <>
       <Navbar fluid className="bg-gray-800">
         <Navbar.Brand href="/">
-          <img
+          <Image
             src="/assets/logos/CM_logo_Orange.svg"
             className="h-6 sm:h-9 mr-3 w-20"
             alt="Cétera Marketing"
+            width={192}
+            height={96}
           />
           <span className="self-center whitespace-nowrap text-xl text-white">
             Cétera Marketing
@@ -75,13 +78,13 @@ const CustomNav = () => {
               <span
                 style={{
                   position: "absolute",
-                  top: "-5px",
-                  right: "-5px",
+                  top: "-7px",
+                  right: "3px",
                   background: "red",
                   color: "white",
-                  borderRadius: "50%",
-                  padding: "3px 7px",
-                  fontSize: "12px",
+                  borderRadius: "100%",
+                  padding: "1px 6px",
+                  fontSize: "10px",
                 }}
               >
                 {totalItems}

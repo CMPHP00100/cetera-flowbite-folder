@@ -1,3 +1,6 @@
+import Image from "next/image";
+
+
 const CalendarHero = ({
   heading,
   description,
@@ -25,7 +28,7 @@ const CalendarHero = ({
             </a>
           </div>
           <div className="md:col-span-5 md:mt-0 md:flex">
-            <img className="dark:block" src={heroImage} alt={heroAlt} />
+            <Image className="dark:block" src={heroImage} alt={heroAlt} />
           </div>
         </div>
       </section>

@@ -1,37 +1,8 @@
-/*"use client";
-import React from "react";
-import useSWR from "swr";
-
-//const fetcher = (url) => fetch(url).then((res) => res.json());
-async function fetchAllItems() {
-  const response = await fetch("http://localhost:3000/myusers");
-  const data = await response.json();
-  return data;
-}
-export default function Users() {
-  //const { data: users, error } = useSWR("./api/users", fetcher);
-  const { data: users, error } = useSWR("fetchAllItems", fetchAllItems);
-
-  if (error) return <div>Failed to load</div>;
-  if (!users) return <div>Loading...</div>;
-
-  return (
-    <div>
-      <h1>Users</h1>
-      <ul>
-        {users.map((user) => (
-          <li key={user.name}>
-            {user.name} - {user.email}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}*/
 "use client";
 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Image from "next/image";
 
 export default function GetUsers({ productId }) {
   //const [users, setUsers] = useState([]);
@@ -116,11 +87,13 @@ export default function GetUsers({ productId }) {
         </p>
         <div className="relative overflow-hidden rounded-lg border">
           {product.pics.map((pic) => (
-            <img
+            <Image
               key={pic.index}
               src={pic.url}
               alt={pic.caption || "Product Image"}
               className="h-40 inline-block w-[200px] object-cover"
+              width={300}
+              height={300}
             />
           ))}
         </div>

@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { useShoppingCart } from "@/context/CartContext";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback} from "react";
 import ProductCard from "@/components/page-sections/product-card";
 import ProductDetails from "@/components/shop-sections/product-details";
 import { BsCartPlus } from "react-icons/bs";
@@ -19,7 +19,7 @@ export default function Product() {
   const [isFocused, setIsFocused] = useState(false);
   const [value, setValue] = useState("");
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       const response = await fetch(`/api/search?query=flashlight`); // Ensure the API endpoint is correct
       if (!response.ok) {
@@ -31,7 +31,7 @@ export default function Product() {
     } catch (error) {
       console.error("Error fetching products:", error);
     }
-  };
+  }, [limit]);
 
   const handleAddToCart = (product) => {
     // Find existing item in cart using sku
@@ -54,7 +54,7 @@ export default function Product() {
 
   useEffect(() => {
     fetchProducts();
-  }, [id, limit]); // Runs when refresh changes
+  }, [fetchProducts]); // Runs when refresh changes
 
   // Filter products when searchQuery changes
   useEffect(() => {

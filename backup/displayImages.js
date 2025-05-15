@@ -1,4 +1,5 @@
 import { useSelector } from "react-redux";
+import Image from "next/image";
 
 const DisplayImages = () => {
   const { data, loading, error } = useSelector((state) => state.apiData);
@@ -19,7 +20,7 @@ const DisplayImages = () => {
             className="col-12 col-sm-6 col-md-3 w-full py-2.5"
             key={item.public_id}
           >
-            <img
+            <Image
               className="object-cover"
               src={item.secure_url}
               alt={item.public_id}

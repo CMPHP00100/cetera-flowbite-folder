@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-//import "bootstrap/dist/css/bootstrap.min.css";
+import Image from "next/image";
 
 const ItemList = () => {
   const [products, setProducts] = useState(null);
@@ -71,7 +71,7 @@ const ItemList = () => {
             <div key="product" class="col-sm-3">
               <div class="w-full max-w-sm rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
                 <a href="#">
-                  <img
+                  <Image
                     class="rounded-t-lg p-8"
                     src={product.thumbPic}
                     alt={product.name}

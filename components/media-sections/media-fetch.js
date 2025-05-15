@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
+import Image from "next/image";
 
 export async function fetchR2Images() {
   const response = await fetch("/api/download", {
@@ -18,7 +19,7 @@ export function ImageGallery({ refresh }) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const getImages = async () => {
+  const getImages = useCallback(async () => {
     try {
       const data = await fetchR2Images();
       console.log(data);
@@ -28,11 +29,11 @@ export function ImageGallery({ refresh }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   React.useEffect(() => {
     getImages();
-  }, [refresh]);
+  }, [refresh, getImages]);
 
   if (loading) return <p>Loading images...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -46,15 +47,13 @@ export function ImageGallery({ refresh }) {
             style={{ maxWidth: "200px", textAlign: "center" }}
             className="me-3"
           >
-            <img
+            <Image
               src={image.url}
               alt={image.name}
-              style={{
-                maxWidth: "100%",
-                height: "auto",
-                border: "1px solid #ddd",
-                borderRadius: "5px",
-              }}
+              className="rounded-lg border"
+              layout="intrinsic"
+              width={800} // 24 * 4 (Tailwind's scale factor)
+              height={600}
             />
             <p style={{ fontSize: "14px", wordBreak: "break-word" }}>
               {image.name}
@@ -65,3 +64,4 @@ export function ImageGallery({ refresh }) {
     </div>
   );
 }
+

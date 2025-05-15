@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import Image from "next/image";
 
 const ImageUpload = () => {
   const [image, setImage] = useState(null);
@@ -56,7 +57,7 @@ const ImageUpload = () => {
 
       {imageUrl && (
         <div class="image-upload">
-          <img
+          <Image
             src={imageUrl}
             alt="Uploaded"
             style={{ maxWidth: "100%", maxHeight: "400px" }}

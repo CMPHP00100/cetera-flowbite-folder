@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useShoppingCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function ProductDetails({ product }) {
   const { addItem } = useShoppingCart();
@@ -94,11 +95,13 @@ export default function ProductDetails({ product }) {
           </nav>
           <div class="mx-auto mt-6 flex max-w-2xl justify-center border-b border-gray-200 sm:px-6 lg:max-w-7xl lg:px-8">
             <div class="flex justify-center">
-              <img
+              <Image
                 src={updatedUrl}
                 alt="Model wearing plain white basic tee."
                 class="aspect-4/5 w-full object-cover sm:rounded-lg lg:aspect-auto"
                 style={{ maxWidth: "600px" }}
+                width={384}
+                height={288}
               />
             </div>
           </div>

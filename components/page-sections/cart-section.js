@@ -3,6 +3,7 @@ import "../custom-styles/cart.css";
 import { FaTrashAlt } from "react-icons/fa";
 import { PiArrowFatLinesUpDuotone } from "react-icons/pi";
 import { PiArrowFatLinesDownDuotone } from "react-icons/pi";
+import Image from "next/image";
 
 const CartSection = ({
   image,
@@ -19,7 +20,7 @@ const CartSection = ({
       <div className="d-flex justify-content-between align-items-center cart-container w-100 line-item flex-wrap p-0 text-center">
         {/* Product Image */}
         <div className="col-12 col-md-3 d-flex justify-content-center">
-          <img
+          <Image
             src={image}
             className="img-fluid rounded-3"
             alt="Cotton T-shirt"

@@ -1,8 +1,9 @@
 "use client";
 
 import { useDrop } from "react-dnd";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import DraggableProduct from "./drag-drop";
+import Image from "next/image";
 
 export default function Moodboard() {
   const [moodboardItems, setMoodboardItems] = useState([]);
@@ -17,25 +18,27 @@ export default function Moodboard() {
   ]; */
 
   // Fetch products from the API when the component mounts
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch("/api/products");
-        if (!response.ok) {
-          throw new Error(`Error fetching products: ${response.status}`);
-        }
-        const data = await response.json();
-        setProducts(data.slice(0, limit));
-        //setProducts(data); // Set products fetched from API
-        setLoading(false); // Set loading to false once data is loaded
-      } catch (error) {
-        console.error("Error fetching products:", error);
-        setLoading(false); // Stop loading even on error
-      }
-    };
 
+  const fetchProducts = useCallback(async () => {
+    try {
+      const response = await fetch("/api/products");
+      if (!response.ok) {
+        throw new Error(`Error fetching products: ${response.status}`);
+      }
+      const data = await response.json();
+      setProducts(data.slice(0, limit));
+      //setProducts(data); // Set products fetched from API
+      setLoading(false); // Set loading to false once data is loaded
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      setLoading(false); // Stop loading even on error
+    }
+  }, [limit]);
+
+
+  useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [fetchProducts]);
 
   const [{ isOver }, drop] = useDrop(() => ({
     accept: "PRODUCT",
@@ -88,11 +91,13 @@ export default function Moodboard() {
                 className="shadown row relative rounded border p-2"
               >
                 <div className="col-sm-2">
-                  <img
+                  <Image
                     key={index}
                     src={item.image}
                     alt={item.name}
                     className="h-24 w-24 rounded-lg shadow-lg"
+                    width={96} // 24 * 4 (Tailwind's scale factor)
+                    height={96} // 24 * 4
                   />
                 </div>
                 <div className="col-sm-10">

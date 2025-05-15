@@ -1,17 +1,24 @@
+import Image from "next/image";
+
 export default function CtaLeft({}) {
   return (
     <div>
       <section className="bg-white dark:bg-gray-900">
         <div className="mx-auto max-w-screen-xl items-center gap-8 px-4 py-8 sm:py-16 md:grid md:grid-cols-2 lg:px-6 xl:gap-16">
-          <img
+          <Image
             className="w-full dark:hidden"
             src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/cta/cta-dashboard-mockup.svg"
             alt="dashboard image"
+            width={864}
+            height={672}
           />
-          <img
+          <Image
             className="hidden w-full dark:block"
             src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/cta/cta-dashboard-mockup-dark.svg"
             alt="dashboard image"
+            layout="intrinsic"
+            width={864}
+            height={672}
           />
           <div className="mt-4 md:mt-0">
             <h2 className="mb-4 text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">

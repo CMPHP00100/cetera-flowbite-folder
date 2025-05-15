@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { FaCartPlus } from "react-icons/fa6";
 import { useDispatch } from "react-redux";
 import { setSelectedItem } from "@/redux/slices/itemsSlice";
-//import { useRouter } from "next/router";
+import Image from "next/image";
 
 export default function ItemSearch({ item }) {
   const [query, setQuery] = useState("");
@@ -11,7 +11,6 @@ export default function ItemSearch({ item }) {
   const [error, setError] = useState("");
 
   const dispatch = useDispatch();
-  //const router = useRouter();
 
   // Fetch all results when component mounts
   useEffect(() => {
@@ -30,8 +29,6 @@ export default function ItemSearch({ item }) {
       //setResults(data);
       setResults(Array.isArray(data) ? data : []);
     } catch (error) {
-      /*console.error("Search error:", error);
-      setResults([]);*/
       console.error("Search error:", error);
       setError("Failed to fetch results");
       setResults([]);
@@ -89,7 +86,7 @@ export default function ItemSearch({ item }) {
                 <div key="index" class="col-sm-3">
                   <div class="w-full max-w-sm rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
                     <a href="#">
-                      <img
+                      <Image
                         class="rounded-t-lg p-8"
                         src={item.thumbPic}
                         alt={item.name}

@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export default function CtaRight() {
   return (
     <div>
@@ -31,15 +33,19 @@ export default function CtaRight() {
               </svg>
             </a>
           </div>
-          <img
+          <Image
             className="w-full dark:hidden"
             src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/cta/cta-dashboard-mockup.svg"
             alt="dashboard image"
+            width={1920}
+            height={1080}
           />
-          <img
+          <Image
             className="hidden w-full dark:block"
             src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/cta/cta-dashboard-mockup-dark.svg"
             alt="dashboard image"
+            width={1920}
+            height={1080}
           />
         </div>
       </section>

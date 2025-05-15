@@ -1,5 +1,7 @@
 "use client";
+
 import { useState } from "react";
+import Image from "next/image";
 
 const HeroSection = ({
   id,
@@ -47,7 +49,7 @@ const HeroSection = ({
             </a>
           </div>
           <div className="hidden lg:col-span-5 lg:mt-0 lg:flex">
-            <img src={heroImage} alt={heroAlt} />
+            <Image src={heroImage} alt={heroAlt} width={1920} height={1080} />
           </div>
         </div>
       </section>

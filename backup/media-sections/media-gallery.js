@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Image from "next/image";
 
 const ImageGallery = () => {
   const [images, setImages] = useState([]);
@@ -38,11 +39,10 @@ const ImageGallery = () => {
             className="col-12 col-sm-6 col-md-3 w-full py-2.5"
             key={image.public_id}
           >
-            <img
+            <Image
               className="object-cover"
               src={image.secure_url}
               alt={image.public_id}
-              //style={{ maxWidth: "200px", maxHeight: "200px" }}
             />
           </div>
         ))}

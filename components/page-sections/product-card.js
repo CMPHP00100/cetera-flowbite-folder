@@ -1,6 +1,7 @@
 "use client";
 import "../custom-styles/card.css";
 import Link from "next/link";
+import Image from "next/image";
 
 const ProductCard = ({
   id,
@@ -23,7 +24,7 @@ const ProductCard = ({
                   <div class="el-wrapper">
                     <Link href={`/product/${id}`} className="block">
                       <div class="box-up" onClick={onClick}>
-                        <img class="img" src={image} alt={alt} />
+                        <Image class="img" src={image} alt={alt} width={96} height={96} />
                         <div class="img-info">
                           <div class="info-inner">
                             <span class="p-name">{title}</span>
