@@ -83,7 +83,7 @@ const ProductSlider = () => {
                 width={384}
                 height={384}
               />
-              <div className="absolute bottom-4 left-4 bg-black bg-opacity-50 px-3 py-1 text-white">
+              <div className="bg-black bg-opacity/50 text-white absolute bottom-4 left-4 px-3 py-1">
                 <div className="font-bold">{slide.title}</div>
                 <div>{slide.price}</div>
               </div>

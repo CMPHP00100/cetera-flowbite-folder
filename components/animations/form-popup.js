@@ -9,7 +9,7 @@ const FormPopup = ({ isVisible, onClose, alertMessage }) => {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
         transition={{ duration: 0.3 }}
-        className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+        className="bg-black bg-opacity/50 fixed inset-0 flex items-center justify-center"
       >
         <div className="row flex size-[400px] justify-center rounded-lg border border-cetera-orange bg-dark-blue p-6 text-center shadow">
           <div class="col-sm-12">
