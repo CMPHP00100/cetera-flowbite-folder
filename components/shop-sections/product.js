@@ -22,11 +22,14 @@ export default function Product() {
   const fetchProducts = async () => {
     try {
       const response = await fetch(`/api/search?query=flashlight`); // Ensure the API endpoint is correct
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const data = await response.json();
       // Manually limit the results on the client side
       setProducts(data.slice(0, limit));
     } catch (error) {
-      //console.error("Error fetching products:", error);
+      console.error("Error fetching products:", error);
     }
   };
 

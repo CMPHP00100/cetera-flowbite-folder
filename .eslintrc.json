@@ -8,6 +8,10 @@
     "tailwindcss": {
       "callees": ["twMerge", "createTheme"],
       "classRegex": "^(class(Name)|theme)?$"
+      //"whitelist": ["container-fluid", "row", "col-12", "col-sm-12", "col-sm-12", "col-12", "btn", "btn-primary", "refresh-btn"]
     }
+  },
+  "rules": {
+    "tailwindcss/no-custom-classname": "off"
   }
 }
