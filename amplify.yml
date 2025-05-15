@@ -6,8 +6,12 @@ frontend:
         # Install dependencies
         - npm install
         - npm install -g next
+        # Ensure Prisma CLI is installed
+        - npm install prisma @prisma/client
     build:
       commands:
+        # Generate Prisma Client
+        - npx prisma generate
         # Build the Next.js app
         - npm run build
   artifacts:
@@ -19,6 +23,7 @@ frontend:
     # Define caching to speed up builds
     paths:
       - node_modules/**/*
+      - prisma/node_modules/**/*
 
 # Backend phase (optional for serverless API integrations or custom backend)
 backend:
@@ -26,6 +31,10 @@ backend:
     preBuild:
       commands:
         - npm install
+        # Ensure Prisma CLI is installed for backend
+        - npm install prisma @prisma/client
     build:
       commands:
+        # Generate Prisma Client for backend
+        - npx prisma generate
         - npm run build
