@@ -3,38 +3,19 @@ frontend:
   phases:
     preBuild:
       commands:
-        # Install dependencies
         - npm install
         - npm install -g next
-        # Ensure Prisma CLI is installed
         - npm install prisma @prisma/client
     build:
       commands:
-        # Generate Prisma Client
-        - npx prisma generate
-        # Build the Next.js app
+        - npx prisma generate --no-engine
+        - export PRISMA_CLIENT_PATH=./prisma/node_modules/@prisma/client
         - npm run build
-  artifacts:
-    # Define the build artifacts directory (where your build files are output)
-    baseDirectory: .next
-    files:
-      - '**/*'
-  cache:
-    # Define caching to speed up builds
-    paths:
-      - node_modules/**/*
-      - prisma/node_modules/**/*
-
-# Backend phase (optional for serverless API integrations or custom backend)
-backend:
-  phases:
-    preBuild:
-      commands:
-        - npm install
-        # Ensure Prisma CLI is installed for backend
-        - npm install prisma @prisma/client
-    build:
-      commands:
-        # Generate Prisma Client for backend
-        - npx prisma generate
-        - npm run build
+artifacts:
+  baseDirectory: .next
+  files:
+    - '**/*'
+cache:
+  paths:
+    - node_modules/**/*
+    - prisma/node_modules/**/*

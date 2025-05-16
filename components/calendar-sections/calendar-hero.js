@@ -28,7 +28,7 @@ const CalendarHero = ({
             </a>
           </div>
           <div className="md:col-span-5 md:mt-0 md:flex">
-            <Image className="dark:block" src={heroImage} alt={heroAlt} />
+            <Image className="dark:block" src={heroImage} alt={heroAlt} width={1920} height={1080} />
           </div>
         </div>
       </section>
