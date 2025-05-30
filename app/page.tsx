@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 //import Modal from "@/components/page-sections/modal";
 //import Home from "@/pages/home/page";

@@ -31,8 +31,8 @@ export function BannerSlider({ CustomComponent }) {
               />
             </video>
 
-            <div class="carousel-caption d-none d-md-block hero-text-container mr-auto lg:col-span-7">
-              <h1 class="mb-4 max-w-2xl text-4xl font-extrabold leading-none tracking-tight dark:text-white md:text-5xl xl:text-6xl">
+            <div className="carousel-caption d-none d-md-block hero-text-container mr-auto lg:col-span-7">
+              <h1 className="mb-4 max-w-2xl text-4xl font-extrabold leading-none tracking-tight dark:text-white md:text-5xl xl:text-6xl">
                 Payments tool for software companies
               </h1>
               <p class="mb-6 max-w-2xl font-light text-gray-500 dark:text-gray-400 md:text-lg lg:mb-8 lg:text-xl">

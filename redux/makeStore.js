@@ -19,7 +19,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["item", "text"], // Persist specific slices
+  //whitelist: ["item", "text"], // Persist specific slices
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

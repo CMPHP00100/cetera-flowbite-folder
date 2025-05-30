@@ -7,8 +7,10 @@
     "sourceMap": true,
     "noEmit": true,
     "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
+    "module": "Node16",
+    //"moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "moduleResolution": "node16",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
@@ -22,7 +24,7 @@
       "@/*": ["./*"]
     },
     "target": "ES2017",
-    "types": ["node", "estree"] // Add this line to explicitly include estree type definitions
+    "types": ["node", "estree", "@prisma/client"] // Add this line to explicitly include estree type definitions
   },
   "include": [
     "next-env.d.ts",
@@ -30,7 +32,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "context/CartContext.js",
-    "redux/store.d.ts"
+    "redux/store.tsx"
   ],
   "exclude": ["node_modules"]
 }

@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import "/app/globals.css";
+import "@/app/globals.css";
 import FormPopup from "@/components/animations/form-popup";
 
 export default function RegisterUser() {
@@ -84,7 +84,7 @@ export default function RegisterUser() {
           type="name"
           id="name"
           name="name"
-          className=" focus:border-cetera-orange! mb-3 block w-full rounded-lg border border-white bg-dark-blue p-2.5 text-sm text-white placeholder:text-gray-400"
+          className="focus:border-cetera-orange! mb-3 block w-full rounded-lg border border-white bg-dark-blue p-2.5 text-sm text-white placeholder:text-gray-400"
           placeholder="Enter name..."
           value={formData.name}
           onChange={handleChange}
@@ -94,7 +94,7 @@ export default function RegisterUser() {
           type="email"
           id="email"
           name="email"
-          className=" focus:border-cetera-orange! mb-3 block w-full rounded-lg border border-white bg-dark-blue p-2.5 text-sm text-white placeholder:text-gray-400"
+          className="focus:border-cetera-orange! mb-3 block w-full rounded-lg border border-white bg-dark-blue p-2.5 text-sm text-white placeholder:text-gray-400"
           placeholder="Enter email..."
           value={formData.email}
           onChange={handleChange}
@@ -104,7 +104,7 @@ export default function RegisterUser() {
           type="password"
           id="password"
           name="password"
-          className=" focus:border-cetera-orange! mb-3 block w-full rounded-lg border border-white bg-dark-blue p-2.5 text-sm text-white placeholder:text-gray-400"
+          className="focus:border-cetera-orange! mb-3 block w-full rounded-lg border border-white bg-dark-blue p-2.5 text-sm text-white placeholder:text-gray-400"
           placeholder="Enter password..."
           value={formData.password}
           onChange={handleChange}
@@ -114,7 +114,7 @@ export default function RegisterUser() {
           type="password"
           id="confirmPassword"
           name="confirmPassword"
-          className=" focus:border-cetera-orange! mb-3 block w-full rounded-lg border border-white bg-dark-blue p-2.5 text-sm text-white placeholder:text-gray-400"
+          className="focus:border-cetera-orange! mb-3 block w-full rounded-lg border border-white bg-dark-blue p-2.5 text-sm text-white placeholder:text-gray-400"
           placeholder="Confirm password..."
           value={formData.confirmPassword}
           onChange={handleChange}

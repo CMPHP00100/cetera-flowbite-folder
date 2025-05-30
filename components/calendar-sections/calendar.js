@@ -10,9 +10,9 @@ const CalendarApp = () => {
   const [refreshGrid, setRefreshGrid] = useState(false);
 
   return (
-    <div class="container-fluid">
+    <div className="container-fluid">
       {/* <div class="calendar-container"> */}
-      <div class="row">
+      <div className="row">
         <div className="col-12 col-sm-12 col-md-12 col-lg-6 bg-gray-100 p-6">
           <div class="row">
             <div class="col-12">

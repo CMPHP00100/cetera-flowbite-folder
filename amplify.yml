@@ -1,21 +1,18 @@
 version: 1
-frontend:
-  phases:
-    preBuild:
-      commands:
-        - npm install
-        - npm install -g next
-        - npm install prisma @prisma/client
-    build:
-      commands:
-        - npx prisma generate --no-engine
-        - export PRISMA_CLIENT_PATH=./prisma/node_modules/@prisma/client
-        - npm run build
-artifacts:
-  baseDirectory: .next
-  files:
-    - '**/*'
-cache:
-  paths:
-    - node_modules/**/*
-    - prisma/node_modules/**/*
+applications:
+  - frontend:
+      phases:
+        preBuild:
+          commands:
+            - npm ci
+        build:
+          commands:
+            - npm run build
+      artifacts:
+        baseDirectory: .next
+        files:
+          - "**/*"
+      cache:
+        paths:
+          - node_modules/**/*
+    appRoot: .

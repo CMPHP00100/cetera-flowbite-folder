@@ -23,23 +23,12 @@ model User {
   name      String?
   email     String?  @unique
   password  String
-  role     Role    @default(END_USER)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+  role      Role     @default(END_USER)
   posts     Post[]
 
   @@map("users")
-}
-enum Role {
-  GLOBAL_ADMIN
-  GLOBAL_SUPPORT
-  PROVIDER_ADMIN
-  PROVIDER_SUPPORT
-  SUPPLIER_ADMIN
-  SUPPLIER_SUPPORT
-  CLIENT_ADMIN
-  CLINET_SUPPORT
-  END_USER
 }
 
 model Event {
@@ -67,4 +56,16 @@ model Items {
   sku         String?
 
   @@map("items")
+}
+
+enum Role {
+  GLOBAL_ADMIN
+  GLOBAL_SUPPORT
+  PROVIDER_ADMIN
+  PROVIDER_SUPPORT
+  SUPPLIER_ADMIN
+  SUPPLIER_SUPPORT
+  CLIENT_ADMIN
+  CLINET_SUPPORT
+  END_USER
 }

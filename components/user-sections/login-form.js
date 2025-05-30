@@ -58,7 +58,7 @@ const LoginForm = () => {
   if (error) return <div>{error}</div>;
 
   return (
-    <div class="container-fluid">
+    <div className="container-fluid">
       <form onSubmit={handleLogin} className="mx-auto max-w-md rounded p-6">
         {/* <h2 className="mb-4 text-xl font-bold">Login</h2> */}
 
@@ -70,7 +70,7 @@ const LoginForm = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className=" focus:border-cetera-orange! mb-3 block w-full rounded-lg border border-white bg-dark-blue p-2.5 text-sm text-white placeholder:text-gray-400"
+          className="focus:border-cetera-orange! mb-3 block w-full rounded-lg border border-white bg-dark-blue p-2.5 text-sm text-white placeholder:text-gray-400"
         />
 
         <input
@@ -79,7 +79,7 @@ const LoginForm = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          className=" focus:border-cetera-orange! mb-4 block w-full rounded-lg border border-white bg-dark-blue p-2.5 text-sm text-white placeholder:text-gray-400"
+          className="focus:border-cetera-orange! mb-4 block w-full rounded-lg border border-white bg-dark-blue p-2.5 text-sm text-white placeholder:text-gray-400"
         />
 
         <button

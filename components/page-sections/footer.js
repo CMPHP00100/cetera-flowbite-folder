@@ -143,7 +143,7 @@ const Footer = () => {
                   // eslint-disable-next-line react/jsx-key
                   <a key={id} href={href} className={className}>
                     <svg
-                      class="h-5 w-5"
+                      className="h-5 w-5"
                       fill="currentColor"
                       viewBox="0 0 24 24"
                       aria-hidden="true"
