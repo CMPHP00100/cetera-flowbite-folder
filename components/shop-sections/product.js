@@ -117,6 +117,7 @@ export default function Product() {
                   id={id}
                   image={image}
                   title={name}
+                  alt={name}
                   price={price}
                   button={<BsCartPlus />}
                   buttonLink={() => handleAddToCart(product)}

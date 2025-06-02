@@ -24,11 +24,11 @@ const ProductCard = ({
                   <div class="el-wrapper">
                     <Link href={`/product/${id}`} className="block">
                       <div class="box-up" onClick={onClick}>
-                        <Image class="img" src={image} alt={alt} width={96} height={96} />
+                        <Image className="img" src={image} alt={alt} width={96} height={96} />
                         <div class="img-info">
                           <div class="info-inner">
-                            <span class="p-name">{title}</span>
-                            <span class="p-company"></span>
+                            <span className="p-name">{title}</span>
+                            <span className="p-company"></span>
                           </div>
                           <div class="a-size">
                             Available sizes :{" "}

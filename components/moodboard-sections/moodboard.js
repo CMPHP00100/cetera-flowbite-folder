@@ -96,8 +96,8 @@ export default function Moodboard() {
                     src={item.image}
                     alt={item.name}
                     className="h-24 w-24 rounded-lg shadow-lg"
-                    width={96} // 24 * 4 (Tailwind's scale factor)
-                    height={96} // 24 * 4
+                    width={150} // 24 * 4 (Tailwind's scale factor)
+                    height={150} // 24 * 4
                   />
                 </div>
                 <div className="col-sm-10">

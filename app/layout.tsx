@@ -1,13 +1,18 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+//import { Inter } from "next/font";
 import { ThemeModeScript } from "flowbite-react";
-import PageWrapper from "@/components/animations/page-wrapper"; // Import PageWrapper
-import CustomNav from "@/components/page-sections/navbar";
-import Footer from "@/components/page-sections/footer";
-import { Providers } from "./providers";
+import PageWrapper from "@/components/animations/page-wrapper.js";
+import CustomNav from "@/components/page-sections/navbar.js";
+import Footer from "@/components/page-sections/footer.js";
+import { Providers } from "./providers.tsx";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+/*const inter = Inter({ 
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});*/
+
 
 export const metadata: Metadata = {
   title: "Create Flowbite React",
@@ -23,8 +28,12 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <ThemeModeScript />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+          rel="stylesheet"
+        />
       </head>
-      <body className={inter.className}>
+      <body className="font-sans antialiased">
         <Providers>
           <CustomNav />
           <PageWrapper>{children}</PageWrapper>

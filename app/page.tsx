@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+//import { useState } from "react";
 //import Modal from "@/components/page-sections/modal";
 //import Home from "@/pages/home/page";
-import ProductList from "@/components/shop-sections/product-list";
+//import ProductList from "@/components/shop-sections/product-list";
 //import Cart from "@/components/shop-sections/cart";
 //import { CartProvider } from "@/context/CartContext";
 import { BannerSlider } from "@/components/page-sections/banner-carousel";

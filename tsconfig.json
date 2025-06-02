@@ -20,8 +20,10 @@
         "name": "next"
       }
     ],
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@/components/*": ["components/*"]
     },
     "target": "ES2017",
     "types": ["node", "estree", "@prisma/client"] // Add this line to explicitly include estree type definitions

@@ -19,4 +19,7 @@ applications:
         paths:
           - node_modules/**/*
           - .next/cache/**/*
+      environment: # 👈 Critical for Next.js
+        NEXT_PUBLIC_AMPLIFY_ENV: $AWS_BRANCH # Optional: expose branch name
+        NODE_OPTIONS: "--max-old-space-size=4096"
     appRoot: .

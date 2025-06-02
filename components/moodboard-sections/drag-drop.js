@@ -30,6 +30,8 @@ export default function DraggableProduct({ product }) {
             src={product.thumbPic}
             alt={product.name}
             className="h-24 w-24"
+            width={96}
+            height={96}
           />{" "}
         </div>
         <div className="col-sm-10 text-sm">
