@@ -6,11 +6,11 @@
 //import ProductList from "@/components/shop-sections/product-list";
 //import Cart from "@/components/shop-sections/cart";
 //import { CartProvider } from "@/context/CartContext";
-import { BannerSlider } from "@/components/page-sections/banner-carousel";
-import CtaLeft from "@/components/page-sections/cta-left";
-import FadeInSection from "@/components/animations/fadein-animation";
-import TypedText from "@/components/animations/typed-text";
-import ProductSlider from "@/components/page-sections/product-carousel";
+import { BannerSlider } from "@/components/page-sections/banner-carousel.js";
+import CtaLeft from "@/components/page-sections/cta-left.js";
+import FadeInSection from "@/components/animations/fadein-animation.js";
+import TypedText from "@/components/animations/typed-text.js";
+import ProductSlider from "@/components/page-sections/product-carousel.js";
 
 export default function App() {
   return (

@@ -2,8 +2,8 @@
 "use client"; // Required because React Context APIs are client-side
 
 import { Provider } from "react-redux";
-import { store } from "@/redux/store";
-import { CartProvider } from "@/context/CartContext";
+import { store } from "@/redux/store.tsx";
+import { CartProvider } from "@/context/CartContext.js";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
