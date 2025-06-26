@@ -1,37 +1,89 @@
+// app/product/[id]/page.js
 "use client";
 
 import { useEffect, useState } from "react";
 import { useShoppingCart } from "@/context/CartContext";
 import { useParams } from "next/navigation";
-//import { CartProvider } from "@/context/CartContext";
 import ProductDetails from "@/components/shop-sections/product-details";
-//import products from "@/data/products";
 
 const SingleProduct = () => {
-  const { products } = useShoppingCart(); // Get products from CartContext
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const { id } = useParams(); // Extract `id` from the dynamic route using useParams
-
-  // Log the extracted `id` to confirm it's being retrieved
-  console.log("Product ID from URL:", id);
+  const { id } = useParams();
+  const { fetchProductDetails } = useShoppingCart();
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (id && products.length > 0) {
-      const product = products.find((product) => {
-        // Ensure `product.id` is defined before calling `toString()`
-        return product.spc && product.spc.toString() === id;
-      });
-      setSelectedProduct(product); // Set the selected product based on the id
-    }
-  }, [id, products]); // Re-run this effect when `id` or `products` changes
+    const loadProduct = async () => {
 
-  if (!selectedProduct) {
-    return <p>Loading product...</p>; // Show loading message while waiting for product data
+      if (!id) {
+        setError("No product ID provided");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        console.log(`Loading product with ID: ${id}`);
+        setLoading(true);
+        setError(null);
+        
+        // Try to fetch product details
+        const productData = await fetchProductDetails(id);
+        
+        if (productData) {
+          console.log("Product loaded successfully:", productData);
+          setProduct(productData);
+        } else {
+          console.log("No product data returned");
+          setError("Product not found");
+        }
+
+      } catch (err) {
+        console.error("Error loading product:", err);
+        setError(`Failed to load product: ${err.message}`);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProduct();
+  }, [id, fetchProductDetails]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-lg">Loading product...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-xl font-bold text-red-600 mb-2">Error</h2>
+          <p className="text-gray-600">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-xl font-bold mb-2">Product Not Found</h2>
+          <p className="text-gray-600">The requested product could not be found.</p>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div>
-      <ProductDetails product={selectedProduct} />
+      <ProductDetails 
+        product={product} 
+      />
     </div>
   );
 };

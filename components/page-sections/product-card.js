@@ -8,6 +8,7 @@ const ProductCard = ({
   image,
   title,
   price,
+  spc,
   alt,
   button,
   buttonLink,
@@ -17,35 +18,35 @@ const ProductCard = ({
     <>
       <div className="product col-12">
         <div className="block">
-          <div class="page-wrapper container">
-            <div class="page-inner">
-              <div class="row">
+          <div className="page-wrapper container">
+            <div className="page-inner">
+              <div className="row">
                 <div className="el-container">
-                  <div class="el-wrapper">
+                  <div className="el-wrapper">
                     <Link href={`/product/${id}`} className="block">
-                      <div class="box-up" onClick={onClick}>
+                      <div className="box-up" onClick={onClick}>
                         <Image className="img" src={image} alt={alt} width={96} height={96} />
-                        <div class="img-info">
-                          <div class="info-inner">
+                        <div className="img-info">
+                          <div className="info-inner">
                             <span className="p-name">{title}</span>
                             <span className="p-company"></span>
                           </div>
-                          <div class="a-size">
-                            Available sizes :{" "}
-                            <span class="size">S , M , L , XL</span>
+                          <div className="a-size">
+                            {" "}
+                            <span className="colors">{spc}</span>
                           </div>
                         </div>
                       </div>
                     </Link>
-                    <div class="box-down">
-                      <div class="h-bg">
-                        <div class="h-bg-inner"></div>
+                    <div className="box-down">
+                      <div className="h-bg">
+                        <div className="h-bg-inner"></div>
                       </div>
 
-                      <a class="cart" href="#" onClick={buttonLink}>
-                        <span class="price">{price}</span>
-                        <span class="add-to-cart">
-                          <span class="txt">{button}</span>
+                      <a className="cart" href={buttonLink}> {/*</div>onClick={}>*/}
+                        <span className="price">$ {price}</span>
+                        <span className="add-to-cart">
+                          <span className="txt">{button}</span>
                         </span>
                       </a>
                     </div>

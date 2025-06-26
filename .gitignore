@@ -35,5 +35,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-#backup file
-backup/redux/
+#backup folder
+/backup
+
+# Local development database
+local.db
+local.db-journal
+local.db-wal

@@ -1,5 +1,5 @@
-//store.tsx
-import { makeStore } from "./makeStore";
+//redux/store.tsx
+import { makeStore } from "./makeStore.js";
 import { Store } from "@reduxjs/toolkit";
 import { Persistor } from "redux-persist";
 
@@ -9,11 +9,11 @@ let persistor: Persistor | undefined;
 if (typeof window !== "undefined") {
   // Client-side: Use Redux Persist
   const { persistStore } = require("redux-persist");
-  store = makeStore();
+  store = makeStore(true); // Enable persistence
   persistor = persistStore(store);
 } else {
   // Server-side: No Redux Persist
-  store = makeStore();
+  store = makeStore(false); // Disable persistence
 }
 
 export { store, persistor };

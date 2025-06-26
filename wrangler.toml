@@ -1,0 +1,11 @@
+name = "sandbox_flowbite"
+account_id = "7ce3429d862927191989654eca341a10"
+compatibility_date = "2023-10-30"
+
+main = "src/index.js"
+
+# Production Database
+[[d1_databases]]
+binding = "DB"
+database_name = "cetera-sandbox-db"
+database_id = "6fb165d4-69e5-49d8-87a9-cfbee97548f7"

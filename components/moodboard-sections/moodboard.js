@@ -70,7 +70,7 @@ export default function Moodboard() {
         {/* Product List */}
         <div className="col-sm-6">
           {products.map((product) => (
-            <DraggableProduct key={product.moodboardId} product={product} />
+            <DraggableProduct key={product.prodEId} product={product} />
           ))}
         </div>
 

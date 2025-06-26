@@ -1,36 +1,36 @@
-import prisma from "../../../lib/prisma";
+//pages/api/deleteEvents/[id].js
+import { getDatabase } from '@/lib/database';
 
 export default async function handler(req, res) {
-  const { id } = req.query; // Extract ID from the URL
-
-  if (req.method === "DELETE") {
-    try {
+  try {
+    // Use your existing database wrapper
+    const db = getDatabase(req.cf?.env);
+    
+    if (req.method === "DELETE") {
+      const { id } = req.query;
+      
       if (!id) {
-        return res.status(400).json({ error: "ID is required" });
+        return res.status(400).json({ error: "Event ID is required" });
       }
 
-      // Ensure ID is parsed to an integer
-      const deletedEvent = await prisma.event.delete({
-        where: {
-          id: parseInt(id, 10), // Ensure ID is an integer
-        },
-      });
-
-      return res.status(200).json({
-        message: `Event with ID ${id} deleted successfully`,
-        deletedEvent,
-      });
-    } catch (error) {
-      console.error("Error deleting event:", error);
-
-      if (error.code === "P2025") {
-        // Record not found
-        return res.status(404).json({ error: "Event not found" });
+      try {
+        const result = await db.prepare("DELETE FROM events WHERE id = ?").bind(id).run();
+        
+        if (result.success) {
+          res.status(200).json({ message: "Event deleted successfully" });
+        } else {
+          res.status(404).json({ error: "Event not found" });
+        }
+      } catch (dbError) {
+        console.error("Database error:", dbError);
+        res.status(500).json({ error: "Failed to delete event" });
       }
-
-      return res.status(500).json({ error: "Failed to delete event" });
+    } else {
+      res.setHeader("Allow", ["DELETE"]);
+      res.status(405).json({ error: `Method ${req.method} not allowed` });
     }
-  } else {
-    return res.status(405).json({ error: "Method not allowed" });
+  } catch (error) {
+    console.error("API error:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 }

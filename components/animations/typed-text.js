@@ -28,7 +28,7 @@ const TypedText = ({ texts, speed = 100, delay = 1000, typedClass }) => {
   }, [charIndex, isDeleting, index, texts, speed, delay]);
 
   return (
-    <motion.h1
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 1 }}
@@ -42,7 +42,7 @@ const TypedText = ({ texts, speed = 100, delay = 1000, typedClass }) => {
       >
         |
       </motion.span>
-    </motion.h1>
+    </motion.div>
   );
 };
 

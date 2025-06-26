@@ -1,4 +1,4 @@
-//providers.tsx
+//app/providers.tsx
 "use client"; // Required because React Context APIs are client-side
 
 import { Provider } from "react-redux";

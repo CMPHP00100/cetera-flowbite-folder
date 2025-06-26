@@ -25,7 +25,7 @@
       "@/components/*": ["components/*"]
     },
     "target": "ES2017",
-    "types": ["node", "estree", "@prisma/client"] // Add this line to explicitly include estree type definitions
+    "types": ["node", "estree", "@prisma/client", "@reduxjs/toolkit", "@types/react-redux"] // Add this line to explicitly include estree type definitions
   },
   "include": [
     "next-env.d.ts",

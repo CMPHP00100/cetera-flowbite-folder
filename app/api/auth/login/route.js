@@ -1,49 +1,49 @@
-//import prisma from "@/lib/prisma"; // Ensure Prisma is correctly set up
-import bcrypt from "bcryptjs";
-import { PrismaClient } from "@prisma/client";
+// app/api/auth/login/route.js
+import { NextResponse } from "next/server";
 
-const prisma = new PrismaClient();
-
-export async function POST(req) {
+export async function POST(request) {
   try {
-    const body = await req.json(); // Parse the incoming request body
-    console.log("Received body:", body); // Debugging log
+    const body = await request.json();
+    const { email, password } = body;
 
-    const { email, password } = body; // Extract email and password from body
-
+    // Input validation
     if (!email || !password) {
-      return Response.json(
+      return NextResponse.json(
         { error: "Email and password are required" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
-    // Find user by email
-    const user = await prisma.user.findUnique({
-      where: { email },
+    // Forward the login request to your Cloudflare Worker
+    const workerResponse = await fetch("https://sandbox_flowbite.raspy-math-fdba.workers.dev/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: credentials.username,
+        password: credentials.password,
+      }),
+      //body: JSON.stringify({ email, password }),
     });
 
-    if (!user) {
-      return Response.json({ error: "User not found" }, { status: 404 });
-    }
+    console.log("Worker response status:", workerResponse.status); // Log worker response
+    const data = await workerResponse.json();
+    console.log("Worker response data:", data); // Log worker response data
 
-    // Compare the entered password with the stored password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordValid) {
-      return Response.json(
-        { error: "Invalid password" + isPasswordValid },
-        { status: 401 },
+    if (workerResponse.ok) {
+      return NextResponse.json(data);
+    } else {
+      return NextResponse.json(
+        { error: data.error || "Login failed" },
+        { status: workerResponse.status }
       );
     }
-
-    // If email and password match, proceed with login
-    return Response.json(
-      { message: "Login successful", user },
-      { status: 200 },
-    );
   } catch (error) {
-    console.error("Login error:", error);
-    return Response.json({ error: "Server error" }, { status: 500 });
+    console.error("Error during login:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

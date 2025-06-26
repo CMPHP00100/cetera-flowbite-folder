@@ -1,18 +1,12 @@
+//app/layout.tsx
 import type { Metadata } from "next";
-//import { Inter } from "next/font";
 import { ThemeModeScript } from "flowbite-react";
 import PageWrapper from "@/components/animations/page-wrapper.js";
 import CustomNav from "@/components/page-sections/navbar.js";
 import Footer from "@/components/page-sections/footer.js";
 import { Providers } from "./providers.tsx";
+import { OrderProvider } from "@/context/OrderContext.js";
 import "./globals.css";
-
-/*const inter = Inter({ 
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});*/
-
 
 export const metadata: Metadata = {
   title: "Create Flowbite React",
@@ -25,20 +19,27 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <ThemeModeScript />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
           rel="stylesheet"
         />
+        {/* Preconnect to improve font loading */}
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body className="font-sans antialiased">
-        <Providers>
-          <CustomNav />
-          <PageWrapper>{children}</PageWrapper>
-          <Footer />
-        </Providers>
+      <body 
+        className="font-sans antialiased"
+        suppressHydrationWarning
+      >
+        <OrderProvider>
+          <Providers>
+            <CustomNav />
+            <PageWrapper>{children}</PageWrapper>
+            <Footer />
+          </Providers>
+        </OrderProvider>
       </body>
     </html>
   );

@@ -12,7 +12,9 @@ const ProductList = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("/api/products");
+        //const response = await fetch("/api/products");
+        const response = await fetch(`/api/products?query=${query}`);
+        const products = await response.json();
         if (!response.ok) {
           throw new Error(`Error fetching products: ${response.status}`);
         }
@@ -23,6 +25,7 @@ const ProductList = () => {
         console.error("Error fetching products:", error);
         setLoading(false); // Stop loading even on error
       }
+      return products;
     };
 
     fetchProducts();
@@ -43,13 +46,14 @@ const ProductList = () => {
       <ul>
         {products.map((product) => (
           <li
-            key={product.spc}
+            key={product.prodEId}
             className="flex items-center gap-4 border-b p-2"
           >
             <div>
-              <Link href={`/product/${product.spc}`}>
+              <Link href={`/product/${product.prodEId}`}>
                 <h3>{product.name}</h3>
               </Link>
+              <p>{product.colors}</p>
               <p>${product.prc}</p>
               <button
                 onClick={() => handleAddToCart(product)} // Add to cart

@@ -43,3 +43,8 @@ button[data-testid="flowbite-dropdown-toggle"] {
   background: white;
   box-shadow: -6px 7px 19px 9px rgba(0, 0, 0, 0.1);
 }
+
+.focus\:border-cetera-orange:focus {
+  outline: none;
+  --tw-ring-color: none;
+}

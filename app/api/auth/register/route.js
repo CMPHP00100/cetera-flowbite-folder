@@ -1,43 +1,71 @@
-//import prisma from "@/lib/prisma"; // Adjust based on your setup
-import { PrismaClient } from "@prisma/client";
+// app/api/auth/login/route.js
+import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { getDatabase } from "@/lib/database";
 
-const prisma = new PrismaClient();
+export const runtime = 'nodejs';
 
-export async function POST(req) {
+export async function POST(request) {
   try {
-    const { name, email, password } = await req.json();
+    // Parse request body
+    const { email, password } = await request.json();
 
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (existingUser) {
-      return new Response(JSON.stringify({ error: "User already exists" }), {
-        status: 400,
-      });
+    // Input validation
+    if (!email || !password) {
+      return NextResponse.json(
+        { error: "Email and password are required" },
+        { status: 400 }
+      );
     }
 
-    // Hash password before saving to DB
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Get database connection
+    const db = getDatabase();
+    const query = "SELECT * FROM users WHERE email = ?";
+    
+    // Retrieve user data
+    const userResult = await db.prepare(query).all(email);
+    const user = userResult.results?.[0];
 
-    // Save new user
-    const newUser = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        name,
-      },
-    });
+    if (!user) {
+      return NextResponse.json(
+        { error: "Invalid email or password" },
+        { status: 401 }
+      );
+    }
 
-    return new Response(
-      JSON.stringify({ message: "User created successfully", user: newUser }),
-      { status: 201 },
+    // Verify password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return NextResponse.json(
+        { error: "Invalid email or password" },
+        { status: 401 }
+      );
+    }
+
+    // Generate JWT token
+    const secretKey = process.env.JWT_SECRET || "your-secret-key";
+    const token = jwt.sign(
+      { userId: user.id, email: user.email, role: user.role },
+      secretKey,
+      { expiresIn: "24h" }
     );
-  } catch (error) {
-    return new Response(JSON.stringify({ error: "Server error" }), {
-      status: 500,
+
+    // Remove sensitive information before sending user data
+    const { password: _, ...userWithoutPassword } = user;
+
+    // Success response
+    return NextResponse.json({
+      success: true,
+      user: userWithoutPassword,
+      token,
+      message: "Login successful",
     });
+  } catch (error) {
+    console.error("Error during login:", error.message);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

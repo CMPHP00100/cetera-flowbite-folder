@@ -1,3 +1,4 @@
+//redux/thunks.js
 import axios from "axios";
 import { fetchStart, fetchSuccess, fetchFailure } from "./store";
 

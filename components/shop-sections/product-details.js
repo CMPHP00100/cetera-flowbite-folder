@@ -1,295 +1,443 @@
+// components/shop-sections/product-details.js
 "use client";
-//import { useParams } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useShoppingCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-export default function ProductDetails({ product }) {
-  const { addItem } = useShoppingCart();
+const colorMap = {
+  red: '#ff0000',
+  blue: '#0000ff',
+  green: '#008000',
+  black: '#000000',
+  white: '#ffffff',
+  silver: '#c0c0c0',
+  gold: '#ffd700',
+  purple: '#800080',
+  royal: '#4169e1',
+  navy: '#0C2441',
+  orange: '#fd5d01',
+  yellow: '#ecd31f',
+  'lime green': '#6acf27',
+  'silver/blue': '#3069bd',
+  'silver/green': '#448967',
+  'silver/red': '#d54659',
+  'silver/purple': '#3a1652',
+  'silver/yellow': '#e9c866',
+  'silver/black': '#373c38',
+  'blue/metallic silver': '#091b92',
+  'green/metallic silver': '#008000',
+  'orange/metallic silver': '#fd5d01',
+  'purple/metallic silver': '#8653f4',
+  'red/metallic silver': '#cc403b',
+  'pink/metallic silver': '#f96b83',
+  'silver/metallic silver': '#afb298',
+  'white/metallic silver': '#ffffff',
+  'yellow/metallic silver': '#f9f920',
+  'burgundy red/metallic silver': '#540100',
+  'gold/metallic silver': '#ffd700',
+  'black/metallic silver': '#373C38',
+  'royal blue': '#255393',
+  'navy blue': '#0C2441',
+  // Add the new translucent colors with metallic silver
+  'translucent blue/metallic silver': '#628ae0', // Light blue with 50% opacity
+  'translucent green/metallic silver': '#6df294', // Light green with 50% opacity
+  'translucent yellow/metallic silver': '#f9f920', // Yellow with 50% opacity
+  'translucent purple/metallic silver': '#8653f4', // Medium purple with 50% opacity
+  'translucent red/metallic silver': '#fc5537', // Light red with 50% opacity
+  'translucent orange/metallic silver': '#f7a311', // Orange with 50% opacity
+  'translucent pink/metallic silver': '#f96b83', // Pink with 50% opacity
+  // Add fallbacks for variations in naming
+  'translucent blue': '#628ae0',
+  'translucent green': '#6df294',
+  'translucent yellow': '#f9f920',
+  'translucent purple': '#8653f4',
+  'translucent red': '#fc5537',
+  'translucent orange': '#f7a311',
+  'translucent pink': '#f96b83'
+};
+
+function getColorHex(colorName) {
+  const cleanName = colorName.trim().toLowerCase();
+  return colorMap[cleanName] || '#cccccc';
+}
+
+export default function ProductDetails({ product, productId }) {
+  const { addItem, getProductDetails } = useShoppingCart();
+  const [productDetails, setProductDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedColor, setSelectedColor] = useState("");
+  const [selectedQuantity, setSelectedQuantity] = useState("");
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const router = useRouter();
 
+  // Get the correct product ID (prefer prodEId if available)
+  const productIdentifier = product?.prodEId || productId;
+
   if (!product) {
-    return (
-      <p className="text-red-500">Product not found or still loading...</p>
-    );
+    return <p className="text-red-500">Product not found or still loading...</p>;
   }
 
-  // Update the query parameter if it's not 1800
+  // Update image URL parameters
   const updateRSParam = (url, newRSValue) => {
-    const urlObj = new URL(url);
-    const params = new URLSearchParams(urlObj.search);
-    if (params.get("RS") !== newRSValue) {
-      params.set("RS", newRSValue); // Set RS to the new value
-      urlObj.search = params.toString(); // Update the URL with the new query string
+    try {
+      const urlObj = new URL(url);
+      const params = new URLSearchParams(urlObj.search);
+      if (params.get("RS") !== newRSValue) {
+        params.set("RS", newRSValue);
+        urlObj.search = params.toString();
+      }
+      return urlObj.toString();
+    } catch {
+      return url;
     }
-    return urlObj.toString(); // Return the updated URL
   };
-  const url = product.thumbPic;
-  // If RS is not 1800, update the URL
-  const updatedUrl = updateRSParam(url, "1800");
 
-  {
-    /*useEffect(() => {
-    console.log("ProductDetails Mounted");
-  }, []);*/
-  }
+  // Get the price for the selected quantity
+  const getSelectedPrice = () => {
+    if (!productDetails || !selectedQuantity) return product.prc;
+    
+    const validPairs = productDetails.qty
+      .map((qty, index) => ({
+        qty,
+        price: productDetails.prc?.[index] || product.prc,
+        index
+      }))
+      .filter(pair => 
+        pair.qty && 
+        pair.qty !== '' && 
+        pair.qty !== '0' && 
+        pair.price && 
+        pair.price !== ''
+      );
+
+    const selectedPair = validPairs.find(pair => pair.qty === selectedQuantity);
+    return selectedPair ? selectedPair.price : product.prc;
+  };
+
+  // Create a unique cart item ID that includes product, color, and quantity tier
+  const createCartItemId = () => {
+    const baseId = productIdentifier || product.spc;
+    const colorSuffix = selectedColor ? `-${selectedColor.toLowerCase().replace(/\s+/g, '')}` : '';
+    const quantitySuffix = selectedQuantity ? `-qty${selectedQuantity}` : '';
+    return `${baseId}${colorSuffix}${quantitySuffix}`;
+  };
+
+  useEffect(() => {
+    const fetchProductDetails = async () => {
+      try {
+        setLoading(true);
+
+        // First check if we have details in cache
+        const cachedDetails = getProductDetails(productIdentifier);
+        if (cachedDetails) {
+          setProductDetails(cachedDetails);
+          return;
+        }
+
+        const response = await fetch(`/api/productDetails?id=${productIdentifier}`);
+        if (!response.ok) throw new Error(`Error: ${response.status}`);
+        
+        const data = await response.json();
+        const details = data.product || data; // Handle both formats
+        setProductDetails(details);
+
+        // Initialize selections
+        if (details.colors) {
+          const colors = details.colors.split(/\s*,\s*/).filter(Boolean);
+          if (colors.length) setSelectedColor(colors[0]);
+        }
+        if (details.qty?.length) {
+          // Find first valid quantity
+          const validPairs = details.qty
+            .map((qty, index) => ({
+              qty,
+              price: details.prc?.[index] || product.prc,
+              index
+            }))
+            .filter(pair => 
+              pair.qty && 
+              pair.qty !== '' && 
+              pair.qty !== '0' && 
+              pair.price && 
+              pair.price !== ''
+            );
+          
+          if (validPairs.length > 0) {
+            setSelectedQuantity(validPairs[0].qty);
+          }
+        }
+      } catch (error) {
+        console.error("Fetch error:", error);
+        setProductDetails(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (productIdentifier) {
+      fetchProductDetails();
+    } else {
+      setLoading(false);
+    }
+  }, [productIdentifier, getProductDetails]);
+
+  // Get safe array of images
+  const productImages = productDetails?.pics || [];
+  const colorOptions = productDetails?.colors?.split(/\s*,\s*/).filter(Boolean) || [];
+
+  // Get current image URL with fallbacks
+  const getCurrentImageUrl = () => {
+    if (productImages.length === 0) return updateRSParam(product.thumbPic, "1800");
+    return updateRSParam(productImages[currentImageIndex]?.url, "1800");
+  };
+
+  if (loading) return <div className="p-8 text-center">
+    Loading details...
+    </div>;
+  if (!productDetails) return <div className="p-8 text-center">No product details available</div>;
 
   return (
-    <>
-      <div class="bg-white">
-        <div class="pt-6">
-          <nav aria-label="Breadcrumb">
-            <ol
-              role="list"
-              class="mx-auto flex max-w-2xl items-center space-x-2 px-4 sm:px-6 lg:max-w-7xl lg:px-8"
-            >
-              <li>
-                <div class="flex items-center">
-                  <a href="/" class="mr-2 text-sm font-medium text-gray-900">
-                    Home
-                  </a>
-                  <svg
-                    width="16"
-                    height="20"
-                    viewBox="0 0 16 20"
-                    fill="currentColor"
-                    aria-hidden="true"
-                    class="h-5 w-4 text-gray-300"
-                  >
-                    <path d="M5.697 4.34L8.98 16.532h1.327L7.025 4.341H5.697z" />
-                  </svg>
-                </div>
-              </li>
-              <li>
-                <div class="flex items-center">
-                  <a
-                    href="/product"
-                    class="mr-2 text-sm font-medium text-gray-900"
-                  >
-                    Products
-                  </a>
-                  <svg
-                    width="16"
-                    height="20"
-                    viewBox="0 0 16 20"
-                    fill="currentColor"
-                    aria-hidden="true"
-                    class="h-5 w-4 text-gray-300"
-                  >
-                    <path d="M5.697 4.34L8.98 16.532h1.327L7.025 4.341H5.697z" />
-                  </svg>
-                </div>
-              </li>
+    <div className="bg-light-gray">
+      <div className="py-8">
+        {/* Breadcrumb navigation */}
+        <nav aria-label="Breadcrumb">
+          <ol className="mx-auto flex max-w-7xl items-center space-x-2 px-4 sm:px-6 lg:px-8">
+            <li>
+              <div className="flex items-center">
+                <a href="/" className="mr-2 text-sm font-medium text-gray-900">Home</a>
+                <svg className="h-5 w-4 text-gray-300" viewBox="0 0 16 20" fill="currentColor">
+                  <path d="M5.697 4.34L8.98 16.532h1.327L7.025 4.341H5.697z" />
+                </svg>
+              </div>
+            </li>
+            <li>
+              <div className="flex items-center">
+                <a href="/product" className="mr-2 text-sm font-medium text-gray-900">Products</a>
+                <svg className="h-5 w-4 text-gray-300" viewBox="0 0 16 20" fill="currentColor">
+                  <path d="M5.697 4.34L8.98 16.532h1.327L7.025 4.341H5.697z" />
+                </svg>
+              </div>
+            </li>
+            <li className="text-sm">
+              <a href="#" className="font-medium text-gray-500 hover:text-gray-600">
+                {product.name} | {product.spc}
+              </a>
+            </li>
+          </ol>
+        </nav>
 
-              <li class="text-sm">
-                <a
-                  href="#"
-                  aria-current="page"
-                  class="font-medium text-gray-500 hover:text-gray-600"
-                >
-                  {product.name} | {product.spc}
-                </a>
-              </li>
-            </ol>
-          </nav>
-          <div class="mx-auto mt-6 flex max-w-2xl justify-center border-b border-gray-200 sm:px-6 lg:max-w-7xl lg:px-8">
-            <div class="flex justify-center">
-              <Image
-                src={updatedUrl}
-                alt="Model wearing plain white basic tee."
-                class="aspect-4/5 w-full object-cover sm:rounded-lg lg:aspect-auto"
-                style={{ maxWidth: "600px" }}
-                width={384}
-                height={288}
-              />
-            </div>
-          </div>
+        {/* Split view layout */}
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="lg:grid lg:grid-cols-2 lg:gap-x-8 lg:items-start">
+            
+            {/* Left side - Images */}
+            <div className="flex flex-col">
+              {/* Main product image */}
+              <div className="aspect-h-4 aspect-w-3 overflow-hidden bg-none">
 
-          {/*<!-- Product info -->*/}
-          <div class="lg:pt-15 mx-auto max-w-2xl px-4 pb-16 pt-9 sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:grid-rows-[auto_auto_1fr] lg:gap-x-8 lg:px-8 lg:pb-24">
-            <div class="lg:col-span-2 lg:border-r lg:border-gray-200 lg:pr-8">
-              <button
-                onClick={() => router.back()}
-                className="mb-3 ms-[0rem] mt-0 text-cetera-orange"
-              >
+                <button onClick={() => router.back()} className="mt-4 mb-2 text-cetera-orange hover:text-cetera-orange/80">
                 ← Back
               </button>
-              <h1 class="text-2xl  font-bold tracking-tight text-gray-900 sm:text-3xl">
-                {product.name}
-              </h1>
+
+                <Image
+                  src={getCurrentImageUrl()}
+                  alt={product.name}
+                  className="h-full w-full object-cover object-center rounded-xl"
+                  width={600}
+                  height={800}
+                  priority
+                />
+              </div>
+
+              {/* Image thumbnails */}
+              {productImages.length > 1 && (
+                <div className="mt-6 grid grid-cols-4 gap-2 sm:grid-cols-6">
+                  {productImages.map((pic, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentImageIndex(index)}
+                      className={`aspect-h-1 aspect-w-1 overflow-hidden bg-white rounded-lg border-2 ${
+                        currentImageIndex === index ? 'border-cetera-orange' : 'border-gray-200'
+                      }`}
+                    >
+                      <Image
+                        src={updateRSParam(pic.url, "1800")}
+                        alt={`Thumbnail ${index + 1}`}
+                        width={80}
+                        height={80}
+                        className="h-full w-full object-cover object-center"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
-            {/*<!-- Options -->*/}
-            <div class="mt-4 lg:row-span-3 lg:mt-0">
-              <h2 class="sr-only">Product information</h2>
-              <p class="text-3xl tracking-tight text-gray-900">{product.prc}</p>
+            {/* Right side - Product Information */}
+            <div className="mt-6 px-4 sm:mt-14 sm:px-0 md:mt-6">
+              
+              <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+                {product.name}
+              </h1>
+              
+              <div className="mt-3">
+                <h2 className="sr-only">Product information</h2>
+                <p className="text-3xl tracking-tight text-gray-900">
+                  {selectedQuantity ? (
+                    `$${getSelectedPrice()}`
+                  ) : (
+                    (() => {
+                      const validPrices = productDetails.prc.filter(prc => prc !== '' && prc != null);
+                      if (validPrices.length === 0) return null;
+                      
+                      const highestPrice = Math.max(...validPrices.map(prc => parseFloat(prc)));
+                      const lowestPrice = Math.min(...validPrices.map(prc => parseFloat(prc)));
+                      
+                      return `$${lowestPrice.toFixed(2)} - $${highestPrice.toFixed(2)}`;
+                    })()
+                  )}
+                </p>
+              </div>
 
-              {/*<!-- Reviews -->*/}
-              <div class="mt-6">
-                <h3 class="sr-only">Reviews</h3>
-                <div class="flex items-center">
-                  <div class="flex items-center">
-                    {/*<!-- Active: "text-gray-900", Default: "text-gray-200" -->*/}
-                    <svg
-                      class="size-5 shrink-0 text-gray-900"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      aria-hidden="true"
-                      data-slot="icon"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401Z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <svg
-                      class="size-5 shrink-0 text-gray-900"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      aria-hidden="true"
-                      data-slot="icon"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401Z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <svg
-                      class="size-5 shrink-0 text-gray-900"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      aria-hidden="true"
-                      data-slot="icon"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401Z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <svg
-                      class="size-5 shrink-0 text-gray-900"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      aria-hidden="true"
-                      data-slot="icon"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401Z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <svg
-                      class="size-5 shrink-0 text-gray-200"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      aria-hidden="true"
-                      data-slot="icon"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401Z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </div>
-                  <p class="sr-only">4 out of 5 stars</p>
-                  <a
-                    href="#"
-                    class="ml-3 text-sm font-medium text-cetera-orange hover:text-cetera-orange"
-                  >
-                    117 reviews
-                  </a>
+              <div className="mt-6">
+                <h3 className="sr-only">Description</h3>
+                <div className="space-y-6 text-base text-gray-700">
+                  <p>{productDetails.description || product.description}</p>
                 </div>
               </div>
-              <form class="mt-10">
-                {/*<!-- Colors -->*/}
-                <div>
-                  <p>Add Colors Here...</p>
-                </div>
-                {/*<!-- Sizes -->*/}
-                <div class="mt-10">
-                  <p>Add Sizes Here...</p>
-                </div>
 
+              <div className="mt-8 space-y-6">
+                {/* Enhanced Color Selector with Swatches */}
+                {colorOptions.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-700">Color</h3>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {colorOptions.map((color) => {
+                        const cleanColor = color.trim();
+                        // Find if this color has a specific image
+                        const hasColorImage = productDetails.pics?.some(
+                          pic => pic.color?.toLowerCase() === cleanColor.toLowerCase()
+                        );
+                        
+                        return (
+                          <button
+                            key={cleanColor}
+                            onClick={() => setSelectedColor(cleanColor)}
+                            className={`w-8 h-8 rounded-full border-2 transition-all ${
+                              selectedColor === cleanColor 
+                                ? 'border-cetera-orange scale-110' 
+                                : 'border-gray-300 hover:border-gray-400'
+                            }`}
+                            style={{ 
+                              backgroundColor: getColorHex(cleanColor),
+                              minWidth: '32px',
+                              minHeight: '32px'
+                            }}
+                            title={cleanColor}
+                          >
+                            {/* Show checkmark if image exists for this color */}
+                            {hasColorImage && (
+                              <span className="sr-only">(Has image)</span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {selectedColor && (
+                      <p className="mt-2 text-sm text-gray-600">Selected: {selectedColor}</p>
+                    )}
+                  </div>
+                )}
+               
+                {/* Quantity selection */}
+                {productDetails.qty?.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-700">Quantity & Price</h3>
+                    <select
+                      value={selectedQuantity}
+                      onChange={(e) => setSelectedQuantity(e.target.value)}
+                      className="mt-2 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-cetera-orange focus:outline-none focus:ring-cetera-orange sm:text-sm"
+                    >
+                      {(() => {
+                        const validPairs = productDetails.qty
+                          .map((qty, index) => ({
+                            qty,
+                            price: productDetails.prc?.[index] || product.prc,
+                            index
+                          }))
+                          .filter(pair => 
+                            pair.qty && 
+                            pair.qty !== '' && 
+                            pair.qty !== '0' && 
+                            pair.price && 
+                            pair.price !== ''
+                          );
+
+                        return validPairs.map((pair) => (
+                          <option key={pair.index} value={pair.qty}>
+                            {pair.qty} pcs - ${parseFloat(pair.price).toFixed(2)}
+                          </option>
+                        ));
+                      })()}
+                    </select>
+                  </div>
+                )}
+
+                {/* Add to cart button */}
                 <button
-                  type="button"
-                  class="focus:outline-hidden mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-cetera-gray px-8 py-3 text-base font-medium text-white hover:bg-cetera-orange focus:ring-2 focus:ring-cetera-orange focus:ring-offset-2"
-                  onClick={(e) => {
-                    e.stopPropagation(); // Prevent bubbling
-                    e.preventDefault(); // Stop page reload (if applicable)
-                    addItem(product);
+                  onClick={() => {
+                    const cartItem = {
+                      ...product,
+                      cartId: createCartItemId(), // Unique cart ID
+                      selectedColor,
+                      selectedQuantity,
+                      selectedQuantityNumber: parseInt(selectedQuantity) || 1,
+                      prc: getSelectedPrice(), // Selected price for this quantity tier
+                      pics: productDetails.pics || [{ url: product.thumbPic }],
+                      // Keep original product details for reference
+                      originalProductDetails: productDetails,
+                      // Display name with variants
+                      displayName: `${product.name}${selectedColor ? ` - ${selectedColor}` : ''}${selectedQuantity ? ` (${selectedQuantity} pcs)` : ''}`
+                    };
+                    
+                    addItem(cartItem);
                   }}
+                  disabled={!selectedQuantity}
+                  className="flex w-full items-center justify-center rounded-md border border-transparent bg-cetera-gray px-8 py-3 text-base font-medium text-white hover:bg-cetera-orange focus:outline-none focus:ring-2 focus:ring-cetera-orange focus:ring-offset-2 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Add to Cart
                 </button>
-              </form>
-            </div>
 
-            <div class="py-10 lg:col-span-2 lg:col-start-1 lg:border-r lg:border-gray-200 lg:pb-16 lg:pr-8 lg:pt-6">
-              {/*<!-- Description and details -->*/}
-              <div>
-                <h3 class="sr-only">Description</h3>
-
-                <div class="space-y-6">
-                  <p class="text-base text-gray-900">
-                    The Basic Tee 6-Pack allows you to fully express your
-                    vibrant personality with three grayscale options. Feeling
-                    adventurous? Put on a heather gray tee. Want to be a
-                    trendsetter? Try our exclusive colorway: &quot;Black&quot;.
-                    Need to add an extra pop of color to your outfit? Our white
-                    tee has you covered.
-                  </p>
-                </div>
-              </div>
-
-              <div class="mt-10">
-                <h3 class="text-sm font-medium text-gray-900">Highlights</h3>
-
-                <div class="mt-4">
-                  <ul role="list" class="list-disc space-y-2 pl-4 text-sm">
-                    <li class="text-gray-400">
-                      <span class="text-gray-600">
-                        Hand cut and sewn locally
-                      </span>
-                    </li>
-                    <li class="text-gray-400">
-                      <span class="text-gray-600">
-                        Dyed with our proprietary colors
-                      </span>
-                    </li>
-                    <li class="text-gray-400">
-                      <span class="text-gray-600">
-                        Pre-washed &amp; pre-shrunk
-                      </span>
-                    </li>
-                    <li class="text-gray-400">
-                      <span class="text-gray-600">Ultra-soft 100% cotton</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              <div class="mt-10">
-                <h2 class="text-sm font-medium text-gray-900">Details</h2>
-
-                <div class="mt-4 space-y-6">
-                  <p class="text-sm text-gray-600">
-                    The 6-Pack includes two black, two white, and two heather
-                    gray Basic Tees. Sign up for our subscription service and be
-                    the first to get new, exciting colors, like our upcoming
-                    &quot;Charcoal Gray&quot; limited release.
-                  </p>
+                {/* Product details */}
+                <div className="border-t border-gray-200 py-12">
+                  <h2 className="text-lg font-medium text-gray-900 mb-4">Details</h2>
+                  <div className="space-y-3">
+                    {productDetails.dimensions && (
+                      <div className="flex">
+                        <span className="text-sm font-medium text-gray-900 w-24">Dimensions:</span>
+                        <span className="text-sm text-gray-600">{productDetails.dimensions}</span>
+                      </div>
+                    )}
+                    {colorOptions.length > 0 && (
+                      <div className="flex">
+                        <span className="text-sm font-medium text-gray-900 w-24">Colors:</span>
+                        <span className="text-sm text-gray-600">{productDetails.colors}</span>
+                      </div>
+                    )}
+                    {productDetails.decorationMethod && (
+                      <div className="flex">
+                        <span className="text-sm font-medium text-gray-900 w-24">Decoration:</span>
+                        <span className="text-sm text-gray-600">{productDetails.decorationMethod}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

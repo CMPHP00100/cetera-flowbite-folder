@@ -1,3 +1,4 @@
+//redux/rootReducer.js
 import { combineReducers } from "@reduxjs/toolkit";
 import cartReducer from "./slices/cartSlice";
 import uploadReducer from "./slices/uploadSlice"; // Example of another reducer

@@ -1,109 +1,102 @@
+// components/user-sections/login-form.js
 "use client";
 
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import FormPopup from "@/components/animations/form-popup";
+import React, { useState } from 'react';
 
-const LoginForm = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [showTruePopup, setShowTruePopup] = useState(false);
-  const [showFalsePopup, setShowFalsePopup] = useState(false);
+const LoginForm = ({ onLogin }) => {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  /*   const [users, setUsers] = useState([]);
-   */
-  const handleLogin = async (e) => {
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+    // Clear error when user starts typing
+    if (error) setError('');
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError("");
+    setIsLoading(true);
+    setError('');
 
     try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        setShowFalsePopup(true);
-        throw new Error(data.error || "Login failed");
-      }
-
-      // Clear form fields
-      setEmail("");
-      setPassword("");
-
-      if (res.ok) {
-        //Set Popup
-        setShowTruePopup(true);
-      }
-
-      // Redirect after 2 seconds
-      /*  setTimeout(() => {
-        setShowPopup(false);
-        window.location.href = "/"; // Change to your desired page
-      }, 2000); */
+      // Call the parent's login handler
+      await onLogin(formData);
     } catch (error) {
-      setError(error.message);
-      console.error("Error:", error);
-      setResponse({ success: false, error: "Something went wrong" });
+      console.error('Login form error:', error);
+      setError('An unexpected error occurred');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  if (error) return <div>{error}</div>;
-
   return (
-    <div className="container-fluid">
-      <form onSubmit={handleLogin} className="mx-auto max-w-md rounded p-6">
-        {/* <h2 className="mb-4 text-xl font-bold">Login</h2> */}
+    <div className="w-full max-w-md mx-auto mt-4">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {error && (
+          <div className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-3 rounded-lg">
+            {error}
+          </div>
+        )}
 
-        {error && <p className="text-red-500">{error}</p>}
+        <div>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            className="focus:border-cetera-orange mb-3 block w-full rounded-lg border border-white bg-dark-blue p-2.5 text-sm text-white placeholder:text-gray-400"
+            placeholder="Enter your email"
+            disabled={isLoading}
+          />
+        </div>
 
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="focus:border-cetera-orange! mb-3 block w-full rounded-lg border border-white bg-dark-blue p-2.5 text-sm text-white placeholder:text-gray-400"
-        />
-
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="focus:border-cetera-orange! mb-4 block w-full rounded-lg border border-white bg-dark-blue p-2.5 text-sm text-white placeholder:text-gray-400"
-        />
+        <div>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+            className="focus:border-cetera-orange mb-3 block w-full rounded-lg border border-white bg-dark-blue p-2.5 text-sm text-white placeholder:text-gray-400"
+            placeholder="Enter your password"
+            disabled={isLoading}
+          />
+        </div>
 
         <button
           type="submit"
-          disabled={loading}
-          className="!hover:text-cetera-orange w-full rounded-lg bg-cetera-orange py-2.5 text-center text-sm font-medium text-dark-blue hover:border hover:border-cetera-orange hover:bg-dark-blue hover:text-cetera-orange focus:outline-none focus:ring-4"
+          disabled={isLoading || !formData.email || !formData.password}
+          className="w-full rounded-lg bg-cetera-orange py-2.5 text-center text-sm font-medium text-dark-blue hover:border hover:border-cetera-orange hover:bg-dark-blue hover:text-cetera-orange focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? "Logging in..." : "Login"}
+          {isLoading ? (
+            <div className="flex items-center justify-center">
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+              Logging in...
+            </div>
+          ) : (
+            'Login'
+          )}
         </button>
       </form>
-      {showTruePopup && (
-        <FormPopup
-          isVisible={handleLogin}
-          onClose={() => setShowTruePopup(false)}
-          alertMessage={"You're Logged In!"}
-        />
-      )}
-      {showFalsePopup && (
-        <FormPopup
-          isVisible={handleLogin}
-          onClose={() => setShowFalsePopup(false)}
-          alertMessage={"There was an error with your login."}
-        />
-      )}
+
+      {/* Test credentials helper */}
+      <div className="mt-6 p-4 bg-blue-500/20 border border-blue-500 rounded-lg">
+        <h3 className="text-blue-200 font-semibold text-sm mb-2">Test Credentials:</h3>
+        <p className="text-blue-300 text-xs">
+          Use an email and password combination that you registered earlier.
+          If you haven't registered yet, switch to the Register tab first.
+        </p>
+      </div>
     </div>
   );
 };

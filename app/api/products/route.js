@@ -1,57 +1,55 @@
+// app/api/products/route.js
 export async function GET(request) {
   const { SAGE_ACCT_ID, SAGE_LOGIN_ID, SAGE_AUTH_KEY } = process.env;
   const searchParams = new URL(request.url).searchParams;
-  const query = searchParams.get("query") || ""; // Extract query parameter
+  const query = searchParams.get("query") || "";
 
-  const apiUrl = query
-    ? `https://www.promoplace.com/ws/ws.dll/ConnectAPI?search=${query}` // Fetch filtered results
-    : `https://www.promoplace.com/ws/ws.dll/ConnectAPI`; // Fetch all results if no query
+  const apiUrl = "https://www.promoplace.com/ws/ws.dll/ConnectAPI";
 
   const payload = {
-    serviceId: 103,
-    apiVer: 130, // Ensure this matches the SAGE API requirements
+    serviceId: 103, // Service ID for product search
+    apiVer: 130,
     auth: {
       acctId: SAGE_ACCT_ID,
       loginId: SAGE_LOGIN_ID,
-      key: SAGE_AUTH_KEY,
+      key: SAGE_AUTH_KEY
     },
     search: {
-      categories: "Flashlights",
-    },
+      keywords: query,
+      categories: "Flashlights"
+    }
   };
 
   try {
     const response = await fetch(apiUrl, {
-      method: "POST", // Change to POST
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
     });
 
-    if (!response.ok) {
-      throw new Error(`SAGE API Error: ${response.statusText}`);
-    }
+    if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
 
     const data = await response.json();
 
-    // Ensure data.products exists
-    const results = data.products?.length
-      ? data.products.filter(
-          (item) =>
-            item.name?.toLowerCase().includes(query.toLowerCase()) ||
-            item.spc?.toLowerCase().includes(query.toLowerCase()),
-        )
-      : [];
+    // Transform products to include both prodEId and spc
+    const products = data.products?.map(product => ({
+      id: product.prodEid, // Numeric ID for API requests
+      sku: product.spc,    // Alphanumeric SKU for display
+      name: product.name,
+      thumbPic: product.thumbPic,
+      prc: product.prc,
+      // Include other needed fields
+    })) || [];
 
-    return new Response(JSON.stringify(results), {
-      headers: { "Content-Type": "application/json" },
+    return new Response(JSON.stringify(products), {
+      headers: { "Content-Type": "application/json" }
     });
+
   } catch (error) {
-    console.error("Error fetching SAGE data:", error);
-    return new Response(JSON.stringify({ error: "Failed to fetch products" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    console.error("Products API Error:", error);
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
   }
 }

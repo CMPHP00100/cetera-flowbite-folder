@@ -1,3 +1,4 @@
+//app/calendar/page.js
 import CalendarHero from "../../components/calendar-sections/calendar-hero";
 import CalendarApp from "../../components/calendar-sections/calendar";
 
