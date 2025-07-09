@@ -128,7 +128,7 @@ const Cart = ({ onProceedToCheckout }) => {
           <p className="text-muted mb-3">Your cart is empty.</p>
           <button 
             className="btn btn-primary"
-            onClick={() => window.location.href = '/shop'}
+            onClick={() => window.location.href = '/products'}
           >
             Continue Shopping
           </button>

@@ -1,30 +1,54 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FaCartShopping } from "react-icons/fa6";
 import "../custom-styles/navbar.css";
 import { useShoppingCart } from "@/context/CartContext";
-import { IoPersonSharp } from "react-icons/io5";
+import { PiHouseLineLight } from "react-icons/pi";
+import { IoPersonSharp, IoCalendarNumberOutline } from "react-icons/io5";
+import { BsInfoCircle, BsBoxSeam } from "react-icons/bs";
+import { GoFileMedia } from "react-icons/go";
 import { HiMenu, HiX } from "react-icons/hi";
+import { GiVibratingSmartphone } from "react-icons/gi";
+import { IoPersonOutline } from "react-icons/io5";
+
+
+
 import Image from "next/image";
 
 const NAV_ITEMS = [
-  { href: "/", label: "Home" },
-  { href: "/moodboard", label: "Moodboard" },
-  { href: "/product", label: "Products" },
-  { href: "/calendar", label: "Calendar" },
-  { href: "/media", label: "Media Gallery" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
+  { href: "/", label: "Home", className:"mobile-home-nav-item", icon: <PiHouseLineLight className="text-lg mr-0" /> },
+  //{ href: "/moodboard", label: "Moodboard" },
+  { href: "/products", label: "Products", icon: <BsBoxSeam className="text-md mr-0" /> },
+  { href: "/calendar", label: "Calendar", icon: <IoCalendarNumberOutline className="text-md mr-0" /> },
+  { href: "/media", label: "Media Gallery", icon: <GoFileMedia className="text-md mr-0" /> },
+  { href: "/about", label: "About", icon: <BsInfoCircle className="text-md mr-0" /> },
+  { href: "/contact", label: "Contact", icon: <GiVibratingSmartphone className="text-lg mr-0" /> },
 ];
 
 const CustomNav = () => {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    // Set initial state
+    handleResize();
+
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+
+    // Clean up
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const { cart } = useShoppingCart();
-  // Calculate total items in the cart
   const totalItems = Object.values(cart).reduce(
     (sum, product) => sum + product.quantity,
     0,
@@ -36,7 +60,7 @@ const CustomNav = () => {
 
   return (
     <nav className="bg-gray-800">
-      <div className="mx-auto max-w-7xl px-4 py-2 md:px-6 xl:px-8">
+      <div className="mx-auto max-w-7xl px-6 py-2 md:px-6 xl:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Brand/Logo */}
           <div className="flex items-center">
@@ -48,13 +72,13 @@ const CustomNav = () => {
                 width={192}
                 height={96}
               />
-              <span className="self-center whitespace-nowrap text-xl text-white">
+              <span className="hidden md:bock lg:block xl:block self-center whitespace-nowrap text-xl text-white">
                 Cétera Marketing
               </span>
             </Link>
           </div>
 
-          {/* Desktop Navigation Links and Icons - All Right Aligned */}
+          {/* Desktop Navigation Links and Icons */}
           <div className="hidden lg:flex items-center space-x-3">
             {NAV_ITEMS.map(({ href, label }) => {
               const isActive = pathname === href;
@@ -62,7 +86,7 @@ const CustomNav = () => {
                 <Link
                   key={href}
                   href={href}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+                  className={`px-3 py-2 rounded-md text-sm font-small transition-colors duration-200 ${
                     isActive 
                       ? "text-cetera-orange bg-gray-700" 
                       : "text-white hover:text-cetera-orange hover:bg-gray-700"
@@ -80,14 +104,14 @@ const CustomNav = () => {
                 className="text-white hover:text-cetera-orange transition-colors duration-200 p-2"
                 title="Account"
               >
-                <IoPersonSharp className="text-lg" />
+                <IoPersonSharp className="text-lg hover:text-cetera-orange" />
               </Link>
               <Link
                 href="/cart"
                 className="relative text-white hover:text-cetera-orange transition-colors duration-200 p-2"
                 title="Shopping Cart"
               >
-                <FaCartShopping className="text-lg" />
+                <FaCartShopping className="text-lg hover:text-cetera-orange" />
                 {totalItems > 0 && (
                   <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                     {totalItems}
@@ -102,20 +126,20 @@ const CustomNav = () => {
             {/* Mobile Cart Icon */}
             <Link
               href="/cart"
-              className="relative text-white hover:text-cetera-orange transition-colors duration-200 p-2"
+              className="relative text-white hover:text-cetera-orange transition-colors duration-200 py-2 ps-2 pe-1"
             >
-              <FaCartShopping className="text-lg" />
+              <FaCartShopping className="text-lg hover:text-cetera-orange" />
               {totalItems > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                   {totalItems}
                 </span>
               )}
             </Link>
-            
+
             {/* Hamburger Menu Button */}
             <button
               onClick={toggleMobileMenu}
-              className="text-white hover:text-cetera-orange transition-colors duration-200 p-2"
+              className="text-white hover:text-cetera-orange transition-colors duration-200 py-2 ps-3 pe-0 border-l border-gray-600 ml-4"
               aria-label="Toggle mobile menu"
             >
               {isMobileMenuOpen ? <HiX className="text-xl" /> : <HiMenu className="text-xl" />}
@@ -125,37 +149,36 @@ const CustomNav = () => {
       </div>
 
       {/* Mobile Navigation Menu */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gray-700">
-            {NAV_ITEMS.map(({ href, label }) => {
-              const isActive = pathname === href;
-              return (
-                <Link
-                  key={href}
-                  href={href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
-                    isActive 
-                      ? "text-cetera-orange bg-gray-600" 
-                      : "text-white hover:text-cetera-orange hover:bg-gray-600"
-                  }`}
-                >
-                  {label}
-                </Link>
-              );
-            })}
+      <div className={`lg:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`}>
+        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gray-700">
+          {NAV_ITEMS.map(({ href, label, icon, className }) => {
+            const isActive = pathname === href;
+            return (
+              <Link
+                key={href}
+                href={href}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`flex items-center px-3 py-2 rounded-md text-base font-small text-white hover:text-cetera-orange transition-colors duration-200 ${
+                  isActive 
+                    ? "text-cetera-orange bg-gray-600" 
+                    : "text-white hover:text-cetera-orange hover:bg-gray-600"
+                 } ${className || ''}`}
+              >
+                {icon}
+                <span className="px-2">{label}</span>
+              </Link>
+            );
+          })}
+          {/* Account Icon */}
             <Link
               href="/account"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center px-3 py-2 rounded-md text-base font-medium text-white hover:text-cetera-orange hover:bg-gray-600 transition-colors duration-200"
+              className="mobile-account-nav-item flex items-center px-3 py-2 rounded-md text-base font-small transition-colors duration-200 text-white hover:text-cetera-orange hover:bg-gray-600"
             >
-              <IoPersonSharp className="mr-2" />
-              Account
+              <IoPersonOutline className="mr-0 text-lg" /> <span className="px-2">Account</span>
             </Link>
-          </div>
         </div>
-      )}
+      </div>
     </nav>
   );
 };

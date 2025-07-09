@@ -1,4 +1,4 @@
-// components/user-sections/account-tabs.js
+// app/account/page.js
 "use client";
 
 import React, { useState } from "react";
@@ -36,7 +36,7 @@ const AccountTabs = () => {
         setUser(data.user);
         localStorage.setItem('authToken', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
-        console.log(`Welcome back, ${data.user.name}!`);
+        console.log(`Welcome back, ${data.user.name}, ${data.user.id}, ${data.user.created_at}, ${data.user.updated_at}, ${data.user.role}!`);
       } else {
         // Login failed
         alert("Login failed: " + (data.error || 'Unknown error'));
@@ -80,7 +80,8 @@ const AccountTabs = () => {
 
   // Show login/register tabs if not logged in
   return (
-    <div className="mx-auto my-8 w-[1000px] pt-8 bg-dark-blue rounded-lg">
+    <div class="mx-auto my-8 lg:my-8 w-full max-w-[95vw] sm:max-w-[90vw] md:max-w-[800px] lg:max-w-[1000px] px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-6 lg:py-8 bg-dark-blue rounded-lg sm:rounded-xl">
+    {/*<div className="mx-auto my-8 w-[1000px] pt-8 bg-dark-blue rounded-lg">*/}
       {/* Tab Buttons */}
       <div className="flex space-x-4 border-b border-gray-400 pb-4">
         <button
@@ -89,7 +90,7 @@ const AccountTabs = () => {
           }`}
           onClick={() => setActiveTab("login")}
         >
-          <h1 className="text-6xl font-extrabold">Login</h1>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold">Login</h1>
         </button>
         <span className="m-0 text-[3rem] font-thin text-cetera-orange">|</span>
         <button
@@ -98,7 +99,7 @@ const AccountTabs = () => {
           }`}
           onClick={() => setActiveTab("register")}
         >
-          <h1 className="text-6xl font-extrabold">Register</h1>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold">Register</h1>
         </button>
       </div>
 

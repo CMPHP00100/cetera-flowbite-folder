@@ -23,7 +23,7 @@ const ProductCard = ({
               <div className="row">
                 <div className="el-container">
                   <div className="el-wrapper">
-                    <Link href={`/product/${id}`} className="block">
+                    <Link href={`/products/${id}`} className="block">
                       <div className="box-up" onClick={onClick}>
                         <Image className="img" src={image} alt={alt} width={96} height={96} />
                         <div className="img-info">
@@ -44,7 +44,9 @@ const ProductCard = ({
                       </div>
 
                       <a className="cart" href={buttonLink}> {/*</div>onClick={}>*/}
-                        <span className="price">$ {price}</span>
+                        <span className="price">
+                          {price !== undefined && price !== null && price !== '' ? `$${price}` : ''}
+                        </span>
                         <span className="add-to-cart">
                           <span className="txt">{button}</span>
                         </span>

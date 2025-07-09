@@ -1,0 +1,6 @@
+CREATE TABLE profile_views (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  viewed_user_id TEXT NOT NULL,
+  viewer_id TEXT,
+  viewed_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);

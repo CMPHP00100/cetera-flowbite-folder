@@ -37,7 +37,7 @@ const LoginForm = ({ onLogin }) => {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto mt-4">
+    <div className="w-full mx-auto max-w-md rounded p-6">
       <form onSubmit={handleSubmit} className="space-y-6">
         {error && (
           <div className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-3 rounded-lg">

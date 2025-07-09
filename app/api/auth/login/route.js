@@ -32,6 +32,7 @@ export async function POST(request) {
     console.log("Worker response data:", data); // Log worker response data
 
     if (workerResponse.ok) {
+      console.log("Login token:", data.token);                                                                                                                                                     
       return NextResponse.json(data);
     } else {
       return NextResponse.json(

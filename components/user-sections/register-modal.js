@@ -9,6 +9,7 @@ export default function RegisterUser() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
     password: "",
     confirmPassword: "",
     role: "END_USER",
@@ -67,7 +68,7 @@ export default function RegisterUser() {
 
       if (res.ok) {
         setResponse({ success: true, user: data });
-        setFormData({ name: "", email: "", password: "", confirmPassword: "", role: "END_USER" });
+        setFormData({ name: "", email: "", phone: "", password: "", confirmPassword: "", role: "END_USER" });
       } else {
         if (data.error?.includes("UNIQUE constraint failed")) {
           setError("An account with this email already exists.");
@@ -108,6 +109,16 @@ export default function RegisterUser() {
           className="focus:border-cetera-orange mb-3 block w-full rounded-lg border border-white bg-dark-blue p-2.5 text-sm text-white placeholder:text-gray-400"
         />
         <input
+          type="phone"
+          id="phone"
+          name="phone"
+          placeholder="Enter phone..."
+          value={formData.phone}
+          onChange={handleChange}
+          required
+          className="focus:border-cetera-orange mb-3 block w-full rounded-lg border border-white bg-dark-blue p-2.5 text-sm text-white placeholder:text-gray-400"
+        />
+        <input
           type="password"
           id="password"
           name="password"
@@ -136,7 +147,7 @@ export default function RegisterUser() {
           className="focus:border-cetera-orange mb-3 block w-full rounded-lg border border-white bg-dark-blue p-2.5 text-sm text-white"
         >
           <option value="END_USER">End User</option>
-          <option value="ADMIN">Admin</option>
+          <option value="CLIENT_ADMIN">Client Admin</option>
           <option value="GLOBAL_ADMIN">Global Admin</option>
         </select>
 

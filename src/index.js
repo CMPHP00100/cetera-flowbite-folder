@@ -1,9 +1,7 @@
-// src/index.js - Updated Cloudflare Worker
+// src/index.js - Updated Cloudflare Worker with User Stats
 
 // Helper function to get the appropriate database
 function getDatabase(env) {
-  // Use development database for local development
-  // Use production database for deployed worker
   console.log('Available env bindings:', Object.keys(env));
   console.log('DB_DEV available:', !!env.DB_DEV);
   console.log('DB available:', !!env.DB);
@@ -14,7 +12,7 @@ function getDatabase(env) {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
     
     if (request.method === "OPTIONS") {
@@ -27,13 +25,17 @@ export default {
         return handleRegistrationRequest(request, env);
       } else if (url.pathname === "/api/events") {
         return handleCreateEvent(request, env);
+      } else if (url.pathname === "/user/update") {
+        return handleUserUpdate(request, env);
       } else {
         return new Response("Not Found", { status: 404 });
       }
     } else if (request.method === "GET") {
       // Handle GET requests
-      if (url.pathname === "/api/events") {
-        return handleGetEvents(request, env);
+      if (url.pathname === "/user/stats") {
+
+        return handleUserStats(request, env);
+
       } else {
         return new Response("Not Found", { status: 404 });
       }
@@ -49,6 +51,75 @@ export default {
     }
   },
 };
+
+async function handleUserUpdate(request, env) {
+  const authHeader = request.headers.get("Authorization");
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
+  }
+
+  const token = authHeader.slice(7);
+  let userId;
+
+  try {
+    userId = await getUserIdFromToken(token, env);
+  } catch (err) {
+    return new Response(JSON.stringify({ error: "Invalid token" }), {
+      status: 401,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
+  }
+
+  const body = await request.json();
+  const { name, email, phone, role } = body;
+
+  if (!name || !email || !phone || !role) {
+    return new Response(JSON.stringify({ error: "Missing required fields" }), {
+      status: 400,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
+  }
+
+  try {
+    await env.DB.prepare(`
+      UPDATE users
+      SET name = ?, email = ?, phone = ?, role = ?, updated_at = datetime('now')
+      WHERE id = ?
+    `).bind(name, email, phone, role, userId).run();
+
+    return new Response(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
+  } catch (err) {
+    console.error("Failed to update user:", err);
+    console.error("Failed to update user backup:", err.message, err.stack);
+    return new Response(JSON.stringify({ error: "Failed to update user" }), {
+      status: 500,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
+  }
+}
+
 
 function handleOptionsRequest() {
   return new Response(null, {
@@ -79,10 +150,135 @@ async function initializeDatabase(env) {
       )
     `).run();
     
-    console.log('Events table initialized successfully');
+    // Create user_sessions table for tracking logins
+    await db.prepare(`
+      CREATE TABLE IF NOT EXISTS user_sessions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        login_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+        token TEXT,
+        FOREIGN KEY (user_id) REFERENCES users(id)
+      )
+    `).run();
+    
+    console.log('Database tables initialized successfully');
   } catch (error) {
     console.error('Database initialization error:', error);
     throw error;
+  }
+}
+
+// Helper function to verify token and get user
+function verifyToken(token) {
+  try {
+    // Your current token is base64 encoded user data
+    const userData = JSON.parse(atob(token));
+    return userData;
+  } catch (error) {
+    console.error('Token verification failed:', error);
+    return null;
+  }
+}
+
+// NEW: Handle user stats endpoint
+async function handleUserStats(request, env) {
+  const authHeader = request.headers.get("authorization");
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { 
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*"
+      },
+    });
+  }
+
+  const token = authHeader.slice(7);
+  let userId;
+
+  try {
+    // Replace with your actual token logic
+    userId = await getUserIdFromToken(token, env);
+  } catch (err) {
+    return new Response(JSON.stringify({ error: "Invalid token" }), {
+      status: 401,
+      headers: { 
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*"
+      },
+    });
+  }
+
+  try {
+    console.log("Stats lookup for userId:", userId);
+    
+    const result = await env.DB.prepare(`
+      SELECT 
+        name,
+        login_count AS loginCount,
+        last_login AS lastLogin,
+        created_at AS memberSince,
+        (SELECT COUNT(*) FROM profile_views WHERE viewed_user_id = ?) AS profileViews
+      FROM users 
+      WHERE id = ?
+    `).bind(userId, userId).first();
+
+    console.log("Stats DB result:", result);
+
+    if (!result) {
+      return new Response(JSON.stringify({ error: "User not found" }), {
+        status: 404,
+        headers: { 
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*"
+        },
+      });
+    }
+
+    return new Response(JSON.stringify({
+      loginCount: result.loginCount || 0,
+      lastLogin: result.lastLogin || null,
+      memberSince: result.memberSince || null,
+      profileViews: result.profileViews || 0,
+      name: result.name || null
+    }), {
+      status: 200,
+      headers: { 
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*"
+      },
+    });
+  } catch (err) {
+    console.error("Worker DB error:", err);
+    return new Response(JSON.stringify({ error: "Failed to fetch stats" }), {
+      status: 500,
+      headers: { 
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*"
+      },
+    });
+  }
+}
+
+// Placeholder - update with real logic
+async function getUserIdFromToken(token, env) {
+  try {
+    const userData = JSON.parse(atob(token));
+
+    // Optional: validate against DB that session is legit
+    const session = await env.DB.prepare(`
+      SELECT user_id FROM user_sessions WHERE token = ?
+    `).bind(token).first();
+
+    if (!session || session.user_id !== userData.id) {
+      throw new Error("Invalid session");
+    }
+
+    return userData.id;
+  } catch (err) {
+    console.error("Failed to decode token or validate session:", err);
+    throw new Error("Invalid token");
   }
 }
 
@@ -90,9 +286,9 @@ async function initializeDatabase(env) {
 async function handleRegistrationRequest(request, env) {
   try {
     const body = await request.json();
-    const { name, email, password, role } = body;
+    const { name, email, phone, password, role } = body;
 
-    if (!name || !email || !password || !role) {
+    if (!name || !email || !phone || !password || !role) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), {
         status: 400,
         headers: {
@@ -102,8 +298,8 @@ async function handleRegistrationRequest(request, env) {
       });
     }
 
-    const sql = `INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)`;
-    const result = await env.DB.prepare(sql).bind(name, email, password, role).run();
+    const sql = `INSERT INTO users (name, email, phone, password, role) VALUES (?, ?, ?, ?)`;
+    const result = await env.DB.prepare(sql).bind(name, email, phone, password, role).run();
 
     return new Response(
       JSON.stringify({ success: true, id: result.meta.last_row_id }),
@@ -126,7 +322,7 @@ async function handleRegistrationRequest(request, env) {
   }
 }
 
-// Login handler (using production DB for users)
+// Login handler (using production DB for users) - UPDATED to track sessions
 async function handleLoginRequest(request, env) {
   try {
     const body = await request.json();
@@ -169,14 +365,41 @@ async function handleLoginRequest(request, env) {
       id: result.id,
       name: result.name,
       email: result.email,
+      phone: result.phone,
       role: result.role
     };
+
+    const token = btoa(JSON.stringify(userData));
+    //const token = Buffer.from(JSON.stringify(userData)).toString('base64');
+    console.log("Your token is:", token);
+    // Initialize database tables first
+    await initializeDatabase(env);
+
+    // Track this login session
+    try {
+      await env.DB.prepare(`
+        INSERT INTO user_sessions (user_id, token) VALUES (?, ?)
+      `).bind(result.id, token).run();
+
+      // Update user's last login time
+      await env.DB.prepare(`
+        UPDATE users 
+        SET 
+          last_login = datetime('now'),
+          login_count = COALESCE(login_count, 0) + 1,
+          updated_at = datetime('now')
+        WHERE id = ?
+      `).bind(result.id).run();
+    } catch (sessionError) {
+      console.error('Error tracking login session:', sessionError);
+      // Don't fail the login if session tracking fails
+    }
 
     return new Response(
       JSON.stringify({ 
         success: true, 
         user: userData,
-        token: btoa(JSON.stringify(userData))
+        token: token
       }),
       {
         status: 200,

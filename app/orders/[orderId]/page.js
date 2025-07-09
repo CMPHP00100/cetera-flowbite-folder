@@ -188,7 +188,7 @@ export default function OrderDetails() {
             </div>
           </div>
 
-          <Link href="/shop" className="btn btn-primary w-100">
+          <Link href="/products" className="btn btn-primary w-100">
             Continue Shopping
           </Link>
         </div>
