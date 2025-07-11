@@ -12,7 +12,7 @@ export default function RegisterUser() {
     phone: "",
     password: "",
     confirmPassword: "",
-    role: "END_USER",
+    //role: "END_USER",
   });
   const [response, setResponse] = useState(null);
   const [error, setError] = useState("");
@@ -139,7 +139,7 @@ export default function RegisterUser() {
           className="focus:border-cetera-orange mb-3 block w-full rounded-lg border border-white bg-dark-blue p-2.5 text-sm text-white placeholder:text-gray-400"
         />
 
-        <select
+        {/*<select
           id="role"
           name="role"
           value={formData.role}
@@ -149,7 +149,7 @@ export default function RegisterUser() {
           <option value="END_USER">End User</option>
           <option value="CLIENT_ADMIN">Client Admin</option>
           <option value="GLOBAL_ADMIN">Global Admin</option>
-        </select>
+        </select>*/}
 
         {error && <p className="text-red-500 mb-3 text-sm">{error}</p>}
 

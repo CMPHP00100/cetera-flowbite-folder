@@ -3,6 +3,7 @@ import React, { useState, useCallback } from "react";
 //import MediaUpload from "../../components/media-sections/media-upload";
 import { FileUploader } from "../../components/media-sections/media-upload";
 import { ImageGallery } from "../../components/media-sections/media-fetch";
+import CSVuploader from "@/components/shop-sections/csv-uploader";
 //import ImageGallery from "../../components/image-gallery";
 import "../../components/custom-styles/media.css";
 import { IoRefresh } from "react-icons/io5";
@@ -38,7 +39,7 @@ const MediaGallery = () => {
           <FileUploader onUploadSuccess={triggerRefresh} />
 
           <button
-            className="btn btn-primary refresh-btn mt-4 rounded-md border-2 border-cetera-blue bg-none text-cetera-blue hover:bg-cetera-blue hover:text-white"
+            className="btn btn-primary refresh-btn mt-4 rounded-md border-2 border-cetera-gray bg-cetera-gray text-white hover:border-cetera-orange hover:bg-cetera-orange hover:text-white"
             type="submit"
             onClick={triggerRefresh}
           >
@@ -49,6 +50,13 @@ const MediaGallery = () => {
 
           <ImageGallery refresh={refresh} />
         </div>
+      </div>
+
+      <div className="my-8 border-t-2">
+        <h1 className="mt-4 mb-2 max-w-2xl px-4 py-2 text-4xl font-extrabold leading-none tracking-tight text-gray-800 underline decoration-cetera-orange md:text-5xl xl:text-6xl">
+          CSV Uploader
+        </h1>
+        <CSVuploader />
       </div>
     </div>
   );

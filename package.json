@@ -66,6 +66,7 @@
     "next-auth": "^4.24.11",
     "next-cloudinary": "^6.16.0",
     "nextjs": "^0.0.3",
+    "papaparse": "^5.5.3",
     "pg": "^8.16.0",
     "postcss": "^8.5.3",
     "postcss-loader": "^8.1.1",
