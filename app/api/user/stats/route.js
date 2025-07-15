@@ -1,4 +1,6 @@
 // app/api/user/stats/route.js
+import { db } from '@/lib/db';
+
 export async function GET(request, { env }) {
   try {
     const authHeader = request.headers.get("Authorization");
@@ -7,12 +9,15 @@ export async function GET(request, { env }) {
     }
 
     const token = authHeader.slice(7);
-    const sessionResult = await env.DB.prepare(`
+    const sessionResult = await db
+    .prepare(`
       SELECT users.id, users.created_at, users.login_count, users.last_login
       FROM user_sessions 
       JOIN users ON user_sessions.user_id = users.id
       WHERE user_sessions.token = ?
-    `).bind(token).first();
+    `)
+    .bind(token)
+    .first();
 
     if (!sessionResult) {
       return new Response(JSON.stringify({ error: "Invalid session or token" }), { status: 401 });

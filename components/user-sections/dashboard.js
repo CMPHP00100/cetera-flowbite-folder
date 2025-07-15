@@ -22,7 +22,7 @@ import {
   WifiOff
 } from 'lucide-react';
 
-const Dashboard = ({ user, onLogout, onUserUpdate }) => {
+const Dashboard = ({ user = null, onLogout, onUserUpdate }) => {
   const [activeSection, setActiveSection] = useState('overview');
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState(user || {});
@@ -42,6 +42,18 @@ const Dashboard = ({ user, onLogout, onUserUpdate }) => {
   // Refs for cleanup
   const intervalRef = useRef(null);
   const retryTimeoutRef = useRef(null);
+
+  // Early return if essential props are missing
+  if (!onLogout || !onUserUpdate) {
+    return (
+      <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-500 mb-4">Configuration Error</h2>
+          <p className="text-gray-300">Dashboard is missing required props.</p>
+        </div>
+      </div>
+    );
+  }
 
   const fetchUserStats = async (showLoading = true) => {
     try {
@@ -150,6 +162,13 @@ const Dashboard = ({ user, onLogout, onUserUpdate }) => {
     };
   }, []);
 
+  // Update editedUser when user prop changes
+  useEffect(() => {
+    if (user) {
+      setEditedUser(user);
+    }
+  }, [user]);
+
   const handleManualRefresh = () => {
     fetchUserStats(true);
   };
@@ -229,9 +248,9 @@ const Dashboard = ({ user, onLogout, onUserUpdate }) => {
     { id: 'settings', label: 'Settings', icon: Settings }
   ];
   
-  useEffect(() => {
+  /*useEffect(() => {
     setEditedUser(user || {});
-  }, [user]);
+  }, [user]);*/
 
   const handleInputChange = (field, value) => {
     setEditedUser(prev => ({
@@ -274,16 +293,21 @@ const Dashboard = ({ user, onLogout, onUserUpdate }) => {
         throw new Error(result.error || 'Profile update failed');
       }
 
-      setIsEditing(false);
-
-      // Inform parent about the updated user
-      onUserUpdate({
-        ...user,
+      // Create the updated user object
+      const updatedUser = {
+        ...(user || {}),
         name: editedUser.name,
         email: editedUser.email,
         phone: editedUser.phone,
         role: editedUser.role
-      });
+      };
+
+      setEditedUser(updatedUser);
+
+      setIsEditing(false);
+
+      // Inform parent about the updated user
+      onUserUpdate(updatedUser);
 
       await fetchUserStats(false);
 
@@ -305,6 +329,18 @@ const Dashboard = ({ user, onLogout, onUserUpdate }) => {
     setIsEditing(false);
     setEditedUser(user || {});
   };
+
+  // Show loading state if user is not available yet
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
+        <div className="text-center">
+          <RefreshCw className="h-8 w-8 text-orange-500 animate-spin mx-auto mb-4" />
+          <p className="text-gray-300">Loading user data...</p>
+        </div>
+      </div>
+    );
+  }
 
   const renderOverview = () => {
     return (

@@ -54,6 +54,13 @@ const AccountTabs = () => {
     setActiveTab("login"); // Reset to login tab
   };
 
+  // Handle user updates
+  const handleUserUpdate = (updatedUser) => {
+    setUser(updatedUser);
+    // Optionally save to localStorage or sync with server
+    console.log('User updated:', updatedUser);
+  };
+
   const handleRegistration = (userData) => {
     console.log('Registration successful:', userData);
     setActiveTab("login");
@@ -75,7 +82,7 @@ const AccountTabs = () => {
 
   // If user is logged in, show full dashboard
   if (user) {
-    return <Dashboard user={user} onLogout={handleLogout} />;
+    return <Dashboard user={user} onLogout={handleLogout} onUserUpdate={handleUserUpdate} />;
   }
 
   // Show login/register tabs if not logged in
