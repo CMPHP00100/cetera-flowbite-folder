@@ -25,13 +25,13 @@
       "@/components/*": ["components/*"]
     },
     "target": "ES2017",
-    "types": ["node", "estree", "@prisma/client", "@reduxjs/toolkit", "@types/react-redux"] // Add this line to explicitly include estree type definitions
+    "types": ["node", "estree", "@reduxjs/toolkit", "@types/react-redux"] // Add this line to explicitly include estree type definitions
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-  ],
+, "app/api/auth/[...nextauth]/route.js", "app/api/auth/[...nextauth]/route.js"  ],
   "exclude": ["node_modules"]
 }

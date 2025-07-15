@@ -1,6 +1,6 @@
 // app/api/user/stats/route.js
 
-export async function GET(request, { env }) {
+export async function GET(request) {
   try {
     const authHeader = request.headers.get("Authorization");
     if (!authHeader || !authHeader.startsWith("Bearer ")) {

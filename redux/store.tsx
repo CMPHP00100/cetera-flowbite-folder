@@ -1,19 +1,26 @@
-//redux/store.tsx
+// redux/store.tsx
 import { makeStore } from "./makeStore.js";
 import { Store } from "@reduxjs/toolkit";
-import { Persistor } from "redux-persist";
 
-let store: Store;
-let persistor: Persistor | undefined;
+// Always create store without persistence initially
+export const store = makeStore(false);
 
-if (typeof window !== "undefined") {
-  // Client-side: Use Redux Persist
-  const { persistStore } = require("redux-persist");
-  store = makeStore(true); // Enable persistence
-  persistor = persistStore(store);
-} else {
-  // Server-side: No Redux Persist
-  store = makeStore(false); // Disable persistence
-}
+// Client-side store with persistence
+let clientStore: Store | undefined;
+let persistor: any;
 
-export { store, persistor };
+export const getClientStore = async () => {
+  if (typeof window === "undefined") {
+    return store;
+  }
+
+  if (!clientStore) {
+    const { persistStore } = await import("redux-persist");
+    clientStore = makeStore(true);
+    persistor = persistStore(clientStore);
+  }
+
+  return clientStore;
+};
+
+export const getPersistor = () => persistor;

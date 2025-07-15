@@ -2,40 +2,32 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-//export const authOptions = {
 const authOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        username: { label: "Username", type: "text", placeholder: "Username" },
+        username: { label: "Username", type: "text", placeholder: "Username main man" },
         password: { label: "Password", type: "password", placeholder: "Password" },
       },
       async authorize(credentials) {
-        try {
-          // Use the full URL for server-side fetch
-          //const res = await fetch("http://localhost:3000/api/auth/login", {
-          const res = await fetch(`${process.env.NEXTAUTH_URL}/api/auth/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(credentials),
-          });
-
-          const user = await res.json();
-
-          if (res.ok && user) {
-            return user; // User is authenticated
-          }
-          return null; // Invalid credentials
-        } catch (error) {
-          console.error("Error in authorize function:", error);
-          return null; // Handle error gracefully
+        // Mock authentication for now
+        console.log("Authorize called with:", credentials);
+        
+        if (credentials?.username && credentials?.password) {
+          return {
+            id: "1",
+            username: credentials.username,
+            email: `${credentials.username}@example.com`,
+          };
         }
+        
+        return null;
       },
     }),
   ],
   pages: {
-    signIn: "/account", // Set this to your account/login page
+    signIn: "/account",
   },
   session: {
     strategy: "jwt",
@@ -44,16 +36,28 @@ const authOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.username = user.username;
       }
       return token;
     },
     async session({ session, token }) {
-      session.user.id = token.id;
+      if (token) {
+        session.user.id = token.id;
+        session.user.username = token.username;
+      }
       return session;
     },
   },
 };
 
-const handler = NextAuth(authOptions);
+// Create the NextAuth handler
+const nextAuthHandler = NextAuth(authOptions);
 
-export { handler as GET, handler as POST };
+// Create wrapper functions that satisfy Next.js 15's type requirements
+export async function GET(request, context) {
+  return nextAuthHandler(request, context);
+}
+
+export async function POST(request, context) {
+  return nextAuthHandler(request, context);
+}

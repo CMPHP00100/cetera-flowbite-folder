@@ -1,11 +1,12 @@
 // app/account/error/page.js
 'use client';
 
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import { signIn } from 'next-auth/react';
 
-export default function AuthErrorPage() {
+function ErrorContent() {
   const params = useSearchParams();
   const error = params.get('error');
 
@@ -39,5 +40,17 @@ export default function AuthErrorPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function AuthErrorPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <div className="text-white">Loading...</div>
+      </div>
+    }>
+      <ErrorContent />
+    </Suspense>
   );
 }
