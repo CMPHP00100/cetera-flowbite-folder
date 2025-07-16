@@ -9,7 +9,7 @@ import "@uppy/dashboard/dist/style.min.css";
 import "../custom-styles/media.css"; // Your custom CSS file
 
 export async function getUploadParameters(file) {
-  const response = await fetch("/api/upload", {
+  const response = await fetch("/api/mediaUploader", {
     method: "POST",
     headers: {
       accept: "application/json",

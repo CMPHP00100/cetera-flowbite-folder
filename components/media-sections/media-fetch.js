@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 
 export async function fetchR2Images() {
-  const response = await fetch("/api/download", {
+  const response = await fetch("/api/mediaDownloader", {
     method: "GET",
     headers: {
       Accept: "application/json",
