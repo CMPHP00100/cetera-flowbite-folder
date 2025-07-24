@@ -59,22 +59,23 @@ const CustomNav = () => {
   };
 
   return (
-    <nav className="bg-gray-800">
-      <div className="mx-auto max-w-7xl px-6 py-2 md:px-6 xl:px-8">
+    <nav className="bg-cetera-dark-blue">
+      {/*<div className="mx-auto max-w-7xl py-2 md:px-6 l:px-10">*/}
+      <div className="mx-auto px-6 md:ps-8 md:pe-[6rem] max-w-8xl py-2">
         <div className="flex h-16 items-center justify-between">
           {/* Brand/Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center">
               <Image
-                src="/assets/logos/CM_logo_Orange.svg"
+                src="/assets/logos/CM_logo_MonoOrange.svg"
                 className="h-6 sm:h-9 mr-3 w-20"
                 alt="Cétera Marketing"
                 width={192}
                 height={96}
               />
-              <span className="hidden md:bock lg:block xl:block self-center whitespace-nowrap text-xl text-white">
+              {/*<span className="hidden md:bock lg:block xl:block self-center whitespace-nowrap text-xl text-white">
                 Cétera Marketing
-              </span>
+              </span>*/}
             </Link>
           </div>
 
@@ -86,10 +87,10 @@ const CustomNav = () => {
                 <Link
                   key={href}
                   href={href}
-                  className={`px-3 py-2 rounded-md text-sm font-small transition-colors duration-200 ${
+                  className={`px-2 py-2 text-[15px] font-small transition-colors duration-200 ${
                     isActive 
-                      ? "text-cetera-orange bg-gray-700" 
-                      : "text-white hover:text-cetera-orange hover:bg-gray-700"
+                      ? "text-cetera-mono-orange hover:text-cetera-light-gray hover:transition-transform hover:duration-200" 
+                      : "text-cetera-light-gray hover:text-cetera-mono-orange"
                   }`}
                 >
                   {label}
@@ -98,22 +99,22 @@ const CustomNav = () => {
             })}
             
             {/* Account and Cart Icons */}
-            <div className="flex items-center space-x-2 ml-4 border-l border-gray-600 pl-4">
+            <div className="flex items-center space-x-2 ml-4 border-l border-cetera-mono-orange pl-4">
               <Link 
                 href="/account" 
-                className="text-white hover:text-cetera-orange transition-colors duration-200 p-2"
+                className="text-cetera-light-gray hover:text-cetera-mono-orange transition-colors duration-200 p-2"
                 title="Account"
               >
-                <IoPersonSharp className="text-lg hover:text-cetera-orange" />
+                <IoPersonSharp className="text-lg hover:text-cetera-mono-orange" />
               </Link>
               <Link
                 href="/cart"
-                className="relative text-white hover:text-cetera-orange transition-colors duration-200 p-2"
+                className="relative text-cetera-light-gray hover:text-cetera-mono-orange transition-colors duration-200 p-2"
                 title="Shopping Cart"
               >
-                <FaCartShopping className="text-lg hover:text-cetera-orange" />
+                <FaCartShopping className="text-lg hover:text-cetera-mono-orange" />
                 {totalItems > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-cetera-dark-blue text-xs rounded-full h-5 w-5 flex items-center justify-center">
                     {totalItems}
                   </span>
                 )}
@@ -126,9 +127,9 @@ const CustomNav = () => {
             {/* Mobile Cart Icon */}
             <Link
               href="/cart"
-              className="relative text-white hover:text-cetera-orange transition-colors duration-200 py-2 ps-2 pe-1"
+              className="relative text-white hover:text-cetera-mono-orange transition-colors duration-200 py-2 ps-2 pe-1"
             >
-              <FaCartShopping className="text-lg hover:text-cetera-orange" />
+              <FaCartShopping className="text-lg hover:text-cetera-mono-orange" />
               {totalItems > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                   {totalItems}
@@ -139,7 +140,7 @@ const CustomNav = () => {
             {/* Hamburger Menu Button */}
             <button
               onClick={toggleMobileMenu}
-              className="text-white hover:text-cetera-orange transition-colors duration-200 py-2 ps-3 pe-0 border-l border-gray-600 ml-4"
+              className="text-white hover:text-cetera-mono-orange transition-colors duration-200 py-2 ps-3 pe-0 border-l border-mono-cetera-orange ml-4"
               aria-label="Toggle mobile menu"
             >
               {isMobileMenuOpen ? <HiX className="text-xl" /> : <HiMenu className="text-xl" />}
@@ -150,7 +151,7 @@ const CustomNav = () => {
 
       {/* Mobile Navigation Menu */}
       <div className={`lg:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`}>
-        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gray-700">
+        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-light-gray">
           {NAV_ITEMS.map(({ href, label, icon, className }) => {
             const isActive = pathname === href;
             return (
@@ -158,10 +159,10 @@ const CustomNav = () => {
                 key={href}
                 href={href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`flex items-center px-3 py-2 rounded-md text-base font-small text-white hover:text-cetera-orange transition-colors duration-200 ${
+                className={`flex items-center px-3 py-2 rounded-md text-base font-small text-cetera-dark-blue hover:text-cetera-mono-orange transition-colors duration-200 ${
                   isActive 
-                    ? "text-cetera-orange bg-gray-600" 
-                    : "text-white hover:text-cetera-orange hover:bg-gray-600"
+                    ? "text-cetera-mono-orange" 
+                    : "text-cetera-dark-blue hover:text-cetera-mono-orange"
                  } ${className || ''}`}
               >
                 {icon}
@@ -173,7 +174,7 @@ const CustomNav = () => {
             <Link
               href="/account"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="mobile-account-nav-item flex items-center px-3 py-2 rounded-md text-base font-small transition-colors duration-200 text-white hover:text-cetera-orange hover:bg-gray-600"
+              className="mobile-account-nav-item flex items-center px-3 py-2 rounded-md text-base font-small transition-colors duration-200 text-cetera-dark-blue hover:text-cetera-mono-orange"
             >
               <IoPersonOutline className="mr-0 text-lg" /> <span className="px-2">Account</span>
             </Link>

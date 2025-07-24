@@ -19,11 +19,11 @@ const CartSection = ({
     <>
       <div className="d-flex justify-content-between align-items-center cart-container w-100 line-item flex-wrap p-0 text-center">
         {/* Product Image */}
-        <div className="col-12 col-md-3 d-flex justify-content-center">
+        <div className="col-12 col-md-3 d-flex justify-content-center mx-auto">
           <Image
             src={image}
             className="img-fluid rounded-3"
-            alt="Cotton T-shirt"
+            alt={title}
           />
         </div>
 

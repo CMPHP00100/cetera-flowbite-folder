@@ -6,6 +6,7 @@ const nextConfig = {
       "flowbite.s3.amazonaws.com",
       "pub-36707eda14a84a53a3f02a5252326351.r2.dev",
       "www.promoplace.com",
+      'images.unsplash.com',
     ],
     remotePatterns: [
       {

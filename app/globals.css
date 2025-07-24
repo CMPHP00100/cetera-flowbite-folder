@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 /*.react-calendar {
   width: 100% !important;
   border: none !important;
@@ -60,4 +61,8 @@ nav .mobile-home-nav-item {
 
 nav .mobile-account-nav-item {
   box-shadow: 14px 31px 15px 20px rgba(0, 0, 0, 0.1);
+}
+
+p, span, a {
+  font-family: "Josefin Sans";
 }

@@ -7,6 +7,7 @@ import { CartProvider } from "@/context/CartContext.js";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useEffect, useState } from "react";
+//import RocketShip from "@/components/animations/rocket-ship.js"
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);

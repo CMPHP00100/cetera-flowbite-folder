@@ -102,7 +102,7 @@ const Cart = ({ onProceedToCheckout }) => {
   };
 
   return (
-    <div className="container py-4">
+    <div className="container-fluid py-4 max-w-6xl">
       {/* Cart Header with Clear Button */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2 className="mb-0">Shopping Cart ({getCartItemCount()} items)</h2>

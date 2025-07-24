@@ -2,11 +2,11 @@
   color: #fff;
 }
 .cart-icon:hover {
-  color: #f85f14;
+  color: #F27830;
 }
 a:hover,
 a:focus,
 .cart-icon:active,
 .cart-icon:focus {
-  color: #f85f14;
+  color: #F27830;
 }

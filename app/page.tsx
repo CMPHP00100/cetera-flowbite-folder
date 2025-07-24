@@ -7,16 +7,20 @@
 //import Cart from "@/components/shop-sections/cart";
 //import { CartProvider } from "@/context/CartContext";
 //import { BannerSlider } from "@/components/page-sections/banner-carousel.js";
-import CtaLeft from "@/components/page-sections/cta-left.js";
-import FadeInSection from "@/components/animations/fadein-animation.js";
-import ScrollingBannerPage from "@/components/animations/scrolling-banner-page.js";
+//import CtaLeft from "@/components/page-sections/cta-left.js";
+//import FadeInSection from "@/components/animations/fadein-animation.js";
+import HomeBanner from "@/components/page-sections/home-banner.js";
+import FeaturedProducts from "@/components/page-sections/featured-products.js";
+import CategoryProducts from "@/components/page-sections/category-products.js";
+
+//import ScrollingBannerPage from "@/components/animations/scrolling-banner-page.js";
 //import TypedText from "@/components/animations/typed-text.js";
 //import ProductSlider from "@/components/page-sections/product-carousel.js";
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-gray-900 p-10">
-        <ScrollingBannerPage />
+    <div className="min-h-screen bg-cetera-light-gray">
+        {/*<ScrollingBannerPage />*/}
 
       {/*<BannerSlider
         CustomComponent={
@@ -31,10 +35,16 @@ export default function App() {
           />
         }
       />*/}
-      {/*<FadeInSection>
+      {/*
+        <FadeInSection>
         <ProductSlider />
-      </FadeInSection>*/}
-      <CtaLeft />
+        </FadeInSection>
+        <CtaLeft />
+      */}
+      <HomeBanner />
+      <FeaturedProducts />
+      <CategoryProducts />
+      
     </div>
   );
 }

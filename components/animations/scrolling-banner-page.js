@@ -199,14 +199,14 @@ export default function ScrollingBannerPage() {
         >
           <div className="max-w-4xl">
             <motion.h2 
-              className="text-5xl font-bold text-indigo-800 mb-6"
+              className="text-3xl md:text-4xl xl:text-5xl font-bold text-indigo-800 mb-6"
               variants={textVariants}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               Directional Effects
             </motion.h2>
             <motion.p 
-              className="text-xl text-indigo-600 leading-relaxed mb-8"
+              className="text-md md:text-l xl:text-xl text-indigo-600 leading-relaxed mb-8"
               variants={textVariants}
               transition={{ duration: 0.6, delay: 0.3 }}
             >

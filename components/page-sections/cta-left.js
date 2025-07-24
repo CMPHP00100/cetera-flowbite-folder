@@ -3,7 +3,7 @@ import Image from "next/image";
 export default function CtaLeft({}) {
   return (
     <div>
-      <section className="bg-light-gray mt-[2.5rem] rounded-3xl">
+      <section className="bg-gray-900 mt-[2.5rem]">
         <div className="mx-auto max-w-screen-xl items-center gap-8 px-4 py-8 sm:py-16 md:grid md:grid-cols-2 lg:px-6 xl:gap-16">
           <Image
             className="w-full dark:hidden"
@@ -31,7 +31,7 @@ export default function CtaLeft({}) {
             </p>
             <a
               href="#"
-              className="inline-flex items-center rounded-lg bg-cetera-peach px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-cetera-mono-orange focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900"
+              className="inline-flex items-center rounded-lg bg-cetera-orange px-5 py-2.5 text-center text-sm font-medium text-white"
             >
               Get started
               <svg

@@ -39,11 +39,11 @@ const MediaGallery = () => {
           <FileUploader onUploadSuccess={triggerRefresh} />
 
           <button
-            className="btn btn-primary refresh-btn mt-4 rounded-md border-2 border-cetera-gray bg-cetera-gray text-white hover:border-cetera-orange hover:bg-cetera-orange hover:text-white"
+            className="btn refresh-btn mt-4 rounded-md border-2 border-cetera-gray bg-gray-800 text-white hover:border-cetera-orange hover:bg-cetera-orange hover:text-white"
             type="submit"
             onClick={triggerRefresh}
           >
-            <span className="inline-flex whitespace-break-spaces p-1">
+            <span className="inline-flex whitespace-break-spaces b p-1">
               <IoRefresh className="mt-1" /> Refresh
             </span>
           </button>
@@ -52,8 +52,8 @@ const MediaGallery = () => {
         </div>
       </div>
 
-      <div className="my-8 border-t-2">
-        <h1 className="mt-4 mb-2 max-w-2xl px-4 py-2 text-4xl font-extrabold leading-none tracking-tight text-gray-800 underline decoration-cetera-orange md:text-5xl xl:text-6xl">
+      <div className="my-8 bg-gray-900 pb-8 p-4">
+        <h1 className="w-full p-4 text-4xl font-extrabold text-center leading-none tracking-tight text-gray-100 underline decoration-cetera-orange md:text-5xl xl:text-6xl">
           CSV Uploader
         </h1>
         <CSVuploader />
