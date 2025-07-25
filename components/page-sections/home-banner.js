@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { PiLightbulbFilamentThin } from "react-icons/pi";
 
 export default function HomeBanner() {
   const [isVisible, setIsVisible] = useState(false);
@@ -99,11 +100,11 @@ export default function HomeBanner() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.8, duration: 0.6 }}
-          className="text-center text-sm sm:text-base md:text-lg lg:text-xl mt-6 font-light tracking-wide font-cetera-josefin text-cetera-light-gray px-2"
+          className="flex items-center justify-center gap-2 text-center text-sm sm:text-base md:text-lg lg:text-xl mt-6 font-light tracking-wide font-cetera-josefin text-cetera-light-gray px-2"
         >
-          Your Ultimate Gifting Destination
-        </motion.p>
+          We Spark Ideas <PiLightbulbFilamentThin className="w-7 h-7 text-cetera-mono-orange text-3xl ms-[-5px] mt-[-12px]"/>
 
+        </motion.p>
         {/* Floating particles */}
         {[...Array(6)].map((_, i) => (
           <motion.div

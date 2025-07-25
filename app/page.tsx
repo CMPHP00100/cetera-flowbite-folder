@@ -12,7 +12,8 @@
 import HomeBanner from "@/components/page-sections/home-banner.js";
 import FeaturedProducts from "@/components/page-sections/featured-products.js";
 import CategoryProducts from "@/components/page-sections/category-products.js";
-
+import ContactForm from "@/components/page-sections/contact-form.js";
+import ScrollToTop from "@/components/animations/scroll-to-top.js";
 //import ScrollingBannerPage from "@/components/animations/scrolling-banner-page.js";
 //import TypedText from "@/components/animations/typed-text.js";
 //import ProductSlider from "@/components/page-sections/product-carousel.js";
@@ -44,7 +45,8 @@ export default function App() {
       <HomeBanner />
       <FeaturedProducts />
       <CategoryProducts />
-      
+      <ContactForm />
+      <ScrollToTop />
     </div>
   );
 }

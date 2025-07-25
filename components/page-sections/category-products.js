@@ -279,10 +279,10 @@ const CategoryProducts = () => {
 
   // Animation variants
   const cardVariants = {
-    hidden: { opacity: 0, y: 60, scale: 0.8 },
+    hidden: { opacity: 0, y: 40, scale: 0.8 },
     visible: (index) => ({
       opacity: 1, y: 0, scale: 1,
-      transition: { duration: 0.8, delay: index * 0.15, ease: [0.25, 0.46, 0.45, 0.94] }
+      transition: { duration: 0.4, delay: index * 0.10, ease: [0.25, 0.46, 0.45, 0.94] }
     })
   };
 
@@ -662,7 +662,7 @@ const CategoryProducts = () => {
         </motion.div>
 
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4"
           variants={containerVariants}
           initial="hidden"
           animate="visible"

@@ -2,7 +2,8 @@
 
 import HeroSection from "@/components/page-sections/hero";
 //import GetUsers from "@/components/user-sections/get-users";
-import D1Products from "@/components/shop-sections/d1-products";
+//import D1Products from "@/components/shop-sections/d1-products";
+import ContactForm from "@/components/page-sections/contact-form.js";
 
 export default function Contact() {
   return (
@@ -16,7 +17,8 @@ export default function Contact() {
         heroAlt="Contact Page Alt Text"
       />
       {/*<GetUsers />*/}
-      <D1Products />
+      {/*<D1Products />*/}
+      <ContactForm />
     </div>
   );
 }
