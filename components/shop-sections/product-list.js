@@ -57,7 +57,7 @@ const ProductList = () => {
               <p>${product.prc}</p>
               <button
                 onClick={() => handleAddToCart(product)} // Add to cart
-                className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                className="rounded bg-cetera-dark-blue px-4 py-2 text-white hover:bg-cetera-mono-orange"
               >
                 Add to Cart
               </button>

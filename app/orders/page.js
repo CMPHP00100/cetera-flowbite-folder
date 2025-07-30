@@ -40,8 +40,8 @@ export default function OrderHistory() {
   }
 
   return (
-    <div className="container py-4">
-      <h2 className="mb-4">My Orders</h2>
+    <div className="container py-4 font-cetera-josefin">
+      <h2 className="mb-4 text-5xl font-bold font-cetera-libre text-cetera-dark-blue underline decoration-cetera-mono-orange">My Orders</h2>
       
       <div className="list-group">
         {orders.map((order) => (
@@ -59,7 +59,7 @@ export default function OrderHistory() {
                     <IoTimeOutline className="me-1" /> Processing
                   </span>
                 ) : (
-                  <span className="badge bg-success me-2">
+                  <span className="badge bg-success me-2 flex">
                     <IoCheckmarkCircle className="me-1" /> Completed
                   </span>
                 )}
@@ -97,7 +97,7 @@ export default function OrderHistory() {
               <div className="col-md-4 text-md-end mt-3 mt-md-0">
                 <Link 
                   href={`/orders/${order.id}`}
-                  className="btn btn-outline-secondary btn-sm"
+                  className="btn btn-sm bg-cetera-dark-blue text-cetera-light-gray hover:bg-cetera-mono-orange"
                 >
                   View Details
                 </Link>

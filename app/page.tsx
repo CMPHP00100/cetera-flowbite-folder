@@ -12,7 +12,7 @@
 import HomeBanner from "@/components/page-sections/home-banner.js";
 import FeaturedProducts from "@/components/page-sections/featured-products.js";
 import CategoryProducts from "@/components/page-sections/category-products.js";
-import ContactForm from "@/components/page-sections/contact-form.js";
+import ContactFormHome from "@/components/page-sections/contact-form-home.js";
 import ScrollToTop from "@/components/animations/scroll-to-top.js";
 //import ScrollingBannerPage from "@/components/animations/scrolling-banner-page.js";
 //import TypedText from "@/components/animations/typed-text.js";
@@ -45,7 +45,7 @@ export default function App() {
       <HomeBanner />
       <FeaturedProducts />
       <CategoryProducts />
-      <ContactForm />
+      <ContactFormHome />
       <ScrollToTop />
     </div>
   );

@@ -6,6 +6,7 @@ import Image from "next/image";
 const HeroSection = ({
   id,
   heading,
+  subheading,
   description,
   dataModalTarget,
   dataModalToggle,
@@ -17,16 +18,19 @@ const HeroSection = ({
 }) => {
   return (
     <div>
-      <section className="bg-gray-900">
+      <section className="bg-cetera-dark-blue">
         <div className="mx-auto grid max-w-screen-xl px-4 py-8 lg:grid-cols-12 lg:gap-8 lg:py-16 xl:gap-0">
           <div className="mr-auto place-self-center lg:col-span-7">
-            <h1 className="mb-4 max-w-2xl text-4xl font-extrabold leading-none tracking-tight text-white md:text-5xl xl:text-6xl">
+            <h1 className="text-[2.5rem] md:text-[4rem] font-bold text-cetera-light-gray mb-2 font-cetera-libre">
               {heading}
             </h1>
-            <p className="mb-6 max-w-2xl font-light text-gray-500 dark:text-gray-400 md:text-lg lg:mb-8 lg:text-xl">
+            <h4 className="mb-4 max-w-2xl text-xl leading-none tracking-tight font-cetera-josefin text-white md:text-2xl">
+              {subheading}
+            </h4>
+            {/*<p className="mb-6 max-w-2xl font-light text-gray-500 dark:text-gray-400 md:text-lg lg:mb-8 lg:text-xl">
               {description}
-            </p>
-            <a
+            </p>*/}
+            {/*<a
               id={id}
               data-modal-target={dataModalTarget}
               data-modal-toggle={useState(dataModalToggle)}
@@ -46,9 +50,9 @@ const HeroSection = ({
                   clipRule="evenodd"
                 />
               </svg>
-            </a>
+            </a>*/}
           </div>
-          <div className="hidden lg:col-span-5 lg:mt-0 lg:flex">
+          <div className="hidden lg:col-span-5 lg:mt-0 lg:flex opacity-[0.7]">
             <Image src={heroImage} alt={heroAlt} width={1920} height={1080} />
           </div>
         </div>

@@ -50,7 +50,7 @@ export function ImageGallery({ refresh }) {
             <Image
               src={image.url}
               alt={image.name}
-              className="rounded-lg border"
+              className="rounded-lg border mb-2"
               layout="intrinsic"
               width={800} // 24 * 4 (Tailwind's scale factor)
               height={600}

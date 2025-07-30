@@ -33,7 +33,8 @@ export default function ProductsPage() {
         }
       >
         <HeroSection
-          heading={
+          heading="Product"
+          subheading={
             <TypedText
               className="textbase"
               texts={[
@@ -46,7 +47,7 @@ export default function ProductsPage() {
           description="Description for the product page goes here..."
           callToActionButtonLink="#"
           callToActionButtonText="Get started"
-          heroImage="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/hero/phone-mockup.png"
+          heroImage="/uploads/shopping-bag.svg"
           heroAlt="Product Page Alt Text"
         />
         {/*<LazyProduct />*/}

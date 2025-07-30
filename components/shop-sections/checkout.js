@@ -27,6 +27,10 @@ const Checkout = ({ onBack }) => {
   const [orderComplete, setOrderComplete] = useState(false);
   const [orderId, setOrderId] = useState(null);
 
+  //Error checking
+  const [errorMessage, setErrorMessage] = useState('');
+  const [showError, setShowError] = useState(false);
+
   // Customer information
   const [customerInfo, setCustomerInfo] = useState({
     firstName: "",
@@ -191,57 +195,219 @@ const Checkout = ({ onBack }) => {
 
   // Handle place order
   const handlePlaceOrder = async () => {
-  setIsProcessing(true);
-  
-  try {
-    const orderData = {
-      id: 'ORD-' + Date.now(),
-      customer: customerInfo,
-      shipping: shippingInfo,
-      payment: { ...paymentInfo, cardNumber: paymentInfo.cardNumber.replace(/\s/g, '') },
-      items: Object.values(cart),
-      totals: {
-        subtotal: totalPrice,
-        shipping: getShippingCost(),
-        tax: getTaxAmount(),
-        total: getFinalTotal(),
-        discount: discount,
-        coupon: coupon,
-      },
-      date: new Date().toISOString(),
-      status: 'Processing'
-    };
+    setIsProcessing(true);
+    setErrorMessage('');
+    setShowError(false);
+    
+    try {
+      const orderData = {
+        id: 'ORD-' + Date.now(),
+        customer: customerInfo,
+        shipping: shippingInfo,
+        payment: { ...paymentInfo, cardNumber: paymentInfo.cardNumber.replace(/\s/g, '') },
+        items: Object.values(cart),
+        totals: {
+          subtotal: totalPrice,
+          shipping: getShippingCost(),
+          tax: getTaxAmount(),
+          total: getFinalTotal(),
+          discount: discount,
+          coupon: coupon,
+        },
+        date: new Date().toISOString(),
+        status: 'Processing'
+      };
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Save the order
-    addOrder(orderData);
-    setOrderId(orderData.id);
-    setOrderComplete(true);
-    clearCart();
-    
+      // Process payment using existing checkout API
+      const paymentResponse = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          paymentData: paymentInfo,
+          orderData: orderData
+        })
+      });
+
+      let paymentResult;
+      
+      // Handle different response scenarios
+      if (!paymentResponse.ok) {
+        // Try to get error message from response
+        try {
+          const errorData = await paymentResponse.json();
+          throw new Error(errorData.message || `Server error: ${paymentResponse.status}`);
+        } catch (jsonError) {
+          // If JSON parsing fails, use status-based error
+          const statusErrors = {
+            400: 'Invalid payment information. Please check your details and try again.',
+            401: 'Payment authorization failed. Please verify your card details.',
+            402: 'Payment required. Please check your card balance.',
+            403: 'Payment forbidden. Please contact your card issuer.',
+            404: 'Payment service unavailable. Please try again later.',
+            408: 'Payment request timed out. Please try again.',
+            422: 'Invalid payment data. Please check all required fields.',
+            429: 'Too many payment attempts. Please wait a moment and try again.',
+            500: 'Payment system error. Please try again in a few minutes.',
+            502: 'Payment gateway unavailable. Please try again later.',
+            503: 'Payment service temporarily unavailable. Please try again later.'
+          };
+          
+          throw new Error(statusErrors[paymentResponse.status] || 'Payment failed. Please try again.');
+        }
+      }
+
+      // Parse successful response
+      try {
+        paymentResult = await paymentResponse.json();
+      } catch (parseError) {
+        throw new Error('Invalid response from payment system. Please try again.');
+      }
+
+      // Check if payment was successful
+      if (!paymentResult.success) {
+        // Handle specific payment failure reasons
+        const failureMessage = paymentResult.message || 'Payment failed';
+        
+        if (failureMessage.toLowerCase().includes('declined')) {
+          throw new Error('Your card was declined. Please check your card details or try a different payment method.');
+        } else if (failureMessage.toLowerCase().includes('insufficient')) {
+          throw new Error('Insufficient funds. Please check your account balance or use a different payment method.');
+        } else if (failureMessage.toLowerCase().includes('expired')) {
+          throw new Error('Your card has expired. Please update your card information.');
+        } else if (failureMessage.toLowerCase().includes('invalid')) {
+          throw new Error('Invalid card information. Please check your card number, expiry date, and CVV.');
+        } else if (failureMessage.toLowerCase().includes('limit')) {
+          throw new Error('Transaction limit exceeded. Please contact your card issuer or try a smaller amount.');
+        } else if (failureMessage.toLowerCase().includes('fraud')) {
+          throw new Error('Transaction flagged for security. Please contact your card issuer.');
+        } else {
+          throw new Error(failureMessage);
+        }
+      }
+
+      // Payment successful - process order
+      orderData.transactionId = paymentResult.transactionId;
+      orderData.authCode = paymentResult.authCode;
+      orderData.status = 'Paid';
+      
+      // Save the order
+      addOrder(orderData);
+      setOrderId(orderData.id);
+      setOrderComplete(true);
+      clearCart();
+      
     } catch (error) {
       console.error('Order processing failed:', error);
-      alert('There was an error processing your order. Please try again.');
+      
+      let displayMessage = 'An unexpected error occurred. Please try again.';
+      
+      // Network errors
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        displayMessage = 'Network error. Please check your internet connection and try again.';
+      }
+      // Timeout errors
+      else if (error.name === 'AbortError' || error.message.includes('timeout')) {
+        displayMessage = 'Request timed out. Please try again.';
+      }
+      // JSON parsing errors
+      else if (error.name === 'SyntaxError' && error.message.includes('JSON')) {
+        displayMessage = 'Invalid response from server. Please try again.';
+      }
+      // Custom error messages (from our API or payment processor)
+      else if (error.message) {
+        displayMessage = error.message;
+      }
+      
+      setErrorMessage(displayMessage);
+      setShowError(true);
+      
+      // Auto-hide error after 10 seconds
+      setTimeout(() => {
+        setShowError(false);
+      }, 10000);
+      
     } finally {
       setIsProcessing(false);
     }
   };
 
+// Function to retry payment (optional)
+const retryPayment = () => {
+  setShowError(false);
+  setErrorMessage('');
+  handlePlaceOrder();
+};
+
+// Function to manually dismiss error
+const dismissError = () => {
+  setShowError(false);
+  setErrorMessage('');
+};
+
+  {/* Error Message Display */}
+  {showError && (
+    <div className="row mb-4">
+      <div className="col-12">
+        <div className="alert alert-danger alert-dismissible d-flex align-items-center" role="alert">
+          <div className="me-3">
+            <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+            </svg>
+          </div>
+          <div className="flex-fill">
+            <h6 className="alert-heading mb-1">Payment Failed</h6>
+            <p className="mb-2">{errorMessage}</p>
+            <div className="d-flex gap-2">
+              <button 
+                type="button" 
+                className="btn btn-sm btn-outline-danger"
+                onClick={retryPayment}
+                disabled={isProcessing}
+              >
+                {isProcessing ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    Retrying...
+                  </>
+                ) : (
+                  'Try Again'
+                )}
+              </button>
+              <button 
+                type="button" 
+                className="btn btn-sm btn-secondary"
+                onClick={dismissError}
+              >
+                Dismiss
+              </button>
+            </div>
+          </div>
+          <button 
+            type="button" 
+            className="btn-close" 
+            onClick={dismissError}
+            aria-label="Close"
+          ></button>
+        </div>
+      </div>
+    </div>
+  )}
+
   // If order is complete, show success page
   if (orderComplete) {
     return (
-      <div className="container py-5">
+      <div className="container-fluid min-h-[75vh] py-5">
         <div className="row justify-content-center">
           <div className="col-md-8 col-lg-6">
             <div className="text-center">
-              <IoCheckmarkCircle className="text-success mb-3" size={80} />
+              <IoCheckmarkCircle className="text-success mb-3 w-full" size={80} />
               <h2 className="text-success mb-3">Order Confirmed!</h2>
-              <p className="text-muted mb-4">
+              <p className="text-muted mb-2">
                 Thank you for your order. Your order number is <strong>{orderId}</strong>
               </p>
-              <p className="text-muted mb-4">
+              <p className="text-muted mb-8">
                 You will receive an email confirmation shortly with tracking information.
               </p>
               <div className="d-flex flex-column flex-sm-row gap-2 justify-content-center">
@@ -253,7 +419,7 @@ const Checkout = ({ onBack }) => {
                 </button>
                 <button 
                    onClick={() => window.location.href = `/orders/${orderId}`}
-                  className="btn btn-primary"
+                  className="btn bg-cetera-dark-blue"
                 >
                   View Order Details
                 </button>
@@ -462,6 +628,105 @@ const Checkout = ({ onBack }) => {
               </div>
               <div className="card-body">
                 <div className="row">
+                  {/* Test Card Helper - Only show in development mode */}
+                  {process.env.NODE_ENV === 'development' && (
+                    <div className="col-12 mb-4">
+                      <div className="alert alert-info">
+                        <strong>Test Mode:</strong> Use these test cards to simulate different scenarios:
+                        <div className="mt-3">
+                          <div className="row">
+                            <div className="col-md-6">
+                              <h6 className="text-success">Successful Payments:</h6>
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-success me-2 mb-2"
+                                onClick={() => setPaymentInfo({
+                                  ...paymentInfo,
+                                  cardNumber: '4111 1111 1111 1111',
+                                  expiryDate: '12/28',
+                                  cvv: '123',
+                                  cardName: 'Test User'
+                                })}
+                              >
+                                Visa Success
+                              </button>
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-success me-2 mb-2"
+                                onClick={() => setPaymentInfo({
+                                  ...paymentInfo,
+                                  cardNumber: '5424 0000 0000 0015',
+                                  expiryDate: '12/28',
+                                  cvv: '123',
+                                  cardName: 'Test User'
+                                })}
+                              >
+                                Mastercard Success
+                              </button>
+                            </div>
+                            <div className="col-md-6">
+                              <h6 className="text-danger">Error Scenarios:</h6>
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-outline-danger me-2 mb-2"
+                                onClick={() => setPaymentInfo({
+                                  ...paymentInfo,
+                                  cardNumber: '4000 0000 0000 0002',
+                                  expiryDate: '12/28',
+                                  cvv: '123',
+                                  cardName: 'Test User'
+                                })}
+                              >
+                                Declined
+                              </button>
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-outline-danger me-2 mb-2"
+                                onClick={() => setPaymentInfo({
+                                  ...paymentInfo,
+                                  cardNumber: '4000 0000 0000 0003',
+                                  expiryDate: '12/28',
+                                  cvv: '123',
+                                  cardName: 'Test User'
+                                })}
+                              >
+                                Insufficient Funds
+                              </button>
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-outline-danger me-2 mb-2"
+                                onClick={() => setPaymentInfo({
+                                  ...paymentInfo,
+                                  cardNumber: '4000 0000 0000 0004',
+                                  expiryDate: '01/20',
+                                  cvv: '123',
+                                  cardName: 'Test User'
+                                })}
+                              >
+                                Expired Card
+                              </button>
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-outline-danger me-2 mb-2"
+                                onClick={() => setPaymentInfo({
+                                  ...paymentInfo,
+                                  cardNumber: '4000 0000 0000 0005',
+                                  expiryDate: '12/28',
+                                  cvv: '123',
+                                  cardName: 'Test User'
+                                })}
+                              >
+                                Invalid Card
+                              </button>
+                            </div>
+                          </div>
+                          <small className="text-muted">
+                            <strong>Note:</strong> Cards ending in 0002-0007 will trigger different error scenarios for testing.
+                          </small>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   <div className="col-12 mb-3">
                     <label className="form-label">Cardholder Name <span className="text-red-500">*</span></label>
                     <input

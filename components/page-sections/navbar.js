@@ -19,9 +19,8 @@ import Image from "next/image";
 
 const NAV_ITEMS = [
   { href: "/", label: "Home", className:"mobile-home-nav-item", icon: <PiHouseLineLight className="text-lg mr-0" /> },
-  //{ href: "/moodboard", label: "Moodboard" },
   { href: "/products", label: "Products", icon: <BsBoxSeam className="text-md mr-0" /> },
-  { href: "/calendar", label: "Calendar", icon: <IoCalendarNumberOutline className="text-md mr-0" /> },
+  { href: "/blog", label: "Blog", icon: <IoCalendarNumberOutline className="text-md mr-0" /> },
   { href: "/media", label: "Media Gallery", icon: <GoFileMedia className="text-md mr-0" /> },
   { href: "/about", label: "About", icon: <BsInfoCircle className="text-md mr-0" /> },
   { href: "/contact", label: "Contact", icon: <GiVibratingSmartphone className="text-lg mr-0" /> },
@@ -73,9 +72,9 @@ const CustomNav = () => {
                 width={192}
                 height={96}
               />
-              {/*<span className="hidden md:bock lg:block xl:block self-center whitespace-nowrap text-xl text-white">
+              <span className="hidden md:bock lg:block xl:block self-center whitespace-nowrap text-xl text-white">
                 Cétera Marketing
-              </span>*/}
+              </span>
             </Link>
           </div>
 

@@ -2,7 +2,7 @@ a {
   text-decoration: none;
 }
 
-.custom-uppy-dashboard .uppy-Dashboard-inner {
+/*.custom-uppy-dashboard .uppy-Dashboard-inner {
   width: 400px !important;
   height: 260px !important;
 }
@@ -13,4 +13,89 @@ a {
 }
 .custom-uppy-dashboard .uppy-Dashboard-AddFiles-title {
   margin-top: 6rem !important;
+}*/
+
+/* Main container styling */
+.uppy-Dashboard--custom {
+  max-width: 72rem; /* max-w-6xl */
+  margin-top: 2rem; /* mt-8 */
+  margin-bottom: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+  border-top-width: 2px; /* border-t-2 */
+  background-color: #f3f4f6; /* bg-gray-100 */
+  border-radius: 0.25rem; /* rounded-2 */
+  overflow: hidden;
+  width: 100%;
+  height: 300px;
+}
+
+/* Inner wrapper */
+.uppy-Dashboard--custom .uppy-Dashboard-innerWrap {
+  padding: 0.5rem; /* p-2 */
+  width: 1150px;
+  height: 300px;
+}
+
+/* Hide original drop hint */
+.uppy-Dashboard--custom .uppy-Dashboard-dropFilesHereHint {
+  display: none; /* hidden */
+  margin-bottom: 0; /* mb-0 */
+}
+
+/* AddFiles area styling */
+.uppy-Dashboard--custom .uppy-Dashboard-AddFiles {
+  border-width: 3px; /* border-3 */
+  border-style: dashed;
+  border-radius: 1rem; /* rounded-2xl */
+  padding: 3rem; /* p-12 */
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s; /* transition-all duration-300 */
+  border-color: #d1d5db; /* border-gray-300 */
+  background-color: #f3f4f6; /* bg-gray-100 */
+}
+
+/* AddFiles hover state */
+.uppy-Dashboard--custom .uppy-Dashboard-AddFiles:hover {
+  border-color: #f97316; /* hover:border-cetera-orange (assuming orange-500) */
+  background-color: #f3f4f6; /* hover:bg-gray-100 */
+}
+
+/* Title text styling */
+.uppy-Dashboard--custom .uppy-Dashboard-AddFiles-title {
+  font-size: 1.25rem; /* text-xl */
+  line-height: 1.75rem;
+  color: #4b5563; /* text-gray-600 */
+  margin-bottom: 1.5rem; /* mb-6 */
+}
+
+/* Browse button styling */
+.uppy-Dashboard--custom .uppy-Dashboard-browse {
+  background-color: #6b7280; /* bg-cetera-gray (assuming gray-500) */
+  color: white;
+  padding-left: 2rem; /* px-8 */
+  padding-right: 2rem;
+  padding-top: 0.75rem; /* py-3 */
+  padding-bottom: 0.75rem;
+  border-radius: 9999px; /* rounded-full */
+  font-weight: 600; /* font-semibold */
+  transition: all 0.3s; /* transition-all duration-300 */
+  transform: translateY(0);
+}
+
+/* Browse button hover state */
+.uppy-Dashboard--custom .uppy-Dashboard-browse:hover {
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); /* hover:shadow-lg */
+  transform: translateY(-0.25rem); /* hover:-translate-y-1 */
+}
+
+/* Hide original file inputs */
+.uppy-Dashboard--custom .uppy-Dashboard-input {
+  display: none; /* hidden */
+}
+
+/* Restrict to CSV files */
+.uppy-Dashboard--custom .uppy-Dashboard-input {
+  accept: ".csv";
 }

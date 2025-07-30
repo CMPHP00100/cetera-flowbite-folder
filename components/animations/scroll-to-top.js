@@ -30,7 +30,7 @@ export default function ScrollToTop() {
   };
 
   return (
-    <div className="fixed bottom-16 right-5">
+    <div className="fixed bottom-5 right-5">
       {isVisible && (
         <motion.button
           onClick={scrollToTop}

@@ -282,7 +282,7 @@ export default function Product() {
               setValue(e.target.value);
             }}
             //className="w-full mt-4 border-x-0 border-b-2 border-t-0 border-b-cetera-orange bg-white text-cetera-orange p-2 rouded-lg"
-            className="w-full mt-4 border-1 border-gray-300 rounded focus:ring-2 focus:ring-cetera-orange focus:border-cetera-orange"
+            className="w-full mt-4 border-1 font-cetera-josefin border-gray-300 rounded focus:ring-2 focus:ring-cetera-orange focus:border-cetera-orange"
             //placeholder={isFocused ? "" : ""}
           />
         </div>
@@ -299,7 +299,7 @@ export default function Product() {
               id="category-select"
               value={selectedCategory}
               onChange={(e) => handleCategoryChange(e.target.value)}
-              className="w-full mt-2 mt-md-4 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-cetera-orange focus:border-cetera-orange"
+              className="w-full mt-2 mt-md-4 p-2 font-cetera-josefin border border-gray-300 rounded focus:ring-2 focus:ring-cetera-orange focus:border-cetera-orange"
               disabled={categoriesLoading}
             >
               {categories.length === 0 ? (
@@ -389,7 +389,7 @@ export default function Product() {
         {filteredProducts.length > 0 && !loading && (
           <button
             onClick={handleLoadMore}
-            className="mt-4 bg-cetera-blue px-4 py-2 text-white hover:bg-cetera-orange"
+            className="mt-4 bg-cetera-mono-orange px-4 py-2 text-white hover:text-cetera-dark-blue font-cetera-josefin"
           >
             Load More
           </button>

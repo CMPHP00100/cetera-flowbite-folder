@@ -102,10 +102,10 @@ const Cart = ({ onProceedToCheckout }) => {
   };
 
   return (
-    <div className="container-fluid py-4 max-w-6xl">
+    <div className="container-fluid p-4 bg-cetera-dark-blue my-8">
       {/* Cart Header with Clear Button */}
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="mb-0">Shopping Cart ({getCartItemCount()} items)</h2>
+      <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
+        <h1 className="mb-0 font-cetera-libre text-[2.5rem] sm:text-[4rem] text-cetera-light-gray">Shopping Cart <span className="text-[1.5rem]">({getCartItemCount()} items)</span></h1>
         {Object.keys(cart).length > 0 && (
           <button
             onClick={handleClearCart}
@@ -135,7 +135,7 @@ const Cart = ({ onProceedToCheckout }) => {
         </div>
       ) : (
         <>
-          <ul className="list-group">
+          <ul className="list-group bg-cetera-light-gray">
             {Object.values(cart).map((product) => {
               const quantityTiers = getQuantityTiers(product);
               const hasMultipleTiers = quantityTiers.length > 1;
@@ -287,7 +287,7 @@ const Cart = ({ onProceedToCheckout }) => {
                   value={couponCode}
                   onChange={(e) => setCouponCode(e.target.value)}
                   placeholder="Enter coupon code"
-                  className="form-control border-1 rounded-l border-cetera-gray bg-none p-2"
+                  className="form-control border-1 rounded-l border-cetera-gray bg-none p-2 bg-cetera-light-gray"
                 />
                 <button
                   onClick={handleApplyCoupon}
@@ -304,9 +304,9 @@ const Cart = ({ onProceedToCheckout }) => {
               )}
             </div>
 
-            <div className="col-md-6 text-md-end">
+            <div className="col-md-6 text-md-end font-cetera-josefin">
               <div className="d-flex flex-column flex-md-row align-items-md-center justify-content-md-end gap-2">
-                <span className="fw-bold text-uppercase border-b border-cetera-orange">
+                <span className="fw-bold text-uppercase border-b border-cetera-orange text-cetera-light-gray">
                   Subtotal:
                 </span>
                 <span className="fs-4 text-cetera-orange">
@@ -319,7 +319,7 @@ const Cart = ({ onProceedToCheckout }) => {
           {/* Checkout Section */}
           <div className="row mt-4">
             <div className="col-12">
-              <div className="card bg-light border-cetera-gray border-1">
+              <div className="card bg-cetera-light-gray border-cetera-gray border-1">
                 <div className="card-body">
                   <div className="d-flex flex-column flex-md-row justify-content-between align-items-center">
                     <div className="mb-3 mb-md-0">

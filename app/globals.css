@@ -63,6 +63,18 @@ nav .mobile-account-nav-item {
   box-shadow: 14px 31px 15px 20px rgba(0, 0, 0, 0.1);
 }
 
+h1 {
+  font-family: "Libre Baskerville";
+}
+
 p, span, a {
   font-family: "Josefin Sans";
+}
+
+.home-footer {
+  background-color: #F4F2F0;
+}
+
+.default-footer {
+  background-color: #273B5B;
 }

@@ -43,9 +43,9 @@ export default function OrderDetails() {
   };
 
   return (
-    <div className="container py-4">
+    <div className="container py-4 font-cetera-josefin">
       <div className="d-flex align-items-center mb-4">
-        <Link href="/orders" className="btn btn-link text-decoration-none p-0 me-3">
+        <Link href="/orders" className="btn text-cetera-dark-blue hover:text-cetera-mono-orange p-0 me-3">
           <IoArrowBack size={24} />
         </Link>
         <h2 className="mb-0">Order #{order.id}</h2>
@@ -137,7 +137,7 @@ export default function OrderDetails() {
                         <IoTimeOutline className="me-1" /> Processing
                       </span>
                     ) : (
-                      <span className="badge bg-success">
+                      <span className="badge bg-success flex">
                         <IoCheckmarkCircle className="me-1" /> Completed
                       </span>
                     )}
@@ -188,7 +188,7 @@ export default function OrderDetails() {
             </div>
           </div>
 
-          <Link href="/products" className="btn btn-primary w-100">
+          <Link href="/products" className="btn bg-cetera-dark-blue text-cetera-light-gray hover:bg-cetera-mono-orange w-100">
             Continue Shopping
           </Link>
         </div>

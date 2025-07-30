@@ -63,7 +63,8 @@ export function FileUploader({ onUploadSuccess }) {
       <Dashboard
         uppy={uppy}
         showLinkToFileUploadResult={true}
-        className="custom-uppy-dashboard" // Apply your custom class
+        //className="custom-uppy-dashboard" // Apply your custom class
+        className="uppy-Dashboard uppy-Dashboard--custom"
         proudlyDisplayPoweredByUppy={false} // Optional: hide "Powered by Uppy"
         //theme="dark" // Optional: use a predefined theme
       />
