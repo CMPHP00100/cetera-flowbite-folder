@@ -1,14 +1,10 @@
-// pages/api/process-payment.js (or app/api/payment/route.js)
+// app/api/payment/route.js
 import { ApiContracts, ApiControllers } from 'authorizenet';
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });
-  }
-
-  const { paymentData, orderData } = req.body;
-
+export async function POST(request) {
   try {
+    const { paymentData, orderData } = await request.json();
+
     // Create merchant authentication
     const merchantAuth = new ApiContracts.MerchantAuthenticationType();
     merchantAuth.setName(process.env.NEXT_PUBLIC_AUTHNET_API_LOGIN_ID);
@@ -75,32 +71,45 @@ export default async function handler(req, res) {
           const transactionResponse = response.getTransactionResponse();
           
           if (transactionResponse.getMessages() != null) {
-            resolve(res.status(200).json({
+            resolve(Response.json({
               success: true,
               transactionId: transactionResponse.getTransId(),
               authCode: transactionResponse.getAuthCode(),
               message: 'Payment processed successfully'
             }));
           } else {
-            resolve(res.status(400).json({
+            resolve(Response.json({
               success: false,
               message: transactionResponse.getErrors().getError()[0].getErrorText()
-            }));
+            }, { status: 400 }));
           }
         } else {
-          resolve(res.status(400).json({
+          resolve(Response.json({
             success: false,
             message: response.getMessages().getMessage()[0].getText()
-          }));
+          }, { status: 400 }));
         }
       });
     });
 
   } catch (error) {
     console.error('Payment processing error:', error);
-    res.status(500).json({
+    return Response.json({
       success: false,
       message: 'Internal server error'
-    });
+    }, { status: 500 });
   }
+}
+
+// Handle non-POST requests
+export async function GET() {
+  return Response.json({ message: 'Method not allowed' }, { status: 405 });
+}
+
+export async function PUT() {
+  return Response.json({ message: 'Method not allowed' }, { status: 405 });
+}
+
+export async function DELETE() {
+  return Response.json({ message: 'Method not allowed' }, { status: 405 });
 }
