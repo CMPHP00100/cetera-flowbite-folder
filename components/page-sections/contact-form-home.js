@@ -43,14 +43,14 @@ export default function ContactFormHome() {
   return (
     <div className="container-fluid mx-auto px-4 py-10 bg-cetera-dark-blue">
         <div className="row pt-2">
-            <div className="col-md-6 pb-4 md:pb-0 address-info contact-info font-cetera-josefin text-cetera-light-gray">
+            <div className="col-xs-12 col-sm-12 col-md-12 col-lg-6 pb-4 md:pb-0 address-info contact-info font-cetera-josefin text-cetera-light-gray">
                 <h1 className="text-[3rem] sm:text-[5rem] font-bold mb-6 font-cetera-libre text-cetera-light-gray">Contact Us</h1>
                 <h3 class="t-h3 text-cetera-mono-orange pb-2">Los Angeles</h3>
                 <p>Cetera Marketing (Head Office)<br /> 8216 Lankershim Blvd, <br /> North Hollywood, CA 91605<br /> </p>
                 <p className="flex pt-2"><GiRotaryPhone className="text-xl text-cetera-mono-orange" /> <a className="text-cetera-light-gray hover:cetera-mono-orange px-2" href="tel:+18187678002">818.767.8002</a> <span className="text-cetera-mono-orange text-xl mt-[-4px]">|</span> <a className="text-cetera-light-gray hover:cetera-mono-orange ps-2" href="tel:+18883884438">888.388.4438</a></p>
             </div>
-            <div className="col-md-6">
-                <form onSubmit={handleSubmit} className="space-y-5 max-w-2xl">
+            <div className="col-xs-12 col-sm-12 col-md-12 col-lg-6">
+                <form onSubmit={handleSubmit} className="space-y-5 w-full">
                     <div>
                     <input
                         type="text"

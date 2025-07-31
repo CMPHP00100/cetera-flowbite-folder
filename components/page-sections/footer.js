@@ -1,10 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
 
 const RESOURCES = [
   { href: "/resources/blog", label: "Blog" },
@@ -56,133 +53,87 @@ const SOCIALS = [
 ];
 
 const Footer = () => {
-  const [pathname, setPathname] = useState('/')
-  const [isHomePage, setIsHomePage] = useState(false)
-  const [isMounted, setIsMounted] = useState(false)
-
-  useEffect(() => {
-    setIsMounted(true)
-    // Check if we're on the home page using window.location as fallback
-    setIsHomePage(window.location.pathname === '/')
-  }, [])
-
-  // Try to get router only after component mounts
-  let router
-  try {
-    router = useRouter()
-    if (isMounted && router.isReady) {
-      const currentIsHome = router.pathname === '/'
-      if (currentIsHome !== isHomePage) {
-        setIsHomePage(currentIsHome)
-      }
-    }
-  } catch (error) {
-    // Router not available, use the window.location fallback
-  }
-
   return (
-    <>
-      <footer className={isHomePage ? 'bg-cetera-light-gray p-4 align-bottom sm:p-6' : 'bg-cetera-dark-blue p-4 align-bottom sm:p-6'}>
-        <div className="continer-fluid mx-auto">
-          <div className="row">
-            <div className="col-12 col-sm-12 col-md-4 md:mb-0">
-              <a href="/" className="flex items-center">
-                <Image
-                  src={isHomePage ? "/assets/logos/CM_logo_DarkBlue.svg" : "/assets/logos/CM_logo_LightGray.svg"}
-                  className="h-8 mr-3 w-20"
-                  alt="Cétera Marketing"
-                  width="200"
-                  height="100"
-                />
-                <p className={isHomePage ? "self-center whitespace-nowrap text-dark-blue hover:text-cetera-mono-orange" : "self-center whitespace-nowrap text-cetera-light-gray hover:text-cetera-mono-orange"}>
-                  <span className="text-[1.4rem] flex lh-1">
-                    Cétera Marketing
-                  </span>
-                  <span className="text-2sm lh-1">we spark ideas</span>
-                </p>
-              </a>
-              <div className="mt-4 flex space-x-4">
-              {SOCIALS.map(({ href, className, svglink, id }) => {
-                //const isActive = pathname === href;
-                return (
-                  // eslint-disable-next-line react/jsx-key
-                  <a key={id} href={href} target="_blank" className={className}>
-                    <svg
-                      className={isHomePage ? 'text-cetera-dark-blue hover:text-cetera-mono-orange social-footer-links h-6 w-6 ms-1' : 'text-cetera-light-gray hover:text-cetera-mono-orange social-footer-links h-6 w-6 ms-1'}
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                    >
-                      <path fillRule="evenodd" d={svglink} clipRule="evenodd" />
-                    </svg>
-                  </a>
-                );
-              })}
+    <footer className="bg-cetera-dark-blue p-4 align-bottom sm:p-6">
+      <div className="continer-fluid mx-auto">
+        <div className="row">
+          <div className="col-12 col-sm-12 col-md-4 md:mb-0">
+            <a href="/" className="flex items-center">
+              <Image
+                src="/assets/logos/CM_logo_LightGray.svg"
+                className="h-8 mr-3 w-20"
+                alt="Cétera Marketing"
+                width="200"
+                height="100"
+              />
+              <p className="self-center whitespace-nowrap text-cetera-light-gray hover:text-cetera-mono-orange">
+                <span className="text-[1.4rem] flex lh-1">Cétera Marketing</span>
+                <span className="text-2sm lh-1">we spark ideas</span>
+              </p>
+            </a>
+            <div className="mt-4 flex space-x-4">
+              {SOCIALS.map(({ href, className, svglink, id }) => (
+                <a key={id} href={href} target="_blank" className={className}>
+                  <svg
+                    className="text-cetera-light-gray hover:text-cetera-mono-orange social-footer-links h-6 w-6 ms-1"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path fillRule="evenodd" d={svglink} clipRule="evenodd" />
+                  </svg>
+                </a>
+              ))}
             </div>
-            </div>
-            {/* <div className="grid grid-cols-2 gap-8 sm:grid-cols-2 sm:gap-4 md:grid-cols-3 md:gap-6"> */}
-            <div className="col-12 col-sm-12 col-md-8">
-              <div className="row mt-md-0 mt-4">
-                <div className="d-none d-sm-none d-md-block col-md-4 col-lg-6"></div>
-                <div className="col-6 col-sm-6 col-md-4 col-lg-3">
-                  <h2 className="mb-2 text-sm font-cetera-josefin uppercase text-cetera-mono-orange font-bold">
-                    Resources
-                  </h2>
-                  <ul className="ps-0 text-gray-400">
-                    {RESOURCES.map(({ href, label }) => {
-                      const isActive = pathname === href;
-                      return (
-                        // eslint-disable-next-line react/jsx-key
-                        <li key={href + label} className="mb-2">
-                          <Link
-                            href={href}
-                            className={isHomePage ? `${isActive ? "text-cetera-mono-orange" : "text-cetera-dark-blue"} hover:text-cetera-mono-orange` : `${isActive ? "text-cetera-mono-orange" : "text-cetera-light-gray"} hover:text-cetera-mono-orange`}
-                          >
-                            {label}
-                          </Link>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-                <div className="col-6 col-sm-6 col-md-4 col-lg-3">
-                  <h2 className="mb-2 text-sm font-cetera-josefin font-bold uppercase text-cetera-mono-orange">
-                    Support
-                  </h2>
-                  <ul className="ps-0 text-gray-400">
-                    {SUPPORT.map(({ href, label }) => {
-                      const isActive = pathname === href;
-                      return (
-                        // eslint-disable-next-line react/jsx-key
-                        <li key={href + label} className="mb-2">
-                          <Link
-                            href={href}
-                            className={isHomePage ? `${isActive ? "text-cetera-mono-orange" : "text-cetera-dark-blue"} hover:text-cetera-mono-orange` : `${isActive ? "text-cetera-mono-orange" : "text-cetera-light-gray"} hover:text-cetera-mono-orange`}
-                          >
-                            {label}
-                          </Link>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
+          </div>
+          <div className="col-12 col-sm-12 col-md-8">
+            <div className="row mt-md-0 mt-4">
+              <div className="d-none d-sm-none d-md-block col-md-4 col-lg-6"></div>
+              <div className="col-6 col-sm-6 col-md-4 col-lg-3">
+                <h2 className="mb-2 text-sm font-cetera-josefin uppercase text-cetera-mono-orange font-bold">Resources</h2>
+                <ul className="ps-0 text-gray-400">
+                  {RESOURCES.map(({ href, label }) => (
+                    <li key={href + label} className="mb-2">
+                      <Link
+                        href={href}
+                        className="text-cetera-light-gray hover:text-cetera-mono-orange"
+                      >
+                        {label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="col-6 col-sm-6 col-md-4 col-lg-3">
+                <h2 className="mb-2 text-sm font-cetera-josefin font-bold uppercase text-cetera-mono-orange">Support</h2>
+                <ul className="ps-0 text-gray-400">
+                  {SUPPORT.map(({ href, label }) => (
+                    <li key={href + label} className="mb-2">
+                      <Link
+                        href={href}
+                        className="text-cetera-light-gray hover:text-cetera-mono-orange"
+                      >
+                        {label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
           </div>
-          {/*<hr className="my-6 border-gray-200 sm:mx-auto lg:my-8" />*/}
-          <div className="sm:flex sm:items-center sm:justify-between pt-2">
-            <span className={isHomePage ? "text-sm text-cetera-dark-blue sm:text-center": "text-sm text-cetera-light-gray sm:text-center"}>
-              © 2022{" "}
-              <a href="https://ceteramarketing.com" className={isHomePage ? "text-cetera-mono-orange hover:text-cetera-dark-blue" : "text-cetera-mono-orange hover:text-cetera-light-gray"}>
-                Cétera Marketing™
-              </a>
-              . All Rights Reserved.
-            </span>
-            
-          </div>
         </div>
-      </footer>
-    </>
+        <div className="sm:flex sm:items-center sm:justify-between pt-2">
+          <span className="text-sm text-cetera-light-gray sm:text-center">
+            © 2022{" "}
+            <a href="https://ceteramarketing.com" className="text-cetera-mono-orange hover:text-cetera-light-gray">
+              Cétera Marketing™
+            </a>
+            . All Rights Reserved.
+          </span>
+        </div>
+      </div>
+    </footer>
   );
 };
+
 export default Footer;
