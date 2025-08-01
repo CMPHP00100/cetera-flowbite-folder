@@ -1,68 +1,47 @@
-// app/api/auth/login/route.js
+// app/api/auth/register/route.js
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import { getDatabase } from "@/lib/database";
 
 export const runtime = 'nodejs';
 
 export async function POST(request) {
   try {
-    // Parse request body
-    const { email, password } = await request.json();
+    const { name, email, phone, password } = await request.json();
 
     // Input validation
-    if (!email || !password) {
+    if (!name || !email || !phone || !password) {
       return NextResponse.json(
-        { error: "Email and password are required" },
+        { error: "All fields are required" },
         { status: 400 }
       );
     }
 
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 12);
+
     // Get database connection
     const db = getDatabase();
-    const query = "SELECT * FROM users WHERE email = ?";
     
-    // Retrieve user data
-    const userResult = await db.prepare(query).all(email);
-    const user = userResult.results?.[0];
+    // Insert user
+    const insertQuery = "INSERT INTO users (name, email, phone, password, role) VALUES (?, ?, ?, ?, ?)";
+    const result = await db.prepare(insertQuery).run(name, email, phone, hashedPassword, "END_USER");
 
-    if (!user) {
-      return NextResponse.json(
-        { error: "Invalid email or password" },
-        { status: 401 }
-      );
-    }
-
-    // Verify password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return NextResponse.json(
-        { error: "Invalid email or password" },
-        { status: 401 }
-      );
-    }
-
-    // Generate JWT token
-    const secretKey = process.env.JWT_SECRET || "your-secret-key";
-    const token = jwt.sign(
-      { userId: user.id, email: user.email, role: user.role },
-      secretKey,
-      { expiresIn: "24h" }
-    );
-
-    // Remove sensitive information before sending user data
-    const { password: _, ...userWithoutPassword } = user;
-
-    // Success response
     return NextResponse.json({
       success: true,
-      user: userWithoutPassword,
-      token,
-      message: "Login successful",
+      user: { id: result.meta.last_row_id, name, email, phone, role: "END_USER" },
+      message: "Registration successful",
     });
   } catch (error) {
-    console.error("Error during login:", error.message);
+    console.error("Registration error:", error.message);
+    
+    if (error.message.includes("UNIQUE constraint failed")) {
+      return NextResponse.json(
+        { error: "An account with this email already exists" },
+        { status: 400 }
+      );
+    }
+    
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

@@ -58,7 +58,8 @@ export default function RegisterUser() {
     try {
       const { confirmPassword, ...apiData } = formData;
 
-      const res = await fetch("https://sandbox_flowbite.raspy-math-fdba.workers.dev/", {
+      //const res = await fetch("https://sandbox_flowbite.raspy-math-fdba.workers.dev/", {
+      const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(apiData),
