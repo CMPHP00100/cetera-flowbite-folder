@@ -20,11 +20,7 @@ export async function POST(request) {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        username: credentials.username,
-        password: credentials.password,
-      }),
-      //body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password }),
     });
 
     console.log("Worker response status:", workerResponse.status); // Log worker response
@@ -32,7 +28,6 @@ export async function POST(request) {
     console.log("Worker response data:", data); // Log worker response data
 
     if (workerResponse.ok) {
-      console.log("Login token:", data.token);                                                                                                                                                     
       return NextResponse.json(data);
     } else {
       return NextResponse.json(
