@@ -12,7 +12,7 @@ export default function RegisterUser() {
     phone: "",
     password: "",
     confirmPassword: "",
-    //role: "END_USER",
+    role: "END_USER", //default role
   });
   const [response, setResponse] = useState(null);
   const [error, setError] = useState("");
@@ -110,7 +110,7 @@ export default function RegisterUser() {
           className="focus:border-cetera-orange mb-3 block w-full rounded-lg border border-white bg-dark-blue p-2.5 text-sm text-white placeholder:text-gray-400"
         />
         <input
-          type="phone"
+          type="tel"
           id="phone"
           name="phone"
           placeholder="Enter phone..."

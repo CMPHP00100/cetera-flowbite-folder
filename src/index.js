@@ -1,4 +1,4 @@
-// src/index.js - Updated Cloudflare Worker with User Stats
+// src/index.js - Complete Cloudflare Worker with proper error handling
 
 // Helper function to get the appropriate database
 function getDatabase(env) {
@@ -14,120 +14,114 @@ function getDatabase(env) {
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    console.log("📍 Incoming path:", url.pathname);
+    console.log("🔧 Method:", request.method);
     
+    // Handle CORS preflight requests
     if (request.method === "OPTIONS") {
       return handleOptionsRequest();
-    } else if (request.method === "POST") {
-      // Route based on pathname
-      if (url.pathname === "/login") {
+    } 
+    
+    // Handle root path for testing
+    if (request.method === "GET" && url.pathname === "/") {
+      return new Response(JSON.stringify({
+        message: "Cloudflare Worker is running",
+        timestamp: new Date().toISOString(),
+        availableEndpoints: {
+          "POST /register": "User registration",
+          "POST /login": "User login", 
+          "GET /user/stats": "User statistics (requires auth)",
+          "POST /api/events": "Create event",
+          "GET /api/events": "Get events",
+          "DELETE /api/events/:id": "Delete event"
+        }
+      }), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        }
+      });
+    }
+    
+    // POST requests
+    if (request.method === "POST") {
+      const path = url.pathname.toLowerCase();
+      
+      if (path === "/login" || path === "/api/auth/login") {
         return handleLoginRequest(request, env);
-      } else if (url.pathname === "/") {
+      } 
+      else if (path === "/register" || path === "/api/auth/register") {
         return handleRegistrationRequest(request, env);
-      } else if (url.pathname === "/api/events") {
+      } 
+      else if (path === "/api/events") {
         return handleCreateEvent(request, env);
-      } else if (url.pathname === "/user/update") {
+      } 
+      else if (path === "/user/update") {
         return handleUserUpdate(request, env);
-      } else {
-        return new Response("Not Found", { status: 404 });
+      } 
+      else {
+        console.log("❌ Unknown POST path:", path);
+        return createErrorResponse(`POST endpoint not found: ${path}`, 404);
       }
-    } else if (request.method === "GET") {
-      // Handle GET requests
-      if (url.pathname === "/user/stats") {
-
+    } 
+    
+    // GET requests
+    if (request.method === "GET") {
+      const path = url.pathname.toLowerCase();
+      
+      if (path === "/user/stats") {
         return handleUserStats(request, env);
-
-      } else {
-        return new Response("Not Found", { status: 404 });
+      } 
+      else if (path === "/api/events") {
+        return handleGetEvents(request, env);
       }
-    } else if (request.method === "DELETE") {
-      // Handle DELETE requests
+      else {
+        return createErrorResponse(`GET endpoint not found: ${path}`, 404);
+      }
+    } 
+    
+    // DELETE requests
+    if (request.method === "DELETE") {
       if (url.pathname.startsWith("/api/events/")) {
         return handleDeleteEvent(request, env);
       } else {
-        return new Response("Not Found", { status: 404 });
+        return createErrorResponse("DELETE endpoint not found", 404);
       }
-    } else {
-      return new Response("Method Not Allowed", { status: 405 });
     }
+    
+    return createErrorResponse("Method not allowed", 405);
   },
 };
 
-async function handleUserUpdate(request, env) {
-  const authHeader = request.headers.get("Authorization");
-
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-    });
+// Helper function to create consistent error responses
+function createErrorResponse(message, status = 500, details = null) {
+  const responseBody = { error: message };
+  if (details && process.env.NODE_ENV !== 'production') {
+    responseBody.details = details;
   }
-
-  const token = authHeader.slice(7);
-  let userId;
-
-  try {
-    userId = await getUserIdFromToken(token, env);
-  } catch (err) {
-    return new Response(JSON.stringify({ error: "Invalid token" }), {
-      status: 401,
+  
+  return new Response(
+    JSON.stringify(responseBody),
+    {
+      status,
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
       },
-    });
-  }
-
-  const body = await request.json();
-  const { name, email, phone, role } = body;
-
-  if (!name || !email || !phone || !role) {
-    return new Response(JSON.stringify({ error: "Missing required fields" }), {
-      status: 400,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-    });
-  }
-
-  try {
-    await env.DB.prepare(`
-      UPDATE users
-      SET name = ?, email = ?, phone = ?, role = ?, updated_at = datetime('now')
-      WHERE id = ?
-    `).bind(name, email, phone, role, userId).run();
-
-    return new Response(JSON.stringify({ success: true }), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-    });
-  } catch (err) {
-    console.error("Failed to update user:", err);
-    console.error("Failed to update user backup:", err.message, err.stack);
-    return new Response(JSON.stringify({ error: "Failed to update user" }), {
-      status: 500,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-    });
-  }
+    }
+  );
 }
 
-
+// Handle CORS preflight requests
 function handleOptionsRequest() {
   return new Response(null, {
     status: 204,
     headers: {
       "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Access-Control-Max-Age": "86400",
     },
   });
 }
@@ -137,7 +131,23 @@ async function initializeDatabase(env) {
   try {
     const db = getDatabase(env);
     
-    // Create events table with consistent column naming
+    // Create users table with all necessary columns
+    await db.prepare(`
+      CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        email TEXT UNIQUE NOT NULL,
+        phone TEXT NOT NULL,
+        password TEXT NOT NULL,
+        role TEXT DEFAULT 'END_USER',
+        login_count INTEGER DEFAULT 0,
+        last_login DATETIME,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )
+    `).run();
+    
+    // Create events table
     await db.prepare(`
       CREATE TABLE IF NOT EXISTS events (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -161,204 +171,154 @@ async function initializeDatabase(env) {
       )
     `).run();
     
-    console.log('Database tables initialized successfully');
+    // Create profile_views table for stats
+    await db.prepare(`
+      CREATE TABLE IF NOT EXISTS profile_views (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        viewed_user_id INTEGER NOT NULL,
+        viewer_user_id INTEGER,
+        viewed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (viewed_user_id) REFERENCES users(id),
+        FOREIGN KEY (viewer_user_id) REFERENCES users(id)
+      )
+    `).run();
+    
+    console.log('✅ Database tables initialized successfully');
   } catch (error) {
-    console.error('Database initialization error:', error);
+    console.error('❌ Database initialization error:', error);
     throw error;
   }
 }
 
-// Helper function to verify token and get user
-function verifyToken(token) {
-  try {
-    // Your current token is base64 encoded user data
-    const userData = JSON.parse(atob(token));
-    return userData;
-  } catch (error) {
-    console.error('Token verification failed:', error);
-    return null;
-  }
-}
-
-// NEW: Handle user stats endpoint
-async function handleUserStats(request, env) {
-  const authHeader = request.headers.get("authorization");
-
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401,
-      headers: { 
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
-      },
-    });
-  }
-
-  const token = authHeader.slice(7);
-  let userId;
-
-  try {
-    // Replace with your actual token logic
-    userId = await getUserIdFromToken(token, env);
-  } catch (err) {
-    return new Response(JSON.stringify({ error: "Invalid token" }), {
-      status: 401,
-      headers: { 
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
-      },
-    });
-  }
-
-  try {
-    console.log("Stats lookup for userId:", userId);
-    
-    const result = await env.DB.prepare(`
-      SELECT 
-        name,
-        login_count AS loginCount,
-        last_login AS lastLogin,
-        created_at AS memberSince,
-        (SELECT COUNT(*) FROM profile_views WHERE viewed_user_id = ?) AS profileViews
-      FROM users 
-      WHERE id = ?
-    `).bind(userId, userId).first();
-
-    console.log("Stats DB result:", result);
-
-    if (!result) {
-      return new Response(JSON.stringify({ error: "User not found" }), {
-        status: 404,
-        headers: { 
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*"
-        },
-      });
-    }
-
-    return new Response(JSON.stringify({
-      loginCount: result.loginCount || 0,
-      lastLogin: result.lastLogin || null,
-      memberSince: result.memberSince || null,
-      profileViews: result.profileViews || 0,
-      name: result.name || null
-    }), {
-      status: 200,
-      headers: { 
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
-      },
-    });
-  } catch (err) {
-    console.error("Worker DB error:", err);
-    return new Response(JSON.stringify({ error: "Failed to fetch stats" }), {
-      status: 500,
-      headers: { 
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
-      },
-    });
-  }
-}
-
-// Placeholder - update with real logic
-async function getUserIdFromToken(token, env) {
-  try {
-    const userData = JSON.parse(atob(token));
-
-    // Optional: validate against DB that session is legit
-    const session = await env.DB.prepare(`
-      SELECT user_id FROM user_sessions WHERE token = ?
-    `).bind(token).first();
-
-    if (!session || session.user_id !== userData.id) {
-      throw new Error("Invalid session");
-    }
-
-    return userData.id;
-  } catch (err) {
-    console.error("Failed to decode token or validate session:", err);
-    throw new Error("Invalid token");
-  }
-}
-
-// Registration handler (using production DB for users)
+// Registration handler with comprehensive validation
 async function handleRegistrationRequest(request, env) {
-  try {
-    const body = await request.json();
-    const { name, email, phone, password, role } = body;
+  const headers = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  };
 
-    if (!name || !email || !phone || !password || !role) {
-      return new Response(JSON.stringify({ error: "Missing required fields" }), {
-        status: 400,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-      });
+  try {
+    console.log("🔍 Registration request received");
+    
+    // Initialize database first
+    await initializeDatabase(env);
+    
+    const body = await request.json();
+    const { name, email, phone, password, role = "END_USER" } = body;
+
+    console.log("📝 Registration data:", { name, email, phone, role });
+
+    // Comprehensive validation
+    const validationErrors = [];
+    
+    if (!name?.trim()) validationErrors.push("Name is required");
+    if (!email?.trim()) validationErrors.push("Email is required");
+    if (!phone?.trim()) validationErrors.push("Phone is required");
+    if (!password?.trim()) validationErrors.push("Password is required");
+    
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (email && !emailRegex.test(email.trim())) {
+      validationErrors.push("Invalid email format");
+    }
+    
+    // Password strength validation
+    if (password && password.length < 8) {
+      validationErrors.push("Password must be at least 8 characters long");
+    }
+    
+    if (validationErrors.length > 0) {
+      return new Response(
+        JSON.stringify({ error: validationErrors.join(", ") }),
+        { status: 400, headers }
+      );
     }
 
-    const sql = `INSERT INTO users (name, email, phone, password, role) VALUES (?, ?, ?, ?)`;
-    const result = await env.DB.prepare(sql).bind(name, email, phone, password, role).run();
+    console.log("✅ Validation passed, inserting into database");
 
-    return new Response(
-      JSON.stringify({ success: true, id: result.meta.last_row_id }),
-      {
-        status: 201,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-      }
-    );
+    const db = getDatabase(env);
+    const sql = `INSERT INTO users (name, email, phone, password, role, created_at) VALUES (?, ?, ?, ?, ?, datetime('now'))`;
+    
+    const result = await db.prepare(sql)
+      .bind(name.trim(), email.trim().toLowerCase(), phone.trim(), password, role)
+      .run();
+
+    console.log("📊 Database result:", result);
+
+    if (result.success) {
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          id: result.meta.last_row_id,
+          message: "User registered successfully"
+        }),
+        { status: 201, headers }
+      );
+    } else {
+      throw new Error("Database insertion failed");
+    }
+
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), {
-      status: 500,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-    });
+    console.error("❌ Registration error:", err);
+    
+    // Handle specific database errors
+    if (err.message.includes("UNIQUE constraint failed") || err.message.includes("email")) {
+      return new Response(
+        JSON.stringify({ error: "An account with this email already exists" }),
+        { status: 409, headers }
+      );
+    }
+    
+    return new Response(
+      JSON.stringify({ 
+        error: "Registration failed", 
+        details: err.message 
+      }),
+      { status: 500, headers }
+    );
   }
 }
 
-// Login handler (using production DB for users) - UPDATED to track sessions
+// Login handler with session tracking
 async function handleLoginRequest(request, env) {
+  const headers = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  };
+
   try {
+    console.log("🔍 Login request received");
+    
+    // Initialize database first
+    await initializeDatabase(env);
+    
     const body = await request.json();
     const { email, password } = body;
 
     if (!email || !password) {
-      return new Response(JSON.stringify({ error: "Email and password are required" }), {
-        status: 400,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-      });
+      return new Response(
+        JSON.stringify({ error: "Email and password are required" }),
+        { status: 400, headers }
+      );
     }
 
+    const db = getDatabase(env);
     const sql = `SELECT * FROM users WHERE email = ?`;
-    const result = await env.DB.prepare(sql).bind(email).first();
+    const result = await db.prepare(sql).bind(email.toLowerCase().trim()).first();
 
     if (!result) {
-      return new Response(JSON.stringify({ error: "Invalid email or password" }), {
-        status: 401,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-      });
+      return new Response(
+        JSON.stringify({ error: "Invalid email or password" }),
+        { status: 401, headers }
+      );
     }
 
+    // In production, you should hash passwords!
     if (result.password !== password) {
-      return new Response(JSON.stringify({ error: "Invalid email or password" }), {
-        status: 401,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-      });
+      return new Response(
+        JSON.stringify({ error: "Invalid email or password" }),
+        { status: 401, headers }
+      );
     }
 
     const userData = {
@@ -370,19 +330,16 @@ async function handleLoginRequest(request, env) {
     };
 
     const token = btoa(JSON.stringify(userData));
-    //const token = Buffer.from(JSON.stringify(userData)).toString('base64');
-    console.log("Your token is:", token);
-    // Initialize database tables first
-    await initializeDatabase(env);
+    console.log("🔑 Generated token for user:", result.id);
 
     // Track this login session
     try {
-      await env.DB.prepare(`
+      await db.prepare(`
         INSERT INTO user_sessions (user_id, token) VALUES (?, ?)
       `).bind(result.id, token).run();
 
-      // Update user's last login time
-      await env.DB.prepare(`
+      // Update user's last login time and count
+      await db.prepare(`
         UPDATE users 
         SET 
           last_login = datetime('now'),
@@ -390,8 +347,10 @@ async function handleLoginRequest(request, env) {
           updated_at = datetime('now')
         WHERE id = ?
       `).bind(result.id).run();
+      
+      console.log("✅ Login session tracked successfully");
     } catch (sessionError) {
-      console.error('Error tracking login session:', sessionError);
+      console.error('⚠️ Error tracking login session:', sessionError);
       // Don't fail the login if session tracking fails
     }
 
@@ -401,29 +360,161 @@ async function handleLoginRequest(request, env) {
         user: userData,
         token: token
       }),
-      {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-      }
+      { status: 200, headers }
     );
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), {
-      status: 500,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-    });
+    console.error("❌ Login error:", err);
+    return new Response(
+      JSON.stringify({ error: "Login failed", details: err.message }),
+      { status: 500, headers }
+    );
   }
 }
 
-// Get all events (using appropriate database)
-async function handleGetEvents(request, env) {
+// Helper function to verify token and get user ID
+async function getUserIdFromToken(token, env) {
   try {
-    // Initialize database first
+    const userData = JSON.parse(atob(token));
+
+    // Validate against database that session is legitimate
+    const db = getDatabase(env);
+    const session = await db.prepare(`
+      SELECT user_id FROM user_sessions WHERE token = ? ORDER BY login_time DESC LIMIT 1
+    `).bind(token).first();
+
+    if (!session || session.user_id !== userData.id) {
+      throw new Error("Invalid or expired session");
+    }
+
+    return userData.id;
+  } catch (err) {
+    console.error("Failed to decode token or validate session:", err);
+    throw new Error("Invalid token");
+  }
+}
+
+// Handle user stats endpoint
+async function handleUserStats(request, env) {
+  const headers = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  };
+
+  try {
+    const authHeader = request.headers.get("authorization");
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers }
+      );
+    }
+
+    const token = authHeader.slice(7);
+    const userId = await getUserIdFromToken(token, env);
+    
+    console.log("📊 Stats lookup for userId:", userId);
+    
+    const db = getDatabase(env);
+    const result = await db.prepare(`
+      SELECT 
+        name,
+        login_count AS loginCount,
+        last_login AS lastLogin,
+        created_at AS memberSince,
+        (SELECT COUNT(*) FROM profile_views WHERE viewed_user_id = ?) AS profileViews
+      FROM users 
+      WHERE id = ?
+    `).bind(userId, userId).first();
+
+    console.log("📊 Stats DB result:", result);
+
+    if (!result) {
+      return new Response(
+        JSON.stringify({ error: "User not found" }),
+        { status: 404, headers }
+      );
+    }
+
+    return new Response(JSON.stringify({
+      loginCount: result.loginCount || 0,
+      lastLogin: result.lastLogin || null,
+      memberSince: result.memberSince || null,
+      profileViews: result.profileViews || 0,
+      name: result.name || null
+    }), {
+      status: 200,
+      headers
+    });
+    
+  } catch (err) {
+    console.error("❌ User stats error:", err);
+    return new Response(
+      JSON.stringify({ error: "Failed to fetch stats", details: err.message }),
+      { status: 500, headers }
+    );
+  }
+}
+
+// Handle user update
+async function handleUserUpdate(request, env) {
+  const headers = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  };
+
+  try {
+    const authHeader = request.headers.get("Authorization");
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers }
+      );
+    }
+
+    const token = authHeader.slice(7);
+    const userId = await getUserIdFromToken(token, env);
+
+    const body = await request.json();
+    const { name, email, phone, role } = body;
+
+    if (!name || !email || !phone || !role) {
+      return new Response(
+        JSON.stringify({ error: "Missing required fields" }),
+        { status: 400, headers }
+      );
+    }
+
+    const db = getDatabase(env);
+    await db.prepare(`
+      UPDATE users
+      SET name = ?, email = ?, phone = ?, role = ?, updated_at = datetime('now')
+      WHERE id = ?
+    `).bind(name, email, phone, role, userId).run();
+
+    return new Response(
+      JSON.stringify({ success: true }),
+      { status: 200, headers }
+    );
+    
+  } catch (err) {
+    console.error("❌ User update error:", err);
+    return new Response(
+      JSON.stringify({ error: "Failed to update user", details: err.message }),
+      { status: 500, headers }
+    );
+  }
+}
+
+// Get all events
+async function handleGetEvents(request, env) {
+  const headers = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  };
+
+  try {
     await initializeDatabase(env);
     
     const db = getDatabase(env);
@@ -435,48 +526,40 @@ async function handleGetEvents(request, env) {
         success: true,
         events: result.results || []
       }),
-      {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-      }
+      { status: 200, headers }
     );
   } catch (err) {
-    console.error("Get events error:", err);
-    return new Response(JSON.stringify({ error: err.message }), {
-      status: 500,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-    });
+    console.error("❌ Get events error:", err);
+    return new Response(
+      JSON.stringify({ error: "Failed to fetch events", details: err.message }),
+      { status: 500, headers }
+    );
   }
 }
 
-// Create a new event (using appropriate database)
+// Create a new event
 async function handleCreateEvent(request, env) {
+  const headers = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  };
+
   try {
-    // Initialize database first
     await initializeDatabase(env);
     
     const body = await request.json();
     const { title, description, location, startTime, endTime } = body;
 
-    console.log("Received event data:", { title, description, location, startTime, endTime });
+    console.log("📅 Received event data:", { title, description, location, startTime, endTime });
 
     // Validate required fields
     if (!title || !description || !location || !startTime || !endTime) {
-      return new Response(JSON.stringify({ 
-        error: "All fields are required (title, description, location, startTime, endTime)" 
-      }), {
-        status: 400,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-      });
+      return new Response(
+        JSON.stringify({ 
+          error: "All fields are required (title, description, location, startTime, endTime)" 
+        }),
+        { status: 400, headers }
+      );
     }
 
     // Validate time
@@ -484,37 +567,28 @@ async function handleCreateEvent(request, env) {
     const end = new Date(endTime);
     
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-      return new Response(JSON.stringify({ 
-        error: "Invalid date format for startTime or endTime" 
-      }), {
-        status: 400,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-      });
+      return new Response(
+        JSON.stringify({ 
+          error: "Invalid date format for startTime or endTime" 
+        }),
+        { status: 400, headers }
+      );
     }
     
     if (end <= start) {
-      return new Response(JSON.stringify({ 
-        error: "End time must be after start time" 
-      }), {
-        status: 400,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-      });
+      return new Response(
+        JSON.stringify({ 
+          error: "End time must be after start time" 
+        }),
+        { status: 400, headers }
+      );
     }
 
     const db = getDatabase(env);
-    console.log("Using database:", db ? "Connected" : "Not connected");
-    
-    // Use consistent column naming
     const sql = `INSERT INTO events (title, description, location, startTime, endTime, created_at) VALUES (?, ?, ?, ?, ?, datetime('now'))`;
     const result = await db.prepare(sql).bind(title, description, location, startTime, endTime).run();
 
-    console.log("Database insert result:", result);
+    console.log("📊 Database insert result:", result);
 
     if (result.success) {
       return new Response(
@@ -523,52 +597,40 @@ async function handleCreateEvent(request, env) {
           message: "Event created successfully", 
           id: result.meta.last_row_id 
         }),
-        {
-          status: 201,
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-          },
-        }
+        { status: 201, headers }
       );
     } else {
-      return new Response(JSON.stringify({ error: "Failed to create event in database" }), {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-      });
+      throw new Error("Failed to create event in database");
     }
   } catch (err) {
-    console.error("Create event error:", err);
-    return new Response(JSON.stringify({ 
-      error: "Internal server error: " + err.message 
-    }), {
-      status: 500,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-    });
+    console.error("❌ Create event error:", err);
+    return new Response(
+      JSON.stringify({ 
+        error: "Failed to create event", 
+        details: err.message 
+      }),
+      { status: 500, headers }
+    );
   }
 }
 
-// Delete an event (using appropriate database)
+// Delete an event
 async function handleDeleteEvent(request, env) {
+  const headers = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  };
+
   try {
     const url = new URL(request.url);
     const pathParts = url.pathname.split('/');
     const eventId = pathParts[pathParts.length - 1];
 
     if (!eventId || isNaN(eventId)) {
-      return new Response(JSON.stringify({ error: "Invalid event ID" }), {
-        status: 400,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-      });
+      return new Response(
+        JSON.stringify({ error: "Invalid event ID" }),
+        { status: 400, headers }
+      );
     }
 
     const db = getDatabase(env);
@@ -578,13 +640,10 @@ async function handleDeleteEvent(request, env) {
     const existingEvent = await db.prepare(checkSql).bind(eventId).first();
     
     if (!existingEvent) {
-      return new Response(JSON.stringify({ error: "Event not found" }), {
-        status: 404,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-      });
+      return new Response(
+        JSON.stringify({ error: "Event not found" }),
+        { status: 404, headers }
+      );
     }
 
     // Delete the event
@@ -598,31 +657,16 @@ async function handleDeleteEvent(request, env) {
           message: "Event deleted successfully",
           id: eventId
         }),
-        {
-          status: 200,
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-          },
-        }
+        { status: 200, headers }
       );
     } else {
-      return new Response(JSON.stringify({ error: "Failed to delete event" }), {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-      });
+      throw new Error("Failed to delete event");
     }
   } catch (err) {
-    console.error("Delete event error:", err);
-    return new Response(JSON.stringify({ error: err.message }), {
-      status: 500,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-    });
+    console.error("❌ Delete event error:", err);
+    return new Response(
+      JSON.stringify({ error: "Failed to delete event", details: err.message }),
+      { status: 500, headers }
+    );
   }
 }

@@ -1,49 +1,52 @@
 // app/api/auth/register/route.js
 import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
-import { getDatabase } from "@/lib/database";
 
-export const runtime = 'nodejs';
+export const runtime = "nodejs";
 
 export async function POST(request) {
   try {
-    const { name, email, phone, password } = await request.json();
-
-    // Input validation
-    if (!name || !email || !phone || !password) {
-      return NextResponse.json(
-        { error: "All fields are required" },
-        { status: 400 }
-      );
-    }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    // Get database connection
-    const db = getDatabase();
+    const body = await request.json();
     
-    // Insert user
-    const insertQuery = "INSERT INTO users (name, email, phone, password, role) VALUES (?, ?, ?, ?, ?)";
-    const result = await db.prepare(insertQuery).run(name, email, phone, hashedPassword, "END_USER");
-
-    return NextResponse.json({
-      success: true,
-      user: { id: result.meta.last_row_id, name, email, phone, role: "END_USER" },
-      message: "Registration successful",
+    console.log("🔍 Registration request received:", { 
+      ...body, 
+      password: '[REDACTED]' 
     });
-  } catch (error) {
-    console.error("Registration error:", error.message);
+
+    const cfEndpoint = "https://sandbox_flowbite.raspy-math-fdba.workers.dev/register";
     
-    if (error.message.includes("UNIQUE constraint failed")) {
+    const workerResponse = await fetch(cfEndpoint, {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ 
+        ...body, 
+        role: "END_USER"
+      }),
+    });
+
+    const resText = await workerResponse.text();
+    console.log("📝 Worker response:", resText);
+
+    let data;
+    try {
+      data = JSON.parse(resText);
+    } catch (parseError) {
+      console.error("❌ Parse error:", parseError);
       return NextResponse.json(
-        { error: "An account with this email already exists" },
-        { status: 400 }
+        { error: "Invalid response from authentication service" },
+        { status: 502 }
       );
     }
-    
+
+    return NextResponse.json(data, { 
+      status: workerResponse.status 
+    });
+
+  } catch (error) {
+    console.error("❌ Register proxy error:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Registration service temporarily unavailable" },
       { status: 500 }
     );
   }
