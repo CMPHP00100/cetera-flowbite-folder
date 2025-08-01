@@ -1,5 +1,5 @@
 // app/blog/[slug]/page.js
-import { getPosts } from '../../../lib/contentful'
+import { getPosts } from '@/lib/contentful'
 import { notFound } from 'next/navigation'
 
 // Helper function to find a post by slug from all posts

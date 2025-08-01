@@ -1,3 +1,4 @@
+//app/orders/[orderId]/page.js
 "use client";
 
 import { useOrderHistory } from "@/context/OrderContext";
@@ -6,6 +7,29 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { CiCreditCard1, CiBoxes, CiCalendar, CiLocationOn } from "react-icons/ci";
 import { IoCheckmarkCircle, IoTimeOutline, IoArrowBack } from "react-icons/io5";
+
+// Helper functions for safe price/quantity handling
+const safePrice = (price) => {
+  if (typeof price === 'number' && !isNaN(price)) {
+    return price.toFixed(2);
+  }
+  if (typeof price === 'string') {
+    const parsed = parseFloat(price);
+    return !isNaN(parsed) ? parsed.toFixed(2) : '0.00';
+  }
+  return '0.00';
+};
+
+const safeQuantity = (quantity) => {
+  if (typeof quantity === 'number' && !isNaN(quantity)) {
+    return quantity;
+  }
+  if (typeof quantity === 'string') {
+    const parsed = parseInt(quantity);
+    return !isNaN(parsed) ? parsed : 1;
+  }
+  return 1;
+};
 
 export default function OrderDetails() {
   const { orderId } = useParams();
@@ -89,9 +113,9 @@ export default function OrderDetails() {
                             </div>
                           </div>
                         </td>
-                        <td>${item.prc.toFixed(2)}</td>
-                        <td>{item.quantity}</td>
-                        <td>${(item.prc * item.quantity).toFixed(2)}</td>
+                        <td>${safePrice(item.prc)}</td>
+                        <td>{safeQuantity(item.quantity)}</td>
+                        <td>${safePrice(safePrice(item.prc) * safeQuantity(item.quantity))}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -155,26 +179,26 @@ export default function OrderDetails() {
                 <h6 className="mb-3">Payment Summary</h6>
                 <div className="d-flex justify-content-between mb-1">
                   <span>Subtotal:</span>
-                  <span>${order.totals.subtotal.toFixed(2)}</span>
+                  <span>${safePrice(order.totals.subtotal)}</span>
                 </div>
                 {order.totals.discount > 0 && (
                   <div className="d-flex justify-content-between mb-1 text-success">
                     <span>Discount ({order.totals.coupon}):</span>
-                    <span>-${((order.totals.subtotal * order.totals.discount) / 100).toFixed(2)}</span>
+                    <span>-${safePrice((safePrice(order.totals.subtotal) * order.totals.discount) / 100)}</span>
                   </div>
                 )}
                 <div className="d-flex justify-content-between mb-1">
                   <span>Shipping:</span>
-                  <span>${order.totals.shipping.toFixed(2)}</span>
+                  <span>${safePrice(order.totals.shipping)}</span>
                 </div>
                 <div className="d-flex justify-content-between mb-1">
                   <span>Tax:</span>
-                  <span>${order.totals.tax.toFixed(2)}</span>
+                  <span>${safePrice(order.totals.tax)}</span>
                 </div>
                 <hr />
                 <div className="d-flex justify-content-between fw-bold">
                   <span>Total:</span>
-                  <span>${order.totals.total.toFixed(2)}</span>
+                  <span>${safePrice(order.totals.total)}</span>
                 </div>
               </div>
 

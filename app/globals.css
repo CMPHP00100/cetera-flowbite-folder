@@ -78,3 +78,8 @@ p, span, a {
 .default-footer {
   background-color: #273B5B;
 }
+
+
+.btn.bg-cetera-gray {
+  background-color: #273B5B !important;
+}

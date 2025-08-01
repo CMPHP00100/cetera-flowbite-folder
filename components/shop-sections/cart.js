@@ -337,7 +337,7 @@ const Cart = ({ onProceedToCheckout }) => {
                       </button>
                       <button
                         onClick={onProceedToCheckout}
-                        className="btn bg-cetera-gray text-white hover:bg-cetera-orange d-flex align-items-center"
+                        className="p-2 rounded-md bg-cetera-dark-blue text-white hover:bg-cetera-orange d-flex align-items-center"
                       >
                         <CiCreditCard1 className="me-2" size={20} />
                         Proceed to Checkout

@@ -205,14 +205,22 @@ const Checkout = ({ onBack }) => {
         customer: customerInfo,
         shipping: shippingInfo,
         payment: { ...paymentInfo, cardNumber: paymentInfo.cardNumber.replace(/\s/g, '') },
-        items: Object.values(cart),
+        items: Object.values(cart).map(item => ({
+          ...item,
+          prc: typeof item.prc === 'number' ? item.prc : parseFloat(item.prc || item.price || 0),
+          quantity: parseInt(item.quantity || 1),
+          // Ensure all required fields are present
+          cartId: item.cartId || item.id,
+          name: item.name || item.displayName || 'Unknown Product',
+          displayName: item.displayName || item.name || 'Unknown Product'
+        })),
         totals: {
-          subtotal: totalPrice,
-          shipping: getShippingCost(),
-          tax: getTaxAmount(),
-          total: getFinalTotal(),
-          discount: discount,
-          coupon: coupon,
+          subtotal: parseFloat(totalPrice.toFixed(2)),
+          shipping: parseFloat(getShippingCost().toFixed(2)),
+          tax: parseFloat(getTaxAmount().toFixed(2)),
+          total: parseFloat(getFinalTotal().toFixed(2)),
+          discount: parseFloat(discount || 0),
+          coupon: coupon || '',
         },
         date: new Date().toISOString(),
         status: 'Processing'
@@ -292,11 +300,17 @@ const Checkout = ({ onBack }) => {
       orderData.authCode = paymentResult.authCode;
       orderData.status = 'Paid';
       
+      console.log('🎯 About to add order to history:', orderData); // DEBUG
+
       // Save the order
       addOrder(orderData);
+      console.log('✅ Order added to context'); // DEBUG
+
       setOrderId(orderData.id);
       setOrderComplete(true);
       clearCart();
+
+      console.log('🛒 Cart cleared, order complete'); // DEBUG
       
     } catch (error) {
       console.error('Order processing failed:', error);
