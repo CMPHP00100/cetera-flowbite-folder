@@ -306,6 +306,28 @@ const Checkout = ({ onBack }) => {
       addOrder(orderData);
       console.log('✅ Order added to context'); // DEBUG
 
+      // Send confirmation email
+      try {
+        console.log('📧 Sending confirmation email...');
+        const emailResponse = await fetch('/api/order-confirmation', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ orderData })
+        });
+
+        if (emailResponse.ok) {
+          console.log('✅ Confirmation email sent successfully');
+        } else {
+          console.error('❌ Failed to send confirmation email:', await emailResponse.text());
+          // Don't fail the order if email fails
+        }
+      } catch (emailError) {
+        console.error('❌ Email sending error:', emailError);
+        // Don't fail the order if email fails
+      }
+
       setOrderId(orderData.id);
       setOrderComplete(true);
       clearCart();
