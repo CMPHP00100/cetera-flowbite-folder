@@ -98,6 +98,7 @@ export default function OrderDetails() {
                       <tr key={item.cartId}>
                         <td>
                           <div className="d-flex align-items-center">
+                            {console.log(item.pics?.[0]?.url)}
                             <Image
                               src={updateRSParam(item.pics?.[0]?.url || item.thumbPic, "100")}
                               alt={item.name}

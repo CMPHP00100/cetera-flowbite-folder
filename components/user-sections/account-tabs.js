@@ -47,7 +47,7 @@ const AccountTabs = () => {
   // Otherwise show login/register tabs
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
-      <div className="bg-cetera-gray rounded-lg shadow-xl w-full max-w-md">
+      <div className="bg-cetera-dark-blue rounded-lg shadow-xl w-full max-w-md">
         {/* Tab Navigation */}
         <div className="flex border-b border-gray-700">
           <button

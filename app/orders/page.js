@@ -76,7 +76,7 @@ export default function OrderHistory() {
                   {order.items.slice(0, 3).map((item) => (
                     <div key={item.cartId} className="d-flex align-items-center me-3">
                       <Image
-                        src={updateRSParam(item.pics?.[0]?.url || item.thumbPic, "100")}
+                        src={updateRSParam(item.pics?.[0]?.url || item.thumbPic || item.pics, "100")}
                         alt={item.name}
                         width={50}
                         height={50}

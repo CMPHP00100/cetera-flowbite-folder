@@ -455,7 +455,7 @@ const dismissError = () => {
                 </button>
                 <button 
                    onClick={() => window.location.href = `/orders/${orderId}`}
-                  className="btn bg-cetera-dark-blue"
+                  className="p-2 bg-cetera-dark-blue text-white rounded-md hover:bg-cetera-mono-orange"
                 >
                   View Order Details
                 </button>
@@ -468,12 +468,12 @@ const dismissError = () => {
   }
 
   return (
-    <div className="container py-4">
+    <div className="container py-4 min-h-[72vh]">
       {/* Header */}
       <div className="d-flex align-items-center mb-4">
         <button
           onClick={onBack}
-          className="btn btn-link text-decoration-none p-0 me-3 text-cetera-gray hover:text-cetera-orange"
+          className="btn btn-link text-decoration-none p-0 me-3 text-cetera-dark-blue hover:text-cetera-orange"
         >
           <IoArrowBack size={24} />
         </button>
@@ -524,8 +524,8 @@ const dismissError = () => {
         <div className="col-lg-8">
           {/* Step 1: Customer Information */}
           {currentStep === 1 && (
-            <div className="card border-cetera-gray">
-              <div className="card-header bg-cetera-gray text-white">
+            <div className="card border-cetera-dark-blue">
+              <div className="card-header bg-cetera-dark-blue text-white">
                 <h5 className="mb-0">Customer Information</h5>
               </div>
               <div className="card-body">
@@ -586,8 +586,8 @@ const dismissError = () => {
 
           {/* Step 2: Shipping Information */}
           {currentStep === 2 && (
-            <div className="card border-cetera-gray">
-              <div className="card-header bg-cetera-gray text-white">
+            <div className="card border-cetera-dark-blue">
+              <div className="card-header bg-cetera-dark-blue text-white">
                 <h5 className="mb-0">Shipping Information</h5>
               </div>
               <div className="card-body">
@@ -658,8 +658,8 @@ const dismissError = () => {
 
           {/* Step 3: Payment Information */}
           {currentStep === 3 && (
-            <div className="card border-cetera-gray">
-              <div className="card-header bg-cetera-gray text-white">
+            <div className="card border-cetera-dark-blue">
+              <div className="card-header bg-cetera-dark-blue text-white">
                 <h5 className="mb-0">Payment Information</h5>
               </div>
               <div className="card-body">
@@ -878,19 +878,19 @@ const dismissError = () => {
           <div className="d-flex justify-content-between mt-4">
             <button
               onClick={handlePrevStep}
-              className={`btn btn-outline-secondary hover:bg-cetera-gray hover:border-cetera-gray ${currentStep === 1 ? 'd-invisible' : ''}`}
+              className={`btn btn-outline-secondary hover:bg-cetera-dark-blue hover:border-cetera-dark-blue ${currentStep === 1 ? 'd-invisible' : ''}`}
               disabled={currentStep === 1}
             >
               Previous
             </button>
             <button
               onClick={handleNextStep}
-              className="btn bg-cetera-gray hover:bg-cetera-orange text-white"
+              className="btn bg-cetera-dark-blue hover:bg-cetera-orange text-white"
               disabled={isProcessing}
             >
               {isProcessing ? (
                 <>
-                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  <span className="spinner-border spinner-border-sm me-2 text-cetera-dark-blue" role="status" aria-hidden="true"></span>
                   Processing...
                 </>
               ) : (
@@ -902,8 +902,8 @@ const dismissError = () => {
 
         {/* Order Summary Sidebar */}
         <div className="col-lg-4">
-          <div className="card position-sticky border-cetera-gray" style={{ top: '20px' }}>
-            <div className="card-header bg-cetera-gray text-white">
+          <div className="card position-sticky border-cetera-dark-blue" style={{ top: '20px' }}>
+            <div className="card-header bg-cetera-dark-blue text-white">
               <h5 className="mb-0">Order Summary</h5>
             </div>
             <div className="card-body">
@@ -913,7 +913,7 @@ const dismissError = () => {
                 {Object.values(cart).slice(0, 3).map((product) => (
                   <div key={product.cartId} className="d-flex align-items-center mb-2">
                     <Image
-                      src={updateRSParam(product.pics?.[0]?.url || product.thumbPic, "200")}
+                      src={updateRSParam(product.pics?.[0]?.url || product.thumbPic || product.pics, "200")}
                       alt={product.name}
                       width={40}
                       height={40}

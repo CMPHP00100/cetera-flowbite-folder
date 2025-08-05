@@ -102,32 +102,27 @@ const Cart = ({ onProceedToCheckout }) => {
   };
 
   return (
-    <div className="container-fluid p-4 bg-cetera-dark-blue my-8">
+    <div className="container-fluid p-4 bg-cetera-light-gray my-8 min-h-[70vh]">
       {/* Cart Header with Clear Button */}
-      <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
-        <h1 className="mb-0 font-cetera-libre text-[2.5rem] sm:text-[4rem] text-cetera-light-gray">Shopping Cart <span className="text-[1.5rem]">({getCartItemCount()} items)</span></h1>
-        {Object.keys(cart).length > 0 && (
-          <button
-            onClick={handleClearCart}
-            className="btn btn-outline-danger btn-dm"
-          >
-            <div className="row">
-              <span className="col-2 me-1">
-                <CiTrash className="text-[18px]" />
-              </span>
-              <span className="col-8 text-sm px-0">
-                <span>Clear Cart</span>
-              </span>
-            </div>
-          </button>
-        )}
+      <div className="justify-content-between align-items-center mt-4 mb-4">
+        <div className="row">
+          <div className="col-sm-12 col-md-10">
+            <h1 className="mb-0 font-cetera-libre text-[2.5rem] sm:text-[4rem] text-cetera-dark-blue underline decoration-cetera-mono-orange">Shopping Cart <span className="text-[1.5rem]">({getCartItemCount()} items)</span></h1>
+          </div>
+           <div className="col-sm-12 col-md-2 mt-3 md:mt-[2.7rem] text-xl text-cetera-dark-blue underline decoration-cetera-mono-orange hover:decoration-cetera-dark-blue md:text-right">
+              <a href="/orders" className="font-cetera-libre">
+                My Orders
+              </a>
+           </div>
+        </div>
+        
       </div>
 
       {Object.keys(cart).length === 0 ? (
         <div className="text-center py-5">
           <p className="text-muted mb-3">Your cart is empty.</p>
           <button 
-            className="btn btn-primary"
+            className="btn bg-cetera-dark-blue border-1 text-white hover:border-cetera-dark-blue hover:text-cetera-dark-blue!"
             onClick={() => window.location.href = '/products'}
           >
             Continue Shopping
@@ -135,148 +130,171 @@ const Cart = ({ onProceedToCheckout }) => {
         </div>
       ) : (
         <>
-          <ul className="list-group bg-cetera-light-gray">
-            {Object.values(cart).map((product) => {
-              const quantityTiers = getQuantityTiers(product);
-              const hasMultipleTiers = quantityTiers.length > 1;
-              const selectedTier = getSelectedTier(product);
-              const tierPrice = calculateTierPrice(product);
-              
-              return (
-                <li
-                  key={product.cartId || product.spc}
-                  id={product.prodEId}
-                  className="list-group-item border-bottom py-3"
-                >
-                  <div className="row align-items-center">
-                    {/* Product Image */}
-                    <div className="col-4 col-md-2 col-lg-2">
-                      <Image
-                        src={updateRSParam(
-                          product.pics?.[0]?.url || product.thumbPic,
-                          "1800"
-                        )}
-                        alt={product.name}
-                        width={100}
-                        height={100}
-                        className="img-fluid rounded border border-gray-400"
-                      />
-                      {/* Remove Button - Desktop */}
-                      <div className="d-none d-md-block mt-2 text-start">
-                        <button
-                          className="btn btn-sm btn-link text-danger px-0"
-                          onClick={() => removeItem(product.cartId || product.prodEId)}
-                        >
-                          <span className="inline-flex">
-                            <CiTrash
-                              value="Remove"
-                              className="text-xl text-red-600"
-                            />
-                            <span className="text-sm text-red-600">Remove</span>
-                          </span>
-                        </button>
-                      </div>
+          <div className="row">
+            <div className="col-sm-12">
+              <div className="float-right mb-2">
+                {Object.keys(cart).length > 0 && (
+                  <button
+                    onClick={handleClearCart}
+                    className="btn btn-outline-danger btn-dm"
+                  >
+                    <div className="row">
+                      <span className="col-2 me-1">
+                        <CiTrash className="text-[18px]" />
+                      </span>
+                      <span className="col-8 text-sm px-0">
+                        <span>Clear Cart</span>
+                      </span>
                     </div>
-
-                    {/* Product Info */}
-                    <div className="col-8 col-md-5 col-lg-6">
-                      <div className="d-flex flex-column">
-                        <a className="text-decoration-none text-dark" href="#">
-                          <h6 className="mb-1">
-                            {product.displayName || product.name}
-                          </h6>
-                        </a>
-                        
-                        {/* Show selected options */}
-                        <div className="text-sm text-gray-600">
-                          {product.selectedColor && (
-                            <span className="me-2">Color: {product.selectedColor}</span>
-                          )}
-                          {product.selectedQuantity && (
-                            <span>Tier: {product.selectedQuantity} pcs</span>
-                          )}
-                        </div>
-
-                        {/* Price - Desktop */}
-                        <div className="d-none d-md-block">
-                          <span className="fw-bold">${selectedTier ? (selectedTier.qty * selectedTier.price).toFixed(2) : product.prc}</span>
-                          <span className="text-muted text-sm ms-2">total</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Quantity Tier Selector (if multiple tiers available) */}
-                    <div className="col-12 col-md-5 col-lg-4 mt-2 mt-md-0">
-                      <div className="row">
-                        {hasMultipleTiers && (
-                          <div className="col-12 mb-2">
-                            <select
-                              value={product.selectedQuantity || ''}
-                              onChange={(e) => handleQuantityTierChange(product, e.target.value)}
-                              className="form-select form-select-sm"
+                  </button>
+                )}
+              </div>
+            </div>
+            <div className="col-sm-12">
+              <ul className="list-group bg-cetera-light-gray">
+                {Object.values(cart).map((product) => {
+                  const quantityTiers = getQuantityTiers(product);
+                  const hasMultipleTiers = quantityTiers.length > 1;
+                  const selectedTier = getSelectedTier(product);
+                  const tierPrice = calculateTierPrice(product);
+                  
+                  return (
+                    <li
+                      key={product.cartId || product.spc}
+                      id={product.prodEId}
+                      className="list-group-item py-3 border-cetera-dark-blue"
+                    >
+                      <div className="row align-items-center">
+                        {/* Product Image */}
+                        <div className="col-4 col-md-2 col-lg-2">
+                          <Image
+                            src={updateRSParam(
+                              product.pics?.[0]?.url || product.thumbPic,
+                              "1800"
+                            )}
+                            alt={product.name}
+                            width={100}
+                            height={100}
+                            className="img-fluid rounded border border-gray-400"
+                          />
+                          {/* Remove Button - Desktop */}
+                          <div className="d-none d-md-block mt-2 text-start">
+                            <button
+                              className="btn btn-sm btn-link text-danger px-0"
+                              onClick={() => removeItem(product.cartId || product.prodEId)}
                             >
-                              {quantityTiers.map((tier) => (
-                                <option key={tier.index} value={tier.qty}>
-                                  {tier.qty} pcs - ${parseFloat(tier.price).toFixed(2)}
-                                </option>
-                              ))}
-                            </select>
+                              <span className="inline-flex">
+                                <CiTrash
+                                  value="Remove"
+                                  className="text-xl text-red-600"
+                                />
+                                <span className="text-sm text-red-600">Remove</span>
+                              </span>
+                            </button>
                           </div>
-                        )}
+                        </div>
 
-                        {/* Quantity Controls */}
-                        <div className="col-12">
-                          <div className="d-flex align-items-center justify-content-between">
-                            <div
-                              className="input-group input-group-sm"
-                              style={{ width: "120px" }}
-                            >
-                              <button
-                                className="border-1 rounded-l-lg border border-gray-500 bg-none p-2 hover:border-cetera-orange hover:bg-cetera-orange hover:text-white"
-                                type="button"
-                                onClick={() => decrement(product.cartId || product.prodEId)}
-                              >
-                                <TfiMinus />
-                              </button>
-                              <input
-                                readOnly
-                                className="form-control text-center border-[#ccc] border-1"
-                                type="text"
-                                value={product.quantity}
-                                name="quantity"
-                              />
-                              <button
-                                className="border-1 rounded-r-lg border border-gray-500 bg-none p-2 hover:border-cetera-orange hover:bg-cetera-orange hover:text-white"
-                                type="button"
-                                onClick={() => increment(product.cartId || product.prodEId)}
-                              >
-                                <TfiPlus />
-                              </button>
+                        {/* Product Info */}
+                        <div className="col-8 col-md-5 col-lg-6">
+                          <div className="d-flex flex-column">
+                            <a className="text-decoration-none text-cetera-dark-blue" href="#">
+                              <h6 className="mb-1">
+                                {product.displayName || product.name}
+                              </h6>
+                            </a>
+                            
+                            {/* Show selected options */}
+                            <div className="text-sm text-muted">
+                              {product.selectedColor && (
+                                <span className="me-2">Color: {product.selectedColor}</span>
+                              )}
+                              {product.selectedQuantity && (
+                                <span>Tier: {product.selectedQuantity} pcs</span>
+                              )}
+                            </div>
+
+                            {/* Price - Desktop */}
+                            <div className="d-none d-md-block">
+                              <span className="fw-bold text-cetera-mono-orange">${selectedTier ? (selectedTier.qty * selectedTier.price).toFixed(2) : product.prc}</span>
+                              <span className="text-muted text-sm ms-2">total</span>
                             </div>
                           </div>
                         </div>
 
-                        {/* Mobile Only - Remove */}
-                        <div className="col-6 d-md-none text-start mt-3">
-                          <button
-                            className="btn btn-sm btn-link text-danger p-0"
-                            onClick={() => removeItem(product.cartId || product.prodEId)}
-                          >
-                            <CiTrash className="text-xl" />
-                          </button>
-                        </div>
+                        {/* Quantity Tier Selector (if multiple tiers available) */}
+                        <div className="col-12 col-md-5 col-lg-4 mt-2 mt-md-0">
+                          <div className="row">
+                            {hasMultipleTiers && (
+                              <div className="col-12 mb-2">
+                                <select
+                                  value={product.selectedQuantity || ''}
+                                  onChange={(e) => handleQuantityTierChange(product, e.target.value)}
+                                  className="form-select form-select-sm"
+                                >
+                                  {quantityTiers.map((tier) => (
+                                    <option key={tier.index} value={tier.qty}>
+                                      {tier.qty} pcs - ${parseFloat(tier.price).toFixed(2)}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            )}
 
-                        {/* Price - Mobile */}
-                        <div className="col-6 d-md-none mt-3 text-end">
-                          <span className="fw-bold">${selectedTier ? (selectedTier.qty * selectedTier.price * product.quantity).toFixed(2) : (product.prc * product.quantity).toFixed(2)}</span>
+                            {/* Quantity Controls */}
+                            <div className="col-12">
+                              <div className="d-flex align-items-center justify-content-between">
+                                <div
+                                  className="input-group input-group-sm"
+                                  style={{ width: "120px" }}
+                                >
+                                  <button
+                                    className="border-1 rounded-l-lg border border-gray-500 bg-none p-2 hover:border-cetera-orange hover:bg-cetera-orange hover:text-white"
+                                    type="button"
+                                    onClick={() => decrement(product.cartId || product.prodEId)}
+                                  >
+                                    <TfiMinus />
+                                  </button>
+                                  <input
+                                    readOnly
+                                    className="form-control text-center border-[#ccc] border-1"
+                                    type="text"
+                                    value={product.quantity}
+                                    name="quantity"
+                                  />
+                                  <button
+                                    className="border-1 rounded-r-lg border border-gray-500 bg-none p-2 hover:border-cetera-orange hover:bg-cetera-orange hover:text-white"
+                                    type="button"
+                                    onClick={() => increment(product.cartId || product.prodEId)}
+                                  >
+                                    <TfiPlus />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Mobile Only - Remove */}
+                            <div className="col-6 d-md-none text-start mt-3">
+                              <button
+                                className="btn btn-sm btn-link text-danger p-0"
+                                onClick={() => removeItem(product.cartId || product.prodEId)}
+                              >
+                                <CiTrash className="text-xl" />
+                              </button>
+                            </div>
+
+                            {/* Price - Mobile */}
+                            <div className="col-6 d-md-none mt-3 text-end">
+                              <span className="fw-bold">${selectedTier ? (selectedTier.qty * selectedTier.price * product.quantity).toFixed(2) : (product.prc * product.quantity).toFixed(2)}</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          </div>
 
           {/* Coupon and Total */}
           <div className="row mt-4">
@@ -287,11 +305,11 @@ const Cart = ({ onProceedToCheckout }) => {
                   value={couponCode}
                   onChange={(e) => setCouponCode(e.target.value)}
                   placeholder="Enter coupon code"
-                  className="form-control border-1 rounded-l border-cetera-gray bg-none p-2 bg-cetera-light-gray"
+                  className="form-control border-1 rounded-l border-cetera-dark-blue bg-none p-2 bg-cetera-light-gray"
                 />
                 <button
                   onClick={handleApplyCoupon}
-                  className="border-1 hover: ml-2 rounded-r border-cetera-gray bg-cetera-gray px-4 py-2 text-white hover:border-cetera-orange hover:bg-cetera-orange hover:border-1"
+                  className="border-1 hover: ml-2 rounded-r border-cetera-dark-blue bg-cetera-dark-blue px-4 py-2 text-white hover:border-cetera-orange hover:bg-cetera-orange hover:border-1"
                 >
                   Apply
                 </button>
@@ -306,7 +324,7 @@ const Cart = ({ onProceedToCheckout }) => {
 
             <div className="col-md-6 text-md-end font-cetera-josefin">
               <div className="d-flex flex-column flex-md-row align-items-md-center justify-content-md-end gap-2">
-                <span className="fw-bold text-uppercase border-b border-cetera-orange text-cetera-light-gray">
+                <span className="fw-bold text-uppercase border-b border-cetera-orange text-cetera-dark-blue">
                   Subtotal:
                 </span>
                 <span className="fs-4 text-cetera-orange">
@@ -319,7 +337,7 @@ const Cart = ({ onProceedToCheckout }) => {
           {/* Checkout Section */}
           <div className="row mt-4">
             <div className="col-12">
-              <div className="card bg-cetera-light-gray border-cetera-gray border-1">
+              <div className="card bg-cetera-light-gray border-cetera-dark-blue border-1">
                 <div className="card-body">
                   <div className="d-flex flex-column flex-md-row justify-content-between align-items-center">
                     <div className="mb-3 mb-md-0">
@@ -330,8 +348,8 @@ const Cart = ({ onProceedToCheckout }) => {
                     </div>
                     <div className="d-flex gap-2">
                       <button 
-                        className="btn btn-outline-secondary hover:bg-cetera-gray hover:border-cetera-gray hover:border-1"
-                        onClick={() => window.location.href = '/shop'}
+                        className="btn btn-outline-secondary hover:bg-cetera-dark-blue hover:border-cetera-dark-blue hover:border-1"
+                        onClick={() => window.location.href = '/products'}
                       >
                         Continue Shopping
                       </button>

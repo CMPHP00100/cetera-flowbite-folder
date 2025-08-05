@@ -404,7 +404,7 @@ export default function ProductDetails({ product, productId }) {
                     addItem(cartItem);
                   }}
                   disabled={!selectedQuantity}
-                  className="flex w-full items-center justify-center rounded-md border border-transparent bg-cetera-gray px-8 py-3 text-base font-medium text-white hover:bg-cetera-orange focus:outline-none focus:ring-2 focus:ring-cetera-orange focus:ring-offset-2 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex w-full items-center justify-center rounded-md border border-transparent bg-cetera-dark-blue px-8 py-3 text-base font-medium text-white hover:bg-cetera-orange focus:outline-none focus:ring-2 focus:ring-cetera-orange focus:ring-offset-2 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Add to Cart
                 </button>

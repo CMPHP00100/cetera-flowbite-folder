@@ -347,7 +347,7 @@ export default function Product() {
           >
             {filteredProducts.length > 0 ? (
               filteredProducts.map((product) => {
-                console.log('Rendering product:', product);
+                //console.log('Rendering product:', product);
                 const price = product.prc;
                 const name = product.name;
                 const productId = product.prodEId || product.id;

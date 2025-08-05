@@ -351,7 +351,7 @@ const CSVuploader = () => {
                         {/*<div className="text-6xl mb-4">📁</div>*/}
                         <div className="text-xl text-gray-600 mb-6">Drop your CSV file here or click to browse</div>
                         <button 
-                        className="bg-cetera-gray text-white px-8 py-3 rounded-full font-semibold hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+                        className="bg-cetera-dark-blue text-white px-8 py-3 rounded-full font-semibold hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
                         disabled={isLoading}
                         >
                         {isLoading ? 'Processing...' : 'Choose File'}
@@ -400,7 +400,7 @@ const CSVuploader = () => {
                 <div className="mb-6">
                     <div className="w-full bg-gray-200 rounded-full h-3">
                     <div 
-                        className="bg-cetera-gray h-3 rounded-full transition-all duration-300"
+                        className="bg-cetera-dark-blue h-3 rounded-full transition-all duration-300"
                         style={{ width: `${progress}%` }}
                     ></div>
                     </div>
