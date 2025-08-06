@@ -38,7 +38,7 @@ const LoginForm = ({ onLogin }) => {
 
   return (
     <div className="w-full mx-auto max-w-md rounded p-6">
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6 font-cetera-josefin">
         {error && (
           <div className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-3 rounded-lg">
             {error}
@@ -53,7 +53,7 @@ const LoginForm = ({ onLogin }) => {
             value={formData.email}
             onChange={handleChange}
             required
-            className="focus:border-cetera-orange mb-3 block w-full rounded-lg border border-white bg-dark-blue p-2.5 text-sm text-white placeholder:text-gray-400"
+            className="focus:border-cetera-orange mb-3 block w-full rounded-lg border-1 border-cetera-mono-orange bg-cetera-light-gray p-2.5 text-sm text-cetera-dark-blue placeholder:text-gray-400"
             placeholder="Enter your email"
             disabled={isLoading}
           />
@@ -67,7 +67,7 @@ const LoginForm = ({ onLogin }) => {
             value={formData.password}
             onChange={handleChange}
             required
-            className="focus:border-cetera-orange mb-3 block w-full rounded-lg border border-white bg-dark-blue p-2.5 text-sm text-white placeholder:text-gray-400"
+            className="focus:border-cetera-orange mb-3 block w-full rounded-lg border-1 border-cetera-mono-orange bg-cetera-light-gray p-2.5 text-sm text-cetera-dark-blue placeholder:text-gray-400"
             placeholder="Enter your password"
             disabled={isLoading}
           />
@@ -91,7 +91,7 @@ const LoginForm = ({ onLogin }) => {
 
       {/* Test credentials helper */}
       <div className="mt-6 p-4 bg-blue-500/20 border border-blue-500 rounded-lg">
-        <h3 className="text-blue-200 font-semibold text-sm mb-2">Test Credentials:</h3>
+        <h3 className="text-blue-200 font-semibold text-sm mb-2">Login Credentials:</h3>
         <p className="text-blue-300 text-xs">
           Use an email and password combination that you registered earlier.
           If you haven't registered yet, switch to the Register tab first.

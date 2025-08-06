@@ -115,7 +115,6 @@ const Cart = ({ onProceedToCheckout }) => {
               </a>
            </div>
         </div>
-        
       </div>
 
       {Object.keys(cart).length === 0 ? (

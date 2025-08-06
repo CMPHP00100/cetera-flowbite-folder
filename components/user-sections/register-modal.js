@@ -88,7 +88,7 @@ export default function RegisterUser() {
 
   return (
     <div className="container-fluid">
-      <form className="mx-auto max-w-md rounded p-6" onSubmit={handleSubmit}>
+      <form className="mx-auto max-w-md rounded p-6 font-cetera-josefin" onSubmit={handleSubmit}>
         <input
           type="text"
           id="name"
@@ -97,7 +97,7 @@ export default function RegisterUser() {
           value={formData.name}
           onChange={handleChange}
           required
-          className="focus:border-cetera-orange mb-3 block w-full rounded-lg border border-white bg-dark-blue p-2.5 text-sm text-white placeholder:text-gray-400"
+          className="focus:border-cetera-mono-orange mb-3 block w-full rounded-lg border-1 border-cetera-mono-orange bg-cetera-light-gray p-2.5 text-sm text-cetera-dark-blue placeholder:text-gray-400"
         />
         <input
           type="email"
@@ -107,7 +107,7 @@ export default function RegisterUser() {
           value={formData.email}
           onChange={handleChange}
           required
-          className="focus:border-cetera-orange mb-3 block w-full rounded-lg border border-white bg-dark-blue p-2.5 text-sm text-white placeholder:text-gray-400"
+          className="focus:border-cetera-mono-orange mb-3 block w-full rounded-lg border-1 border-cetera-mono-orange bg-cetera-light-gray p-2.5 text-sm text-cetera-dark-blue placeholder:text-gray-400"
         />
         <input
           type="tel"
@@ -117,7 +117,7 @@ export default function RegisterUser() {
           value={formData.phone}
           onChange={handleChange}
           required
-          className="focus:border-cetera-orange mb-3 block w-full rounded-lg border border-white bg-dark-blue p-2.5 text-sm text-white placeholder:text-gray-400"
+          className="focus:border-cetera-mono-orange mb-3 block w-full rounded-lg border-1 border-cetera-mono-orange bg-cetera-light-gray p-2.5 text-sm text-cetera-dark-blue placeholder:text-gray-400"
         />
         <input
           type="password"
@@ -127,7 +127,7 @@ export default function RegisterUser() {
           value={formData.password}
           onChange={handleChange}
           required
-          className="focus:border-cetera-orange mb-3 block w-full rounded-lg border border-white bg-dark-blue p-2.5 text-sm text-white placeholder:text-gray-400"
+          className="focus:border-cetera-mono-orange mb-3 block w-full rounded-lg border-1 border-cetera-mono-orange bg-cetera-light-gray p-2.5 text-sm text-cetera-dark-blue placeholder:text-gray-400"
         />
         <input
           type="password"
@@ -137,7 +137,7 @@ export default function RegisterUser() {
           value={formData.confirmPassword}
           onChange={handleChange}
           required
-          className="focus:border-cetera-orange mb-3 block w-full rounded-lg border border-white bg-dark-blue p-2.5 text-sm text-white placeholder:text-gray-400"
+          className="focus:border-cetera-mono-orange mb-3 block w-full rounded-lg border-1 border-cetera-mono-orange bg-cetera-light-gray p-2.5 text-sm text-cetera-dark-blue placeholder:text-gray-400"
         />
 
         {/*<select
@@ -174,7 +174,7 @@ export default function RegisterUser() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full rounded-lg bg-cetera-orange py-2.5 text-center text-sm font-medium text-dark-blue hover:border hover:border-cetera-orange hover:bg-dark-blue hover:text-cetera-orange focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full rounded-lg bg-cetera-orange py-2.5 text-center text-md font-medium text-cetera-dark-blue hover:border hover:border-cetera-orange hover:bg-cetera-dark-blue hover:text-cetera-orange focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSubmitting ? (
             <span className="flex items-center justify-center gap-2">

@@ -87,7 +87,7 @@ const AccountTabs = () => {
 
   // Show login/register tabs if not logged in
   return (
-    <div class="mx-auto my-8 lg:my-8 w-full max-w-[95vw] sm:max-w-[90vw] md:max-w-[800px] lg:max-w-[1000px] px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-6 lg:py-8 bg-dark-blue rounded-lg sm:rounded-xl">
+    <div class="mx-auto my-8 lg:my-8 w-full max-w-[95vw] sm:max-w-[90vw] md:max-w-[800px] lg:max-w-[1000px] px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-6 lg:py-8 bg-cetera-dark-blue rounded-lg sm:rounded-xl">
     {/*<div className="mx-auto my-8 w-[1000px] pt-8 bg-dark-blue rounded-lg">*/}
       {/* Tab Buttons */}
       <div className="flex space-x-4 border-b border-gray-400 pb-4">
