@@ -93,16 +93,16 @@ const AccountTabs = () => {
       <div className="flex space-x-4 border-b border-gray-400 pb-4">
         <button
           className={`flex-1 py-2 text-center ${
-            activeTab === "login" ? "font-bold text-cetera-orange" : "text-gray-400"
+            activeTab === "login" ? "font-bold text-cetera-mono-orange" : "text-gray-400"
           }`}
           onClick={() => setActiveTab("login")}
         >
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold">Login</h1>
         </button>
-        <span className="m-0 text-[3rem] font-thin text-cetera-orange">|</span>
+        <span className="m-0 text-[3rem] font-thin text-cetera-mono-orange">|</span>
         <button
           className={`flex-1 py-2 text-center ${
-            activeTab === "register" ? "font-bold text-cetera-orange" : "text-gray-400"
+            activeTab === "register" ? "font-bold text-cetera-mono-orange" : "text-gray-400"
           }`}
           onClick={() => setActiveTab("register")}
         >

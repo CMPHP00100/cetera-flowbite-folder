@@ -53,7 +53,7 @@ const LoginForm = ({ onLogin }) => {
             value={formData.email}
             onChange={handleChange}
             required
-            className="focus:border-cetera-orange mb-3 block w-full rounded-lg border-1 border-cetera-mono-orange bg-cetera-light-gray p-2.5 text-sm text-cetera-dark-blue placeholder:text-gray-400"
+            className="focus:border-cetera-mono-orange mb-3 block w-full rounded-lg border-1 border-cetera-mono-orange bg-cetera-light-gray p-2.5 text-sm text-cetera-dark-blue placeholder:text-gray-400"
             placeholder="Enter your email"
             disabled={isLoading}
           />
@@ -67,7 +67,7 @@ const LoginForm = ({ onLogin }) => {
             value={formData.password}
             onChange={handleChange}
             required
-            className="focus:border-cetera-orange mb-3 block w-full rounded-lg border-1 border-cetera-mono-orange bg-cetera-light-gray p-2.5 text-sm text-cetera-dark-blue placeholder:text-gray-400"
+            className="focus:border-cetera-mono-orange mb-3 block w-full rounded-lg border-1 border-cetera-mono-orange bg-cetera-light-gray p-2.5 text-sm text-cetera-dark-blue placeholder:text-gray-400"
             placeholder="Enter your password"
             disabled={isLoading}
           />
@@ -76,7 +76,7 @@ const LoginForm = ({ onLogin }) => {
         <button
           type="submit"
           disabled={isLoading || !formData.email || !formData.password}
-          className="w-full rounded-lg bg-cetera-orange py-2.5 text-center text-sm font-medium text-dark-blue hover:border hover:border-cetera-orange hover:bg-dark-blue hover:text-cetera-orange focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full rounded-lg bg-cetera-mono-orange py-2.5 text-center text-sm font-medium text-dark-blue hover:border hover:border-cetera-mono-orange hover:bg-dark-blue hover:text-cetera-mono-orange focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? (
             <div className="flex items-center justify-center">
