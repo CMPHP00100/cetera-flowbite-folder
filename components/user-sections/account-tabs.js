@@ -4,7 +4,9 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import dynamic from "next/dynamic";
 import RegisterUser from "@/components/user-sections/register-user";
-import Login from "@/components/user-sections/login";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext"; // Add this import
+import Login from "@/components/user-sections/login"; // Uncomment this import
 
 // Dynamically import Dashboard to avoid SSR issues
 const Dashboard = dynamic(() => import("@/components/user-sections/dashboard"), {
@@ -20,28 +22,73 @@ const AccountTabs = () => {
   const [activeTab, setActiveTab] = useState("login");
   const [user, setUser] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { login } = useAuth();
+  const router = useRouter();
 
   const handleLoginSuccess = (userData) => {
     console.log("Login successful:", userData);
-    setUser(userData);
+    
+    // Update local state
+    setUser(userData.user || userData);
     setIsLoggedIn(true);
+    
+    // Update auth context
+    if (login) {
+      login(userData.token, userData.user || userData);
+    }
+    
+    // Check for premium user (handle both role formats)
+    const userRole = userData.user?.role || userData.role;
+    if (userRole === "PREMIUM" || userRole === "PREMIUM_USER") {
+      router.push("/premium");
+    } else {
+      // Stay on dashboard for regular users
+      // router.push("/"); // Remove this to keep user on dashboard
+    }
   };
 
   const handleRegistrationSuccess = (userData) => {
     console.log("Registration successful:", userData);
-    setUser(userData);
+    setUser(userData.user || userData);
     setIsLoggedIn(true);
+    
+    // Update auth context
+    if (login) {
+      login(userData.token, userData.user || userData);
+    }
   };
 
   const handleLogout = () => {
     setUser(null);
     setIsLoggedIn(false);
     setActiveTab("login");
+    
+    // Clear auth context and localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userData');
+    }
+  };
+
+  // Add user update handler for dashboard
+  const handleUserUpdate = (updatedUser) => {
+    setUser(updatedUser);
+    // Update auth context if needed
+    if (login) {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
+      login(token, updatedUser);
+    }
   };
 
   // If user is logged in, show dashboard
   if (isLoggedIn && user) {
-    return <Dashboard user={user} onLogout={handleLogout} />;
+    return (
+      <Dashboard 
+        user={user} 
+        onLogout={handleLogout} 
+        onUserUpdate={handleUserUpdate}
+      />
+    );
   }
 
   // Otherwise show login/register tabs

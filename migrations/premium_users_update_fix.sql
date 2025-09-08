@@ -1,0 +1,30 @@
+ALTER TABLE users RENAME TO users_old;
+
+CREATE TABLE users (
+  id TEXT PRIMARY KEY,
+  name TEXT,
+  email TEXT UNIQUE NOT NULL,
+  password TEXT NOT NULL,
+  role TEXT NOT NULL CHECK(role IN (
+    'GLOBAL_ADMIN',
+    'GLOBAL_SUPPORT',
+    'PROVIDER_ADMIN',
+    'PROVIDER_SUPPORT',
+    'SUPPLIER_ADMIN',
+    'SUPPLIER_SUPPORT',
+    'CLIENT_ADMIN',
+    'CLIENT_SUPPORT',
+    'END_USER',
+    'PREMIUM_USER'
+  )) DEFAULT 'END_USER',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  login_count INTEGER DEFAULT 0,
+  last_login DATETIME,
+  phone TEXT,
+  image TEXT,
+  access_code TEXT UNIQUE
+);
+
+INSERT INTO users SELECT * FROM users_old;
+DROP TABLE users_old;

@@ -12,8 +12,8 @@ export default function RegisterUser() {
     phone: "",
     password: "",
     confirmPassword: "",
-    role: "END_USER", //default role
   });
+  const [selectedTab, setSelectedTab] = useState(""); // "regular" | "premium"
   const [response, setResponse] = useState(null);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,7 +31,7 @@ export default function RegisterUser() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    setError(""); // Clear error on input change
+    setError("");
 
     if (name === "password" || name === "confirmPassword") {
       const validationError = validatePassword(
@@ -57,19 +57,20 @@ export default function RegisterUser() {
 
     try {
       const { confirmPassword, ...apiData } = formData;
+      const role = selectedTab === "premium" ? "PREMIUM_USER" : "END_USER";
 
-      //const res = await fetch("https://sandbox_flowbite.raspy-math-fdba.workers.dev/", {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(apiData),
+        body: JSON.stringify({ ...apiData, role }),
       });
 
       const data = await res.json();
 
       if (res.ok) {
         setResponse({ success: true, user: data });
-        setFormData({ name: "", email: "", phone: "", password: "", confirmPassword: "", role: "END_USER" });
+        setFormData({ name: "", email: "", phone: "", password: "", confirmPassword: "" });
+        setSelectedTab("regular");
       } else {
         if (data.error?.includes("UNIQUE constraint failed")) {
           setError("An account with this email already exists.");
@@ -88,7 +89,23 @@ export default function RegisterUser() {
 
   return (
     <div className="container-fluid">
-      <form className="mx-auto max-w-md rounded p-6 font-cetera-josefin" onSubmit={handleSubmit}>
+      {/* Account Type Dropdown */}
+      <div className="mx-auto max-w-md px-6 pt-6">
+        <select
+          id="accountType"
+          value={selectedTab}
+          onChange={(e) => setSelectedTab(e.target.value)}
+          className="block w-full rounded-lg border border-cetera-mono-orange bg-cetera-light-gray p-2.5 text-sm text-cetera-mono-orange font-cetera-josefin"
+        >
+          <option value="" disabled>
+            Select account type...
+          </option>
+          <option value="regular">Regular User</option>
+          <option value="premium">Premium User</option>
+        </select>
+      </div>
+
+      <form className="mx-auto max-w-md rounded px-6 pb-6 pt-3 font-cetera-josefin" onSubmit={handleSubmit}>
         <input
           type="text"
           id="name"
@@ -97,7 +114,7 @@ export default function RegisterUser() {
           value={formData.name}
           onChange={handleChange}
           required
-          className="focus:border-cetera-mono-orange mb-3 block w-full rounded-lg border-1 border-cetera-mono-orange bg-cetera-light-gray p-2.5 text-sm text-cetera-dark-blue placeholder:text-gray-400"
+          className="focus:border-cetera-mono-orange mb-3 block w-full rounded-lg border border-cetera-mono-orange bg-cetera-light-gray p-2.5 text-sm text-cetera-dark-blue placeholder:text-gray-400"
         />
         <input
           type="email"
@@ -107,7 +124,7 @@ export default function RegisterUser() {
           value={formData.email}
           onChange={handleChange}
           required
-          className="focus:border-cetera-mono-orange mb-3 block w-full rounded-lg border-1 border-cetera-mono-orange bg-cetera-light-gray p-2.5 text-sm text-cetera-dark-blue placeholder:text-gray-400"
+          className="focus:border-cetera-mono-orange mb-3 block w-full rounded-lg border border-cetera-mono-orange bg-cetera-light-gray p-2.5 text-sm text-cetera-dark-blue placeholder:text-gray-400"
         />
         <input
           type="tel"
@@ -117,7 +134,7 @@ export default function RegisterUser() {
           value={formData.phone}
           onChange={handleChange}
           required
-          className="focus:border-cetera-mono-orange mb-3 block w-full rounded-lg border-1 border-cetera-mono-orange bg-cetera-light-gray p-2.5 text-sm text-cetera-dark-blue placeholder:text-gray-400"
+          className="focus:border-cetera-mono-orange mb-3 block w-full rounded-lg border border-cetera-mono-orange bg-cetera-light-gray p-2.5 text-sm text-cetera-dark-blue placeholder:text-gray-400"
         />
         <input
           type="password"
@@ -127,7 +144,7 @@ export default function RegisterUser() {
           value={formData.password}
           onChange={handleChange}
           required
-          className="focus:border-cetera-mono-orange mb-3 block w-full rounded-lg border-1 border-cetera-mono-orange bg-cetera-light-gray p-2.5 text-sm text-cetera-dark-blue placeholder:text-gray-400"
+          className="focus:border-cetera-mono-orange mb-3 block w-full rounded-lg border border-cetera-mono-orange bg-cetera-light-gray p-2.5 text-sm text-cetera-dark-blue placeholder:text-gray-400"
         />
         <input
           type="password"
@@ -137,32 +154,18 @@ export default function RegisterUser() {
           value={formData.confirmPassword}
           onChange={handleChange}
           required
-          className="focus:border-cetera-mono-orange mb-3 block w-full rounded-lg border-1 border-cetera-mono-orange bg-cetera-light-gray p-2.5 text-sm text-cetera-dark-blue placeholder:text-gray-400"
+          className="focus:border-cetera-mono-orange mb-3 block w-full rounded-lg border border-cetera-mono-orange bg-cetera-light-gray p-2.5 text-sm text-cetera-dark-blue placeholder:text-gray-400"
         />
-
-        {/*<select
-          id="role"
-          name="role"
-          value={formData.role}
-          onChange={handleChange}
-          className="focus:border-cetera-orange mb-3 block w-full rounded-lg border border-white bg-dark-blue p-2.5 text-sm text-white"
-        >
-          <option value="END_USER">End User</option>
-          <option value="CLIENT_ADMIN">Client Admin</option>
-          <option value="GLOBAL_ADMIN">Global Admin</option>
-        </select>*/}
 
         {error && <p className="text-red-500 mb-3 text-sm">{error}</p>}
 
         <div className="mb-4 mt-6 flex items-start">
-          <div className="h-5 flex items-center">
-            <input
-              id="terms"
-              type="checkbox"
-              required
-              className="focus:ring-3 focus:cetera-orange size-4 rounded border border-gray-300 bg-gray-50 active:bg-cetera-mono-orange"
-            />
-          </div>
+          <input
+            id="terms"
+            type="checkbox"
+            required
+            className="focus:ring-3 focus:cetera-orange size-4 rounded border border-gray-300 bg-gray-50 active:bg-cetera-mono-orange"
+          />
           <label htmlFor="terms" className="ms-2 text-sm font-medium text-white">
             I agree with the{" "}
             <a href="#" className="text-cetera-mono-orange hover:underline">
@@ -174,7 +177,7 @@ export default function RegisterUser() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full rounded-lg bg-cetera-mono-orange py-2.5 text-center text-md font-medium text-cetera-dark-blue hover:border hover:border-cetera-mono-orange hover:bg-cetera-dark-blue hover:text-cetera-mono-orange focus:outline-none focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full rounded-lg bg-cetera-mono-orange py-2.5 text-center text-md font-medium text-cetera-dark-blue hover:border hover:border-cetera-mono-orange hover:bg-cetera-dark-blue hover:text-cetera-mono-orange disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSubmitting ? (
             <span className="flex items-center justify-center gap-2">

@@ -1,8 +1,9 @@
 // app/account/page.js
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSession, signIn, signOut } from "next-auth/react";
 import dynamic from "next/dynamic";
 import RegisterUser from "@/components/user-sections/register-modal";
 import "../../components/custom-styles/account.css";
@@ -11,35 +12,22 @@ const LoginForm = dynamic(() => import("@/components/user-sections/login-form"),
 const Dashboard = dynamic(() => import("@/components/user-sections/dashboard"), { ssr: false });
 
 const AccountTabs = () => {
+  const { data: session, status } = useSession();
   const [activeTab, setActiveTab] = useState("login");
-  const [user, setUser] = useState(null);
 
   const handleLogin = async (credentials) => {
     try {
-      console.log('Attempting login with:', credentials);
-      
-      const response = await fetch('https://sandbox_flowbite.raspy-math-fdba.workers.dev/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: credentials.email || credentials.username,
-          password: credentials.password
-        })
+      const result = await signIn("credentials", {
+        email: credentials.email || credentials.username,
+        password: credentials.password,
+        redirect: false,
       });
 
-      const data = await response.json();
-      
-      if (response.ok && data.success) {
-        // Login successful
-        setUser(data.user);
-        localStorage.setItem('authToken', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        console.log(`Welcome back, ${data.user.name}, ${data.user.id}, ${data.user.created_at}, ${data.user.updated_at}, ${data.user.role}!`);
-      } else {
-        // Login failed
-        alert("Login failed: " + (data.error || 'Unknown error'));
+      if (result?.error) {
+        alert("Login failed: " + result.error);
+      } else if (result?.ok) {
+        // Login successful - NextAuth will handle the session
+        console.log("Login successful");
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -47,17 +35,13 @@ const AccountTabs = () => {
     }
   };
 
-  const handleLogout = () => {
-    setUser(null);
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('user');
-    setActiveTab("login"); // Reset to login tab
+  const handleLogout = async () => {
+    await signOut({ redirect: false });
+    setActiveTab("login");
   };
 
-  // Handle user updates
   const handleUserUpdate = (updatedUser) => {
-    setUser(updatedUser);
-    // Optionally save to localStorage or sync with server
+    // For now, just log - NextAuth handles session updates differently
     console.log('User updated:', updatedUser);
   };
 
@@ -66,30 +50,31 @@ const AccountTabs = () => {
     setActiveTab("login");
   };
 
-  // Check if user is already logged in on component mount
-  React.useEffect(() => {
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      try {
-        setUser(JSON.parse(savedUser));
-      } catch (error) {
-        console.error('Error parsing saved user:', error);
-        localStorage.removeItem('user');
-        localStorage.removeItem('authToken');
-      }
-    }
+  // Clear any old localStorage data
+  useEffect(() => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('authToken');
   }, []);
 
-  // If user is logged in, show full dashboard
-  if (user) {
-    return <Dashboard user={user} onLogout={handleLogout} onUserUpdate={handleUserUpdate} />;
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+
+  // If user is logged in via NextAuth, show dashboard
+  if (session?.user) {
+    return (
+      <Dashboard 
+        user={session.user} 
+        onLogout={handleLogout} 
+        onUserUpdate={handleUserUpdate} 
+      />
+    );
   }
 
   // Show login/register tabs if not logged in
   return (
-    <div class="mx-auto my-8 lg:my-8 w-full max-w-[95vw] sm:max-w-[90vw] md:max-w-[800px] lg:max-w-[1000px] px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-6 lg:py-8 bg-cetera-dark-blue rounded-lg sm:rounded-xl">
-    {/*<div className="mx-auto my-8 w-[1000px] pt-8 bg-dark-blue rounded-lg">*/}
-      {/* Tab Buttons */}
+    <div className="mx-auto my-8 lg:my-8 w-full max-w-[95vw] sm:max-w-[90vw] md:max-w-[800px] lg:max-w-[1000px] px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-6 lg:py-8 bg-cetera-dark-blue rounded-lg sm:rounded-xl">
+      {/* Rest of your existing JSX remains the same */}
       <div className="flex space-x-4 border-b border-gray-400 pb-4">
         <button
           className={`flex-1 py-2 text-center ${
@@ -110,7 +95,6 @@ const AccountTabs = () => {
         </button>
       </div>
 
-      {/* Animated Tab Content */}
       <div className="relative mt-4 h-[600px] overflow-hidden">
         <AnimatePresence mode="wait">
           {activeTab === "login" ? (

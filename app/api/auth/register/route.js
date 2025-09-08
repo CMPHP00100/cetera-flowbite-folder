@@ -6,23 +6,31 @@ export const runtime = "nodejs";
 export async function POST(request) {
   try {
     const body = await request.json();
+    const { role = "END_USER", phone, ...rest } = body; // Extract phone separately
     
-    console.log("🔍 Registration request received:", { 
-      ...body, 
-      password: '[REDACTED]' 
+    // Prepare data for worker - only include phone if it exists and Worker supports it
+    const workerData = {
+      ...rest,
+      role,
+      // Only include phone if provided, otherwise omit it
+      ...(phone && { phone })
+    };
+
+    console.log("🔍 Registration request received:", {
+      ...rest,
+      role,
+      phone: phone || "not provided",
+      password: "[REDACTED]",
     });
 
     const cfEndpoint = "https://sandbox_flowbite.raspy-math-fdba.workers.dev/register";
-    
+
     const workerResponse = await fetch(cfEndpoint, {
       method: "POST",
-      headers: { 
+      headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ 
-        ...body, 
-        role: "END_USER"
-      }),
+      body: JSON.stringify(workerData),
     });
 
     const resText = await workerResponse.text();
@@ -39,10 +47,43 @@ export async function POST(request) {
       );
     }
 
-    return NextResponse.json(data, { 
-      status: workerResponse.status 
-    });
+    // If phone field caused an error, retry without it
+    if (data.error && data.error.includes("phone") && phone) {
+      console.log("🔄 Retrying registration without phone field...");
+      
+      const retryData = {
+        ...rest,
+        role
+      };
+      
+      const retryResponse = await fetch(cfEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(retryData),
+      });
+      
+      const retryText = await retryResponse.text();
+      console.log("📝 Retry response:", retryText);
+      
+      try {
+        data = JSON.parse(retryText);
+        return NextResponse.json(data, {
+          status: retryResponse.status,
+        });
+      } catch (retryParseError) {
+        console.error("❌ Retry parse error:", retryParseError);
+        return NextResponse.json(
+          { error: "Authentication service error" },
+          { status: 502 }
+        );
+      }
+    }
 
+    return NextResponse.json(data, {
+      status: workerResponse.status,
+    });
   } catch (error) {
     console.error("❌ Register proxy error:", error);
     return NextResponse.json(

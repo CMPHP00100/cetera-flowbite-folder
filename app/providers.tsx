@@ -6,10 +6,18 @@ import { store } from "@/redux/store.tsx";
 import { CartProvider } from "@/context/CartContext.js";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { SessionProvider } from "next-auth/react";
 import { useEffect, useState } from "react";
 //import RocketShip from "@/components/animations/rocket-ship.js"
 
-export function Providers({ children }: { children: React.ReactNode }) {
+interface ProvidersProps {
+  children: React.ReactNode;
+  session?: any; // You can type this more strictly if needed
+}
+
+
+//export function Providers({ children }: { children: React.ReactNode }) {
+export function Providers({ children, session }: ProvidersProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -21,10 +29,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <Provider store={store}>
-      <DndProvider backend={HTML5Backend}>
-        <CartProvider>{children}</CartProvider>
-      </DndProvider>
-    </Provider>
+    <SessionProvider session={session}>
+      <Provider store={store}>
+        <DndProvider backend={HTML5Backend}>
+          <CartProvider>{children}</CartProvider>
+        </DndProvider>
+      </Provider>
+    </SessionProvider>
   );
 }

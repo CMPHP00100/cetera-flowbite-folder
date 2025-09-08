@@ -43,3 +43,6 @@ next-env.d.ts
 local.db
 local.db-journal
 local.db-wal
+
+#local SQLite file
+dev.db

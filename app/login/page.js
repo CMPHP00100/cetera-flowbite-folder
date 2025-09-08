@@ -1,5 +1,5 @@
 //app/login/page.js
-import LoginForm from "@/components/user-sections/login-form";
+/*import LoginForm from "@/components/user-sections/login-form";
 
 export default function Login() {
   return (
@@ -7,4 +7,7 @@ export default function Login() {
       <LoginForm />
     </div>
   );
+}*/
+export default function Login() {
+  return <div>Login page - redirect happened here!</div>
 }

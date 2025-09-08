@@ -1,0 +1,6 @@
+-- migrations/001_consolidate_roles.sql
+UPDATE users
+SET role = CASE
+    WHEN role IN ('CLIENT_ADMIN', 'SUPPLIER_ADMIN', 'PROVIDER_ADMIN', 'PREMIUM_USER') THEN 'PREMIUM_USER'
+    ELSE 'STANDARD_USER'
+END;

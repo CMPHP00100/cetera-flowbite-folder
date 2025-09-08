@@ -1,4 +1,4 @@
-// app/api/users/route.js - Fixed version
+// app/api/users/route.js
 import { getDatabase } from '../../../lib/database';
 
 // IMPORTANT: Use nodejs runtime for better-sqlite3 compatibility
@@ -82,6 +82,66 @@ export async function POST(request) {
     return Response.json({
       error: error.message,
       hint: 'Check database connection'
+    }, { status: 500 });
+  }
+}
+
+export async function PUT(request) {
+  try {
+    console.log('=== PUT /api/users ===');
+    const body = await request.json();
+    const { userId, planType } = body;
+    
+    // Basic validation
+    if (!userId || !planType) {
+      return Response.json({
+        error: 'Missing required fields: userId, planType'
+      }, { status: 400 });
+    }
+    
+    // Validate planType
+    if (!['Standard', 'Premium'].includes(planType)) {
+      return Response.json({
+        error: 'Invalid planType. Must be "Standard" or "Premium"'
+      }, { status: 400 });
+    }
+    
+    const db = getDatabase(process.env);
+    
+    // Map planType to role
+    const role = planType === 'Premium' ? 'PREMIUM_USER' : 'END_USER';
+    
+    // Update user role
+    const stmt = db.prepare(`
+      UPDATE users 
+      SET role = ? 
+      WHERE id = ?
+    `);
+    
+    const result = await stmt.bind(role, userId).run();
+    
+    console.log('Update result:', result);
+    
+    if (result.success && result.meta.changes > 0) {
+      return Response.json({
+        message: 'Subscription updated successfully',
+        userId: userId,
+        newRole: role,
+        planType: planType
+      });
+    } else if (result.success && result.meta.changes === 0) {
+      return Response.json({
+        error: 'User not found'
+      }, { status: 404 });
+    } else {
+      throw new Error('Failed to update user subscription');
+    }
+    
+  } catch (error) {
+    console.error('PUT /api/users error:', error);
+    return Response.json({
+      error: error.message,
+      hint: 'Check database connection and user ID'
     }, { status: 500 });
   }
 }

@@ -2,10 +2,13 @@
 import type { Metadata } from "next";
 import { ThemeModeScript } from "flowbite-react";
 import PageWrapper from "@/components/animations/page-wrapper.js";
+import { AuthProvider } from "@/context/AuthContext.js";
 import CustomNav from "@/components/page-sections/navbar.js";
 import Footer from "@/components/page-sections/footer.js";
 import { Providers } from "./providers.tsx";
 import { OrderProvider } from "@/context/OrderContext.js";
+//import { SessionProvider } from "next-auth/react";
+import NextAuthSessionProvider from "@/components/providers/session-provider.tsx";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -34,13 +37,17 @@ export default function RootLayout({
         className="font-sans antialiased bg-cetera-light-gray"
         suppressHydrationWarning
       >
-        <OrderProvider>
-          <Providers>
-            <CustomNav />
-            <PageWrapper>{children}</PageWrapper>
-            <Footer />
-          </Providers>
-        </OrderProvider>
+        <NextAuthSessionProvider>
+          <AuthProvider>
+            <OrderProvider>
+              <Providers>
+                <CustomNav />
+                <PageWrapper>{children}</PageWrapper>
+                <Footer />
+              </Providers>
+            </OrderProvider>
+          </AuthProvider>
+        </NextAuthSessionProvider>
       </body>
     </html>
   );
