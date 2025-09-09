@@ -1,10 +1,11 @@
 //app/api/premium-api/route.js
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+//import { getServerSession } from "next-auth/next";
+import { authOptions, auth } from "@/app/api/auth/[...nextauth]/route";
 import { hasAccess } from "@/lib/access";
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
+  //const session = await getServerSession(authOptions);
 
   if (!session) {
     return new Response(JSON.stringify({ error: "Not authenticated" }), { status: 401 });
