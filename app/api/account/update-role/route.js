@@ -1,15 +1,12 @@
 // app/api/account/update-role/route.js
-//import { getServerSession } from "next-auth/next";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/nextAuthServer";
-import { auth } from "@/app/api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/authOptions";
 import { NextResponse } from "next/server";
 import DB from "@/lib/d1Local"; // your D1 wrapper
 
 export async function PUT(req) {
   try {
-    const session = await auth();
-    //const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions);
 
     if (!session || !session.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -43,3 +40,4 @@ export async function PUT(req) {
     return NextResponse.json({ error: "Failed to update role" }, { status: 500 });
   }
 }
+
