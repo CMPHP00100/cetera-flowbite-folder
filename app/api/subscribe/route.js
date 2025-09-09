@@ -1,17 +1,14 @@
 // app/api/subscribe/route.js
 import { NextResponse } from "next/server";
-import { auth } from "@/app/api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/authOptions";
 import { generateAccessCode, getDatabase, runStmt, queryStmt } from "@/lib/database";
-import { initD1, getD1 } from "@/lib/d1Local";
-
-//const db = new DatabaseWrapper(getD1());
-//const DB_ROLES = ["CLIENT_ADMIN", "END_USER"];
 
 export async function PUT(req) {
   console.log("🔥 PUT /api/subscribe hit");
 
   try {
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
@@ -28,13 +25,8 @@ export async function PUT(req) {
         return NextResponse.json({ error: "Invalid plan type" }, { status: 400 });
       }
     } else if (body.newRole && body.userId) {
-      if (body.newRole === "PREMIUM_USER") {
-        newRole = "CLIENT_ADMIN";
-      } else if (body.newRole === "END_USER") {
-        newRole = "END_USER";
-      } else {
-        newRole = body.newRole;
-      }
+      newRole = body.newRole === "PREMIUM_USER" ? "CLIENT_ADMIN" :
+                body.newRole === "END_USER" ? "END_USER" : body.newRole;
       accessCode = body.accessCode;
       targetUserId = body.userId;
       planType = newRole === "CLIENT_ADMIN" ? "Premium" : "Standard";
@@ -47,8 +39,7 @@ export async function PUT(req) {
     console.log("🎯 Target user ID:", targetUserId);
     console.log("🎯 New role:", newRole);
 
-    //const db = getDatabase(process.env);
-    const db = getDatabase(context?.env || process.env);
+    const db = getDatabase(process.env);
 
     const allowedRoles = [
       "GLOBAL_ADMIN", "GLOBAL_SUPPORT", "PROVIDER_ADMIN", "PROVIDER_SUPPORT",
@@ -59,10 +50,8 @@ export async function PUT(req) {
       return NextResponse.json({ error: `Invalid role: ${newRole}`, allowedRoles }, { status: 400 });
     }
 
-    // 🔍 Get current user role from DB
     const userCheckStmt = db.prepare("SELECT id, role, access_code FROM users WHERE id = ?");
     let currentUser = await queryStmt(userCheckStmt, targetUserId);
-    console.log("👤 Current user from database:", currentUser);
 
     if (!currentUser) {
       console.log("❓ User not found, creating new user...");
@@ -90,24 +79,15 @@ export async function PUT(req) {
       console.log("🔑 Generated new access code:", accessCode);
     }
 
-    // 📝 Update role + access code
     const updateStmt = db.prepare(`
       UPDATE users 
       SET role = ?, access_code = ?, updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
     `);
-    console.log(`📝 About to update user: role="${newRole}", accessCode="${accessCode}", userId="${targetUserId}"`);
+    console.log(`📝 Updating user: role="${newRole}", accessCode="${accessCode}", userId="${targetUserId}"`);
     const changes = await runStmt(updateStmt, newRole, accessCode, targetUserId);
-    console.log("💾 Database update result:", changes);
 
-    // ✅ Verify against D1 immediately
-    const verifyStmt = db.prepare("SELECT id, role, access_code FROM users WHERE id = ?");
-    const updatedUser = await queryStmt(verifyStmt, targetUserId);
-
-    console.log("🔍 Verification check:");
-    console.log("   Old role:", currentUser.role);
-    console.log("   New role from D1:", updatedUser?.role);
-    console.log("   Access code from D1:", updatedUser?.access_code);
+    const updatedUser = await queryStmt(userCheckStmt, targetUserId);
 
     const response = {
       success: true,
@@ -131,19 +111,17 @@ export async function PUT(req) {
   }
 }
 
-// 🔑 Redeem premium access using access codes
 export async function POST(req) {
   console.log("🔥 POST /api/subscribe hit (redeem)");
 
   try {
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     if (!session?.user?.id) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
     const { accessCode } = await req.json();
     if (!accessCode) return NextResponse.json({ error: "Access code required" }, { status: 400 });
 
-    //const db = getDatabase(process.env);
-    const db = getDatabase(context?.env || process.env);
+    const db = getDatabase(process.env);
 
     const premiumUserStmt = db.prepare(`
       SELECT id, name, email, role
