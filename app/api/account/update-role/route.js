@@ -1,6 +1,8 @@
 // app/api/account/update-role/route.js
 //import { getServerSession } from "next-auth/next";
-import { authOptions, auth } from "@/app/api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/nextAuthServer";
+import { auth } from "@/app/api/auth/[...nextauth]/route";
 import { NextResponse } from "next/server";
 import DB from "@/lib/d1Local"; // your D1 wrapper
 

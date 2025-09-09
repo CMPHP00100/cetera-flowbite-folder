@@ -2,19 +2,10 @@
 import NextAuth from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 
-// Destructure the nested "handlers" object
-const { handlers, auth, signIn, signOut } = NextAuth(authOptions);
-
-// (Optional) debug – remove after confirming
-console.log("Auth handlers ready?", !!handlers?.GET, !!handlers?.POST);
+const { handlers } = NextAuth(authOptions);
 
 export const { GET, POST } = handlers;
-export { auth, signIn, signOut };
 
-// 🔑 Re-export authOptions so other files can import it
-export { authOptions };
-
-// (Optional) helps avoid caching/runtime mismatches in some setups
+// optional: keep runtime hints
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-

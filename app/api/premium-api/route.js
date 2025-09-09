@@ -1,6 +1,7 @@
 //app/api/premium-api/route.js
 //import { getServerSession } from "next-auth/next";
-import { authOptions, auth } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/nextAuthServer";
+import { auth } from "@/app/api/auth/[...nextauth]/route";
 import { hasAccess } from "@/lib/access";
 
 export async function GET() {
