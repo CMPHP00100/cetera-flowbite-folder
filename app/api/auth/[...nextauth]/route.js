@@ -11,6 +11,10 @@ console.log("Auth handlers ready?", !!handlers?.GET, !!handlers?.POST);
 export const { GET, POST } = handlers;
 export { auth, signIn, signOut };
 
+// 🔑 Re-export authOptions so other files can import it
+export { authOptions };
+
 // (Optional) helps avoid caching/runtime mismatches in some setups
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+
