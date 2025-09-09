@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import dynamic from "next/dynamic";
 import RegisterUser from "@/components/user-sections/register-user";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/AuthContext"; // Add this import
+import { useAuth } from "@/context/AuthContext"; // Add this import
 import Login from "@/components/user-sections/login"; // Uncomment this import
 
 // Dynamically import Dashboard to avoid SSR issues

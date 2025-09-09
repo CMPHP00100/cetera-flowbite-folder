@@ -1,7 +1,7 @@
-//import prisma from "./lib/prisma";
-import type { GetStaticProps } from "next";
+//index.ts
+//import type { GetStaticProps } from "next";
 
-export const getStaticProps: GetStaticProps = async () => {
+/*export const getStaticProps: GetStaticProps = async () => {
   const prisma = require('./lib/prisma');
   const feed = await prisma.post.findMany({
     where: { published: true },
@@ -15,4 +15,4 @@ export const getStaticProps: GetStaticProps = async () => {
     props: { feed },
     revalidate: 10,
   };
-};
+};*/

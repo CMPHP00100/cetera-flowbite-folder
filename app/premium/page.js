@@ -1,6 +1,6 @@
 // app/premium/page.js
 "use client";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Crown, Star, Zap, Shield, TrendingUp } from "lucide-react";
