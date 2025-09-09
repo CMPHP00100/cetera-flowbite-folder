@@ -1,43 +1,25 @@
 // app/api/account/update-role/route.js
+import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/authOptions";
-import { NextResponse } from "next/server";
-import DB from "@/lib/d1Local";
+import { initD1, getD1 } from "@/lib/d1Local";
 
 export async function PUT(req) {
-  try {
-    const session = await getServerSession(authOptions);
+  await initD1();
+  const db = getD1();
 
-    if (!session || !session.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const { newRole } = await req.json();
+  const { newRole } = await req.json();
+  if (!["END_USER", "PREMIUM_USER"].includes(newRole)) return NextResponse.json({ error: "Invalid role change" }, { status: 400 });
 
-    if (!["END_USER", "PREMIUM_USER"].includes(newRole)) {
-      return NextResponse.json({ error: "Invalid role change" }, { status: 400 });
-    }
+  const query = "UPDATE users SET role = ? WHERE email = ? RETURNING id, email, role";
+  const result = await db.prepare(query).bind(newRole, session.user.email).first();
 
-    const query = `
-      UPDATE users
-      SET role = ?
-      WHERE email = ?
-      RETURNING id, email, role
-    `;
+  if (!result) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
-    const result = await DB.prepare(query)
-      .bind(newRole, session.user.email)
-      .first();
-
-    if (!result) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    return NextResponse.json({ success: true, user: result });
-  } catch (err) {
-    console.error("Role update error:", err);
-    return NextResponse.json({ error: "Failed to update role" }, { status: 500 });
-  }
+  return NextResponse.json({ success: true, user: result });
 }
 
 
